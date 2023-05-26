@@ -1,3 +1,3 @@
-# project07
+# project06
 
-Battle simulator
+Inventory management
