@@ -45,10 +45,55 @@ class CombatScreen extends Phaser.Scene {
 	    		}
 	    	}
 	    }
+
+	    let characters = []
+	    let unit = new Unit()
+	    unit.updateUnit({
+	    	name: 'Unit1',
+	    	allegiance: allegianceVars.ally,
+	    	position: database.getSpotByIJ(0,0).id,
+	    	health: 3,
+	    	spriteInfos: {
+				spriteName:null,
+				spriteSheet: 'tilesets',
+				spriteNumber:129
+			},
+	    	unit: unit.id
+	    })
+	    characters.push(unit)
+	    let unit2 = new Unit()
+	    unit2.updateUnit({
+	    	name: 'Unit2',
+	    	allegiance: allegianceVars.ally,
+	    	position: database.getSpotByIJ(0,1).id,
+	    	health: 4,
+	    	spriteInfos: {
+				spriteName:null,
+				spriteSheet: 'tilesets',
+				spriteNumber:130
+			},
+	    	unit: unit.id
+	    })
+	    characters.push(unit2)
+
+	    let characterContainer = []
+
+	    for(let character of characters) {
+	    	console.log(character)
+	    	let spot = database.getSpot(character.position);
+	    	let widthPlacement = terrainVars.tileSize * spot.i + terrainVars.tileSize/2 - backgroundRect.width/2
+			let heightPlacement = terrainVars.tileSize * spot.j + terrainVars.tileSize/2 - backgroundRect.height/2
+	    	let sprite = this.add.sprite(widthPlacement, heightPlacement, character.spriteInfos.spriteSheet, character.spriteInfos.spriteNumber);
+	    	characterContainer.push(sprite)
+    		this.characterObj[character.id] = {
+    			character: character,
+    			obj: sprite,
+    		}
+	    }
 	    
 
-	    let terrainScreen = this.add.container(backgroundRect.width/2, backgroundRect.height/2, [...spriteContainer]);
-	    terrainScreen.setSize(backgroundRect.width, backgroundRect.height)
+	    let terrainScreen = this.add.container(backgroundRect.width/2, backgroundRect.height/2, [...spriteContainer, ...characterContainer]);
+	    terrainScreen.setSize(backgroundRect.width, backgroundRect.height)	    
 
 	    this.cameras.main.setViewport(this.parent.x, this.parent.y+visualVars.windowGrabOffset, terrainScreen.width, terrainScreen.height);
 	}

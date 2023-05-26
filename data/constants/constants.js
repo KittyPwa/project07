@@ -15,7 +15,12 @@ var visualVars= {
 
 }
 
-var dataTypes = ['terrain', 'spot', 'ally', 'enemy']
+var allegianceVars = {
+    ally: 'ally',
+    foe: 'foe'
+}
+
+var dataTypes = ['terrain', 'spot', 'unit']
 
 var terrainVars = {
     collumnAmount: 5,

@@ -24,6 +24,7 @@ function Spot() {
 		this.i = data.i
 		this.j = data.j
 		this.identifier = data.i + '_' + data.j
+		this.id = data.id
 	}
 
 	this.setSpot = function(i,j) {

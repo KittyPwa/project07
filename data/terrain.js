@@ -11,6 +11,7 @@ function Terrain() {
 
 	this.updateTerrain = function(data) {
 		this.terrain = data.terrain
+		this.id = data.id
 	}
 
 	database.addTerrainToDatabase(this)

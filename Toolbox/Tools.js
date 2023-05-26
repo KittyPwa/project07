@@ -28,7 +28,7 @@ function Database() {
         let functionized = 'get' + capitalized
         let plural = dataName + 's'
         this[functionized] = function(id) {
-            return this.data[plural][i]
+            return this.data[plural][id]
         }    
     }
 
