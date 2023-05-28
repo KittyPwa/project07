@@ -18,13 +18,13 @@ class CombatScreen extends Phaser.Scene {
 	    let that = this
 	    this.terrain = new Terrain()
 	    
-	    let backgroundRect = this.add.rectangle(0,0 ,this.terrain.width*terrainVars.tileSize, this.terrain.height*terrainVars.tileSize)
+	    let backgroundRect = this.add.rectangle(0,0 ,this.terrain.height*terrainVars.tileSize, this.terrain.width*terrainVars.tileSize)
 	    this.backgroundRect = backgroundRect
 	    backgroundRect.setStrokeStyle(visualVars.rectLineThickness, visualVars.rectLineColor)
 	    let spriteContainer = []
 	    spriteContainer.push(backgroundRect)
-	    for(let i = 0; i < this.terrain.width; i++) {
-	    	for(let j = 0; j < this.terrain.height; j++) {
+	    for(let i = 0; i < this.terrain.height; i++) {
+	    	for(let j = 0; j < this.terrain.width; j++) {
 	    		let spot = database.getSpotByIJ(i,j);
 				let widthPlacement = terrainVars.tileSize * i + terrainVars.tileSize/2 - backgroundRect.width/2
 				let heightPlacement = terrainVars.tileSize * j + terrainVars.tileSize/2 - backgroundRect.height/2
@@ -79,7 +79,6 @@ class CombatScreen extends Phaser.Scene {
 	    let characterContainer = []
 
 	    for(let character of characters) {
-	    	console.log(character)
 	    	let spot = database.getSpot(character.position);
 	    	let widthPlacement = terrainVars.tileSize * spot.i + terrainVars.tileSize/2 - backgroundRect.width/2
 			let heightPlacement = terrainVars.tileSize * spot.j + terrainVars.tileSize/2 - backgroundRect.height/2

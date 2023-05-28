@@ -17,9 +17,9 @@ function Terrain() {
 	database.addTerrainToDatabase(this)
 
 
-	for(let i = 0; i < this.width; i++) {
+	for(let i = 0; i < this.height; i++) {
 		this.terrain[i] = []
-		for(let j = 0; j < this.height; j++) {
+		for(let j = 0; j < this.width; j++) {
 			let spot = new Spot()
 			spot.updateSpot({
 				i: i,
@@ -58,8 +58,8 @@ function Terrain() {
 	this.getAvailableSpots = function() {
 		let spot
 		let availableSpots = []
-		for(let i = 0; i < this.width; i++) {
-			for(let j = 0; j < this.height; j++) {
+		for(let i = 0; i < this.height; i++) {
+			for(let j = 0; j < this.width; j++) {
 				spot = database.getSpotByIJ(i,j);				
 				if(spot) {
 					if(spot.isAvailable()) {
