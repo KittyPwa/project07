@@ -5,7 +5,7 @@ function Terrain() {
 
 	this.width = terrainVars.collumnAmount;
 
-	this.length = terrainVars.rowAmount;
+	this.height = terrainVars.rowAmount;
 
 	this.terrain = []
 
@@ -19,9 +19,13 @@ function Terrain() {
 
 	for(let i = 0; i < this.width; i++) {
 		this.terrain[i] = []
-		for(let j = 0; j < this.length; j++) {
+		for(let j = 0; j < this.height; j++) {
 			let spot = new Spot()
-			spot.setSpot(i,j)
+			spot.updateSpot({
+				i: i,
+				j: j,
+				unitInSpot: null,			
+			})
 			this.terrain[i][j] = spot.id
 		}
 	}
@@ -40,7 +44,7 @@ function Terrain() {
 			for(let j = -1 * range; j <= range; j++) {
 				newJ = j + spotOrigin.j
 				if(i != 0 || j != 0) {
-					spot = database.getSpot(newI, newJ)
+					spot = database.getSpotByIJ(newI, newJ)
 					if(spot) {
 						if(this.getDistanceBetweenSpots(spotOrigin, spot) <= range)
 							spots.push(spot)						
@@ -49,6 +53,22 @@ function Terrain() {
 			}
 		}
 		return spots
+	}
+
+	this.getAvailableSpots = function() {
+		let spot
+		let availableSpots = []
+		for(let i = 0; i < this.width; i++) {
+			for(let j = 0; j < this.height; j++) {
+				spot = database.getSpotByIJ(i,j);				
+				if(spot) {
+					if(spot.isAvailable()) {
+						availableSpots.push(spot)
+					}
+				}
+			}
+		}
+		return availableSpots
 	}
 }
 database.addTypeToDatabase(Terrain, 'Terrain')

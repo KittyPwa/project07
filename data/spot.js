@@ -7,6 +7,20 @@ function Spot() {
 
 	this.identifier = null
 
+	this.unitInSpot = null;
+
+	this.isAvailable = function() {
+		return this.unitInSpot == null
+	}
+
+	this.setUnit = function(unit) {
+		this.unitInSpot = unit.id;
+	}
+
+	this.removeUnit = function() {
+		this.unitInSpot = null;
+	}
+
 	this.getSpotByIJ = function(i,j) {
 		for(let spot of Object.values(this.data.spots)) {
 			if(spot.identifier == i + '_' + j) {
@@ -24,13 +38,8 @@ function Spot() {
 		this.i = data.i
 		this.j = data.j
 		this.identifier = data.i + '_' + data.j
-		this.id = data.id
-	}
-
-	this.setSpot = function(i,j) {
-		this.i = i
-		this.j = j
-		this.identifier = i + '_' + j
+		this.unitInSpot = data.unitInSpot
+		this.id = data.id != undefined ? data.id : this.id
 	}
 
 	this.type = 'Spot'

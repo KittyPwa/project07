@@ -18,13 +18,13 @@ class CombatScreen extends Phaser.Scene {
 	    let that = this
 	    this.terrain = new Terrain()
 	    
-	    let backgroundRect = this.add.rectangle(0,0 ,this.terrain.width*terrainVars.tileSize, this.terrain.length*terrainVars.tileSize)
+	    let backgroundRect = this.add.rectangle(0,0 ,this.terrain.width*terrainVars.tileSize, this.terrain.height*terrainVars.tileSize)
 	    this.backgroundRect = backgroundRect
 	    backgroundRect.setStrokeStyle(visualVars.rectLineThickness, visualVars.rectLineColor)
 	    let spriteContainer = []
 	    spriteContainer.push(backgroundRect)
 	    for(let i = 0; i < this.terrain.width; i++) {
-	    	for(let j = 0; j < this.terrain.length; j++) {
+	    	for(let j = 0; j < this.terrain.height; j++) {
 	    		let spot = database.getSpotByIJ(i,j);
 				let widthPlacement = terrainVars.tileSize * i + terrainVars.tileSize/2 - backgroundRect.width/2
 				let heightPlacement = terrainVars.tileSize * j + terrainVars.tileSize/2 - backgroundRect.height/2
@@ -95,17 +95,51 @@ class CombatScreen extends Phaser.Scene {
 	    let terrainScreen = this.add.container(backgroundRect.width/2, backgroundRect.height/2, [...spriteContainer, ...characterContainer]);
 	    terrainScreen.setSize(backgroundRect.width, backgroundRect.height)	    
 
+	    for(let character of Object.values(this.characterObj)) {
+	    	let sprite = character.obj	    	
+	    	character = character.character
+	    	sprite.setInteractive()
+	    	if(character.allegiance == allegianceVars.ally) {
+	    		sprite.on('pointerdown', function() {
+		    		if(!that.selected) {
+		    			that.selectCharacter(character, sprite, that)
+		    		} else {
+		    			if(that.selected != character.id) {
+		    				that.unselectCharacter(that, that.characterObj[that.selected].obj)
+		    				that.selectCharacter(character, sprite, that)
+		    			} else {
+		    				that.unselectCharacter(that, sprite)
+		    			}
+		    		}
+		    	})
+	    	}
+	    }
+
+	    for(let spot of Object.values(this.spotsObj)) {
+	    	let sprite = spot.obj;
+	    	spot = spot.spot
+	    	sprite.setInteractive()
+
+	    	sprite.on('pointerdown', function() {
+	    		let character = database.getUnit(that.selected)    		
+	    		if(spot.isAvailable()) {
+	    			that.moveSelectedToSpot(spot, that)	    			
+	    		}
+	    	})
+	    }
+
 	    this.cameras.main.setViewport(this.parent.x, this.parent.y+visualVars.windowGrabOffset, terrainScreen.width, terrainScreen.height);
 	}
 
 	moveSelectedToSpot(spot, that) {
-		let character = database.getCharacter(that.selected)
-		character.position = spot.id;
+		let character = database.getUnit(that.selected)
+		character.updateUnit({position: spot.id})		
 		let sprite = that.characterObj[character.id].obj;
 		that.updateSpritePosition(sprite, spot, that);
+		that.showSpotsAvailable(character, that)
 	}
 
-	hideSpotsInRange(that) {
+	hideIlluminatedSpots(that) {
 		for(let spotIlluminated of that.spotsIlluminated) {
 			let sprite = that.spotsObj[spotIlluminated.id].obj;
 			sprite.clearTint()
@@ -116,21 +150,22 @@ class CombatScreen extends Phaser.Scene {
 	selectCharacter(character, sprite, that) {
 		that.selected = character.id;
 		sprite.tint = visualVars.selectedColor
-		this.showSpotsInRange(character, that)
+		this.showSpotsAvailable(character, that)
 	}
 
-	unselectCharacter(that) {
+	unselectCharacter(that, sprite) {
 		that.selected = undefined
-		that.hideSpotsInRange(that)
+		sprite.clearTint()
+		that.hideIlluminatedSpots(that)
 	}
 
-	showSpotsInRange(character, that) {
-		let spot = database.getSpotById(character.position)
-		let spotsInRange = that.terrain.getSpotsInRange(spot, character.movementSpeed)
-		that.hideSpotsInRange(that)
-		that.spotsIlluminated = spotsInRange;
-		for(let spotInRange of spotsInRange) {
-			let sprite = that.spotsObj[spotInRange.id].obj;
+	showSpotsAvailable(character, that) {
+		let spot = database.getSpotByIJ(character.position)
+		let spotsAvailable = that.terrain.getAvailableSpots()
+		that.hideIlluminatedSpots(that)
+		that.spotsIlluminated = spotsAvailable;
+		for(let spotAvailable of spotsAvailable) {
+			let sprite = that.spotsObj[spotAvailable.id].obj;
 			sprite.tint = visualVars.validColor
 		}
 	}
