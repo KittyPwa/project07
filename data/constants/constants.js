@@ -25,7 +25,14 @@ var allegianceVars = {
     foe: 'foe'
 }
 
-var dataTypes = ['terrain', 'spot', 'unit']
+var language = JSON.parse(JSON.stringify(messageEn))
+
+var oppositeAllegianceVars = {
+    ally: 'foe',
+    foe: 'ally'
+}
+
+var dataTypes = ['terrain', 'spot', 'unit', 'combatManager', 'logger']
 
 var terrainVars = {
     collumnAmount: 5,

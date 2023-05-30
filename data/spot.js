@@ -32,8 +32,20 @@ function Spot() {
 		return null
 	}
 
+	this.getSpotsInRow = function(spotId) {
+		let originSpot = this.getSpot(spotId)
+		let rowSpots = []
+		for(let spot of Object.values(this.data.spots)) {
+			if(spot.j == originSpot.j) {
+				rowSpots.push(spot)
+			}
+		}
+		return rowSpots
+	}
+
 	this.databaseFunctions = {
 		'getSpotByIJ' : this.getSpotByIJ,
+		'getSpotsInRow' : this.getSpotsInRow
 	}
 
 	this.updateSpot = function(data) {

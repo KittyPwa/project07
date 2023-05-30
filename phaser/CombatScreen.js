@@ -15,9 +15,45 @@ class CombatScreen extends Phaser.Scene {
         this.backgrounds = []
         this.tileWidthOffset = 1
         this.tileHeightOffset = 1
+        this.keyT = null
+        this.textObject
     }
     
     create() {
+
+    	this.keyT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.T);
+
+    	this.combatManager = new CombatManager()
+    	new Logger()
+
+    	// Create a container for the text box
+		const textBox = this.add.container(300, 0);
+
+		// Create a graphics object to draw the box
+		const box = this.add.graphics();
+		const boxWidth = 200;
+		const boxHeight = 500;
+		const boxColor = 0xCCCCCC;
+		const boxAlpha = 0.8;
+		box.fillStyle(boxColor, boxAlpha);
+		box.fillRect(0, 0, boxWidth, boxHeight);
+
+		// Add the box to the container
+		textBox.add(box);
+
+		// Create the text object and position it within the box
+		this.textObject = this.add.text(0, 0, language.temp.pressT, {
+		  fontFamily: "Arial",
+		  fontSize: 10,
+		  color: "#000000"
+		});
+
+		// Center the text within the box
+		this.textObject.setPosition(0, 0);
+
+		// Add the text to the container
+		textBox.add(this.textObject);
+
 
 	    let that = this
 
@@ -47,6 +83,8 @@ class CombatScreen extends Phaser.Scene {
 	    	allegiance: allegianceVars.ally,
 	    	position: database.getSpotByIJ(0,0, allyTerrain.id).id,
 	    	health: 3,
+	    	speed: 4,
+	    	attack: 1,
 	    	spriteInfos: {
 				spriteName:null,
 				spriteSheet: 'tilesets',
@@ -62,6 +100,8 @@ class CombatScreen extends Phaser.Scene {
 	    	allegiance: allegianceVars.ally,
 	    	position: database.getSpotByIJ(0,1, allyTerrain.id).id,
 	    	health: 4,
+	    	speed: 3,
+	    	attack: 2,
 	    	spriteInfos: {
 				spriteName:null,
 				spriteSheet: 'tilesets',
@@ -78,6 +118,8 @@ class CombatScreen extends Phaser.Scene {
 	    	allegiance: allegianceVars.foe,
 	    	position: database.getSpotByIJ(0,0, foeTerrain.id).id,
 	    	health: 4,
+	    	speed: 5,
+	    	attack: 1,
 	    	spriteInfos: {
 	    		spriteName: null,
 	    		spriteSheet: 'tilesets',
@@ -86,6 +128,13 @@ class CombatScreen extends Phaser.Scene {
 	    	unitType: unitTypeVars.full
 	    })
 	    characters.push(unit3)
+
+	    let combatManagerData = {
+	    	units: JSON.parse(JSON.stringify(characters)).map((a) => a = a.id),
+	    	terrains: JSON.parse(JSON.stringify(terrains)).map((a) => a = a.id),
+	    	turn: 1
+	    }
+	    this.combatManager.updateCombatManager(combatManagerData)
 
 	    let tileOffset = {
 	    	tileWidthOffset: 0,
@@ -261,8 +310,20 @@ class CombatScreen extends Phaser.Scene {
 		sprite.y = heightPlacement
 	}
 
-	showHands() {
-		
+	destroySprite(sprite) {
+		sprite.destroy()
+	}
+
+	update() {
+		if (Phaser.Input.Keyboard.JustDown(this.keyT)) {
+			this.combatManager.executeTurn()
+			for(let unit of Object.values(this.characterObj)) {
+				if(!unit.character.isAlive()) {
+					this.destroySprite(unit.obj)
+				}
+			}
+			this.textObject.setText(database.getLogger().getLogs())
+		}
 	}
 
 	refresh() {

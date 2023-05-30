@@ -80,6 +80,32 @@ function Terrain() {
 		return availableSpots
 	}
 
+	this.getRowOfFoes = function(spotId) {
+		let spot = database.getSpot(spotId)
+		let allegiance = oppositeAllegianceVars[database.getTerrain(spot.terrain).allegiance]
+		return this.getRowOfUnits(spot, allegiance)
+	}
+
+	this.getRowOfAllies = function(spotId) {
+		let spot = database.getSpot(spotId)
+		let allegiance = database.getTerrain(spot.terrain).allegiance.allegiance
+		return this.getRowOfUnits(spot,allegiance)
+	}
+
+	this.getRowOfUnits = function(spot, allegiance) {		
+		let rowSpots = database.getSpotsInRow(spot.id)
+		let foes = []
+		for(let rowSpot of rowSpots) {
+			let terrain = database.getTerrain(rowSpot.terrain)
+			if(terrain.allegiance == allegiance) {
+				if(rowSpot.unitInSpot != null) {
+					foes.push(database.getUnit(rowSpot.unitInSpot))
+				}
+			}
+		}
+		return foes
+	}
+
 	this.databaseFunctions = {
 		'getTerrainByAllegiance' : this.getTerrainByAllegiance,
 	}
