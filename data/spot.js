@@ -9,6 +9,8 @@ function Spot() {
 
 	this.unitInSpot = null;
 
+	this.terrain = null
+
 	this.isAvailable = function() {
 		return this.unitInSpot == null
 	}
@@ -21,9 +23,9 @@ function Spot() {
 		this.unitInSpot = null;
 	}
 
-	this.getSpotByIJ = function(i,j) {
+	this.getSpotByIJ = function(i,j, terrain) {
 		for(let spot of Object.values(this.data.spots)) {
-			if(spot.identifier == i + '_' + j) {
+			if(spot.terrain == terrain && spot.identifier == i + '_' + j) {
 				return spot
 			}
 		}
@@ -35,18 +37,19 @@ function Spot() {
 	}
 
 	this.updateSpot = function(data) {
-		this.i = data.i
-		this.j = data.j
+		this.i = data.i != undefined ? data.i : this.i
+		this.j = data.j != undefined ? data.j : this.j
+		this.terrain = data.terrain != undefined ? data.terrain : this.terrain
 		this.identifier = data.i + '_' + data.j
 		this.unitInSpot = data.unitInSpot
-		this.id = data.id != undefined ? data.id : this.id
+		database.setSpotToDatabase(this)
 	}
 
 	this.type = 'Spot'
 
 	this.accessible = true
 
-	database.addSpotToDatabase(this)
+	database.setSpotToDatabase(this)
 }
 
 database.addTypeToDatabase(Spot, 'Spot')

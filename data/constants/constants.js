@@ -15,6 +15,11 @@ var visualVars= {
 
 }
 
+var unitTypeVars = {
+    summon: 'summon',
+    full: 'full'
+}
+
 var allegianceVars = {
     ally: 'ally',
     foe: 'foe'

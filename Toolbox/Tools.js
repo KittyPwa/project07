@@ -43,7 +43,7 @@ function Database() {
 
     this.createSetter = function(dataName) {
         let capitalized = capitalizeFirstLetter(dataName)
-        let functionized = 'add' + capitalized + 'ToDatabase'
+        let functionized = 'set' + capitalized + 'ToDatabase'
         let plural = dataName + 's'
         this[functionized] = function(toAdd) {
             this.data[plural][toAdd.id] = toAdd

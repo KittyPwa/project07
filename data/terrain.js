@@ -1,33 +1,42 @@
 function Terrain() {
+	
 	this.id = uuidv4();
 	
 	this.type = 'Terrain'
 
-	this.width = terrainVars.collumnAmount;
+	this.width = null;
 
-	this.height = terrainVars.rowAmount;
+	this.height = null;
 
 	this.terrain = []
 
+	this.allegiance = null
+
 	this.updateTerrain = function(data) {
-		this.terrain = data.terrain
-		this.id = data.id
+		this.terrain = data.terrain != undefined ? data.terrain : this.terrain
+		this.id = data.id != undefined ? data.id : this.id
+		this.allegiance = data.allegiance != undefined ? data.allegiance : this.allegiance
+		this.height = data.height != undefined ? data.height : this.height;
+		this.width = data.width != undefined ? data.width : this.width;
+		this.spots = data.spots != undefined ? data.spots : this.spots
+		database.setTerrainToDatabase(this)
 	}
 
-	database.addTerrainToDatabase(this)
-
-
-	for(let i = 0; i < this.height; i++) {
-		this.terrain[i] = []
-		for(let j = 0; j < this.width; j++) {
-			let spot = new Spot()
-			spot.updateSpot({
-				i: i,
-				j: j,
-				unitInSpot: null,			
-			})
-			this.terrain[i][j] = spot.id
+	this.updateSpots = function() {
+		for(let i = 0; i < this.width; i++) {
+			this.terrain[i] = []
+			for(let j = 0; j < this.height; j++) {
+				let spot = new Spot()
+				spot.updateSpot({
+					i: i,
+					j: j,
+					unitInSpot: null,	
+					terrain: this.id,		
+				})
+				this.terrain[i][j] = spot.id
+			}
 		}
+		database.setTerrainToDatabase(this)
 	}
 
 	this.getDistanceBetweenSpots = function(spotA, spotB) {
@@ -44,7 +53,7 @@ function Terrain() {
 			for(let j = -1 * range; j <= range; j++) {
 				newJ = j + spotOrigin.j
 				if(i != 0 || j != 0) {
-					spot = database.getSpotByIJ(newI, newJ)
+					spot = database.getSpotByIJ(newI, newJ, this.id)
 					if(spot) {
 						if(this.getDistanceBetweenSpots(spotOrigin, spot) <= range)
 							spots.push(spot)						
@@ -58,9 +67,9 @@ function Terrain() {
 	this.getAvailableSpots = function() {
 		let spot
 		let availableSpots = []
-		for(let i = 0; i < this.height; i++) {
-			for(let j = 0; j < this.width; j++) {
-				spot = database.getSpotByIJ(i,j);				
+		for(let i = 0; i < this.width; i++) {
+			for(let j = 0; j < this.height; j++) {
+				spot = database.getSpotByIJ(i,j, this.id);				
 				if(spot) {
 					if(spot.isAvailable()) {
 						availableSpots.push(spot)
@@ -70,6 +79,18 @@ function Terrain() {
 		}
 		return availableSpots
 	}
+
+	this.databaseFunctions = {
+		'getTerrainByAllegiance' : this.getTerrainByAllegiance,
+	}
+
+	this.getTerrainByAllegiance = function(allegiance) {
+		for(let terrain of this.data.terrains) {
+			if(terrain.allegiance == allegiance)
+				return terrain
+		}
+	}
+	database.setTerrainToDatabase(this)	
 }
 database.addTypeToDatabase(Terrain, 'Terrain')
-$
+
