@@ -215,7 +215,8 @@ class CombatScreen extends Phaser.Scene {
 		    	sprite.on('pointerdown', function() {
 		    		let character = database.getUnit(that.selected)  
 		    		if(character && character.allegiance == terrain.allegiance && spot.isAvailable()) {		    			
-		    			that.moveSelectedToSpot(spot, that.spotsObj[spot.id].tileOffset, that)	    			
+		    			that.moveSelectedToSpot(spot, that.spotsObj[spot.id].tileOffset, that)	   
+		    			that.unselectCharacter(that, that.characterObj[that.selected].obj)			
 		    		}
 		    	})
 	    	}
@@ -316,6 +317,9 @@ class CombatScreen extends Phaser.Scene {
 
 	update() {
 		if (Phaser.Input.Keyboard.JustDown(this.keyT)) {
+			if(this.selected) {
+				this.unselectCharacter(this, this.characterObj[this.selected].obj)
+			}
 			this.combatManager.executeTurn()
 			for(let unit of Object.values(this.characterObj)) {
 				if(!unit.character.isAlive()) {

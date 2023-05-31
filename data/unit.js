@@ -26,6 +26,13 @@ function Unit() {
 		}
 	}
 
+	this.die = function() {
+		if(!this.isAlive()) {
+			let spot = database.getSpot(this.position)
+			spot.removeUnit()			
+		}
+	}
+
 	this.isAlive = function() {
 		return this.health > 0
 	}
