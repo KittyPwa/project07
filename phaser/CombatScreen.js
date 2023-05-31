@@ -280,8 +280,7 @@ class CombatScreen extends Phaser.Scene {
         let x = placement.x 
         let y = placement.y 
         let unit = database.getUnit(unitId)
-        let text = unit.getDescription();        
-        let heightOffset = 5
+        let text = unit.getDescription();                
         var style = { font: "12px Arial", fill: "#FFFFFF", align: "center", color: "white" };
         var t = that.add.text(x,y, text, style);
         t.x = x - this.parent.x - terrainVars.widthOffset

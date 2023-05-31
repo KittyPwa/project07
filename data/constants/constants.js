@@ -15,6 +15,14 @@ var visualVars= {
 
 }
 
+var skillVar = {
+    strike: 'Strike'
+}
+
+var skillType = {
+    damage: 'damage'
+}
+
 var unitTypeVars = {
     summon: 'Summon',
     full: 'Unit',
@@ -40,7 +48,7 @@ var oppositeAllegianceVars = {
     foe: 'ally'
 }
 
-var dataTypes = ['terrain', 'spot', 'unit', 'combatManager', 'logger']
+var dataTypes = ['terrain', 'spot', 'unit', 'combatManager', 'logger', 'skill']
 
 var terrainVars = {
     collumnAmount: 5,

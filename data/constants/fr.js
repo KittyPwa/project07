@@ -10,5 +10,21 @@ var messageFr = {
 	},
 	turn: {
 		turn: ['Tour ']
+	},
+	unit: {
+		description: {
+			health: ['Vie : '],
+			attack : ['Attaque : '],
+			speed: ['Vitesse : '],
+			unitType: ['Type : '],
+			skill : ['Compétences: '],
+		}
+	},
+	skill: {
+		strike: {
+			name: ['Frappe'],
+			description: ['Frappe adversaire pour ', ' dégâts']
+		}
 	}
+
 }

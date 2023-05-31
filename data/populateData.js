@@ -1,7 +1,26 @@
 function populateDatabase() {
 	populateTerrains()
+    populateSkills()
 	populateUnits()
 	populateLogger()
+}
+
+function populateSkills() {
+    let strike = new Skill()
+    strike.updateSkill({
+        name: language.skill.strike.name[0],
+        skillId: skillVar.strike,
+        skillType: skillType.damage,
+        effect: function() {            
+            return this.data.damage
+        },        
+        effectDescription: function() {
+            return language.skill.strike.description[0] + this.data.damage + language.skill.strike.description[1]  
+        },
+        data: {
+            damage: 1
+        }
+    })
 }
 
 function populateTerrains() {
@@ -41,6 +60,7 @@ function populateUnits() {
 			spriteSheet: 'tilesets',
 			spriteNumber:129
 		},
+        skills: [database.getSkillByName(skillVar.strike).id],
     	unitType: unitTypeVars.full
     })
 
@@ -56,6 +76,7 @@ function populateUnits() {
 			spriteSheet: 'tilesets',
 			spriteNumber:130
 		},
+        skills: [database.getSkillByName(skillVar.strike).id],
     	unitType: unitTypeVars.full
 
     })
@@ -72,6 +93,7 @@ function populateUnits() {
     		spriteSheet: 'tilesets',
     		spriteNumber: 131
     	},
+        skills: [database.getSkillByName(skillVar.strike).id],
     	unitType: unitTypeVars.full
     })
 }

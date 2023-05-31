@@ -25,7 +25,7 @@ function CombatManager() {
 	this.attack = function(attackerId, victimId) {
 		let attacker = database.getUnit(attackerId)
 		let victim = database.getUnit(victimId)
-		let damage = attacker.attack
+		let damage = attacker.inflictDamage()
 		victim.takeDamage(damage)
 		let logger = database.getLogger()
 		let attackLog = attacker.name + language.combat.attacks[0] + victim.name + language.combat.attacks[1] + damage + language.combat.attacks[2]

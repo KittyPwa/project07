@@ -10,5 +10,20 @@ var messageEn = {
 	},
 	turn: {
 		turn: ['Turn ']
+	},
+	unit: {
+		description: {
+			health: ['Health : '],
+			attack : ['Attack : '],
+			speed: ['Speed : '],
+			unitType: ['Type : '],
+			skill : ['Skills: '],
+		}
+	},
+	skill: {
+		strike: {
+			name: ['Strike'],
+			description: ['Strike foe for ', ' damage']
+		}
 	}
 }

@@ -17,7 +17,29 @@ function Unit() {
 
 	this.type = 'Unit';
 
-	this.unitType = null
+	this.unitType = null;
+
+	this.skills = null
+
+	this.getDamagingSkill = function() {
+		for(let skillId of this.skills) {
+			let skill = database.getSkill(skillId);
+			if(skill.skillType == skillType.damage) {
+				return skillId;
+			}
+		}
+	}
+
+	this.updateFromSkill = function() {
+		let dmgSkill = database.getSkill(this.getDamagingSkill())
+		if(dmgSkill != undefined)
+			this.attack = dmgSkill.data.damage;
+	}
+
+	this.inflictDamage = function() {
+		let dmgSkill = database.getSkill(this.getDamagingSkill())
+		return dmgSkill.launchEffect()		
+	}
 
 	this.takeDamage = function(damage) {
 		this.health -= damage
@@ -28,10 +50,14 @@ function Unit() {
 
 	this.getDescription = function() {
 		let description = this.name + '\n'
-		description += 'Health : ' + this.health +'\n'
-		description += 'Speed : ' + this.speed + '\n'
-		description += 'Attack : ' + this.attack + '\n'
-		description += 'Type : ' + this.unitType
+		description += language.unit.description.health[0] + this.health +'\n'
+		description += language.unit.description.speed[0] + this.speed + '\n'
+		description += language.unit.description.attack[0] + this.attack + '\n'
+		description += language.unit.description.unitType[0] + this.unitType + '\n'
+		for(let skillId of this.skills) {
+			let skill = database.getSkill(skillId)
+			description += language.unit.description.skill[0] + skill.name + '\n'
+		}
 		return description
 	}
 
@@ -50,7 +76,9 @@ function Unit() {
 		this.name = data.name != undefined ? data.name : this.name;
 		this.allegiance = data.allegiance != undefined ? data.allegiance : this.allegiance;
 		this.speed = data.speed != undefined ? data.speed : this.speed;		
-		this.attack = data.attack != undefined ? data.attack : this.attack;
+		//this.attack = data.attack != undefined ? data.attack : this.attack;
+		this.skills = data.skills != undefined ? data.skills : this.skills;
+		this.updateFromSkill()
 
 		let oldPosition = this.position
 		this.position = data.position != undefined ? data.position : this.position;
