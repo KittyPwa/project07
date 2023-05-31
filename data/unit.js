@@ -26,6 +26,15 @@ function Unit() {
 		}
 	}
 
+	this.getDescription = function() {
+		let description = this.name + '\n'
+		description += 'Health : ' + this.health +'\n'
+		description += 'Speed : ' + this.speed + '\n'
+		description += 'Attack : ' + this.attack + '\n'
+		description += 'Type : ' + this.unitType
+		return description
+	}
+
 	this.die = function() {
 		if(!this.isAlive()) {
 			let spot = database.getSpot(this.position)

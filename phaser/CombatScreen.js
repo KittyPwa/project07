@@ -17,10 +17,10 @@ class CombatScreen extends Phaser.Scene {
         this.tileHeightOffset = 1
         this.keyT = null
         this.textObject
+        this.infoBox
     }
     
     create() {
-
     	this.keyT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.T);
 
     	this.combatManager = new CombatManager()
@@ -88,20 +88,16 @@ class CombatScreen extends Phaser.Scene {
  	    	height:height
  	    } 	     	
 
- 	    let backgroundRect = that.add.rectangle(0,0 ,background.width*2*terrainVars.tileSize, background.height*2*terrainVars.tileSize)
-	    that.backgroundRect = backgroundRect
-	    backgroundRect.setStrokeStyle(visualVars.rectLineThickness, visualVars.rectLineColor)	   
+ 	    let backgroundRect = that.add.rectangle(0,0 ,background.width*2*terrainVars.tileSize, background.height*2*terrainVars.tileSize)      
 
 	     for(let terrain of terrains) {	    	
 	    	spriteContainer = [...spriteContainer, ...that.initializeTerrain(terrain, backgroundRect, tileOffset, that)]
 	    	tileOffset.tileWidthOffset = terrain.width	    	
 	    }
 
-	    spriteContainer.push(backgroundRect)	    
-
 	    let characterContainer = this.intializeCharacters(characters, height, this)
 
- 	    this.terrainScreen = that.add.container(0,0, [...spriteContainer, ...characterContainer]);
+ 	    this.terrainScreen = that.add.container(0,terrainVars.heightOffset, [...spriteContainer, ...characterContainer]);
 
 	    this.terrainScreen.setSize(backgroundRect.width, backgroundRect.height)	
 
@@ -154,6 +150,7 @@ class CombatScreen extends Phaser.Scene {
 		    	let spot = database.getSpot(spotId)
 		    	let sprite = that.spotsObj[spot.id].obj;
 		    	sprite.setInteractive()
+		    	sprite.setDepth(2)
 
 		    	sprite.on('pointerdown', function() {
 		    		let character = database.getUnit(that.selected)  
@@ -203,9 +200,28 @@ class CombatScreen extends Phaser.Scene {
 		    				that.unselectCharacter(that, sprite)
 		    			}
 		    		}
-		    	})
+		    	})		    	
 	    	}
-	    }
+	    	sprite.setDepth(3)
+	    	sprite.on('pointerover', function(pointer, pointerX, pointerY) {
+	    		sprite.on('pointermove', function(pointer, pointerX, pointerY){
+			            let placement = {
+			                x: pointer.x,
+			                y: pointer.y,
+			                pointerX: pointerX,
+			                pointerY: pointerY
+			            }
+			            if(that.infoBox){
+			            	that.infoBox.destroy()
+			            }
+			            that.infoBox = that.createInfoBox(character.id, placement, that)
+			        })
+		        })
+
+	        sprite.on('pointerout', function () {
+	            that.infoBox.destroy()
+	        });
+    }
 	    return characterContainer
 	}
 
@@ -259,6 +275,20 @@ class CombatScreen extends Phaser.Scene {
 	destroySprite(sprite) {
 		sprite.destroy()
 	}
+
+	createInfoBox(unitId, placement, that) {				
+        let x = placement.x 
+        let y = placement.y 
+        let unit = database.getUnit(unitId)
+        let text = unit.getDescription();        
+        let heightOffset = 5
+        var style = { font: "12px Arial", fill: "#FFFFFF", align: "center", color: "white" };
+        var t = that.add.text(x,y, text, style);
+        t.x = x - this.parent.x - terrainVars.widthOffset
+        t.y = y - (this.parent.y + visualVars.windowGrabOffset + terrainVars.tileSize*2 + terrainVars.heightOffset/3)
+        t.setDepth(4)
+        return t
+    }
 
 	update() {
 		if (Phaser.Input.Keyboard.JustDown(this.keyT)) {

@@ -1,5 +1,5 @@
 var visualVars= {
-    windowGrabOffset: 32,
+    windowGrabOffset: 32,    
 
     screenWidth: 800,
     screenHeight: 600,
@@ -16,16 +16,16 @@ var visualVars= {
 }
 
 var unitTypeVars = {
-    summon: 'summon',
-    full: 'full',
-    general: 'general',
+    summon: 'Summon',
+    full: 'Unit',
+    general: 'General',
 }
 
 var tileTypeVars = {
-    summon: 'summon',
-    full: 'full',
-    dam: 'dam',
-    roots: 'roots'
+    summon: 'Summon',
+    full: 'Unit',
+    dam: 'Dam',
+    roots: 'Root'
 }
 
 var allegianceVars = {
@@ -50,5 +50,7 @@ var terrainVars = {
     summonTile: 966,
     damTile: 1028,
     rootTile: 950,
-    tileSize: 32
+    tileSize: 32,
+    widthOffset: 20,
+    heightOffset: 75 
 }
