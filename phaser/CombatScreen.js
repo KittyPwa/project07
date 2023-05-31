@@ -24,7 +24,6 @@ class CombatScreen extends Phaser.Scene {
     	this.keyT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.T);
 
     	this.combatManager = new CombatManager()
-    	new Logger()
 
     	// Create a container for the text box
 		const textBox = this.add.container(300, 0);
@@ -57,77 +56,9 @@ class CombatScreen extends Phaser.Scene {
 
 	    let that = this
 
-	    let terrains = []
-	    let allyTerrain = new Terrain()
-	    allyTerrain.updateTerrain({
-	    	allegiance: allegianceVars.ally,
-	    	width: terrainVars.rowAmount,
-	    	height: terrainVars.collumnAmount
-	    })
-	    allyTerrain.updateSpots()
-	    terrains.push(allyTerrain)
-
-	    let foeTerrain = new Terrain()
-	    foeTerrain.updateTerrain({
-	    	allegiance: allegianceVars.foe,
-	    	width: terrainVars.rowAmount,
-	    	height: terrainVars.collumnAmount
-	    })	    
-	    foeTerrain.updateSpots()	    
-	    terrains.push(foeTerrain)
-
-	    let characters = []
-	    let unit = new Unit()
-	    unit.updateUnit({
-	    	name: 'Unit1',
-	    	allegiance: allegianceVars.ally,
-	    	position: database.getSpotByIJ(0,0, allyTerrain.id).id,
-	    	health: 3,
-	    	speed: 4,
-	    	attack: 1,
-	    	spriteInfos: {
-				spriteName:null,
-				spriteSheet: 'tilesets',
-				spriteNumber:129
-			},
-	    	unitType: unitTypeVars.full
-	    })
-	    characters.push(unit)
-
-	    let unit2 = new Unit()
-	    unit2.updateUnit({
-	    	name: 'Unit2',
-	    	allegiance: allegianceVars.ally,
-	    	position: database.getSpotByIJ(0,1, allyTerrain.id).id,
-	    	health: 4,
-	    	speed: 3,
-	    	attack: 2,
-	    	spriteInfos: {
-				spriteName:null,
-				spriteSheet: 'tilesets',
-				spriteNumber:130
-			},
-	    	unitType: unitTypeVars.full
-
-	    })
-	    characters.push(unit2)
-
-	    let unit3 = new Unit()
-	    unit3.updateUnit({
-	    	name: 'Unit3',
-	    	allegiance: allegianceVars.foe,
-	    	position: database.getSpotByIJ(0,0, foeTerrain.id).id,
-	    	health: 4,
-	    	speed: 5,
-	    	attack: 1,
-	    	spriteInfos: {
-	    		spriteName: null,
-	    		spriteSheet: 'tilesets',
-	    		spriteNumber: 131
-	    	},
-	    	unitType: unitTypeVars.full
-	    })
-	    characters.push(unit3)
+	    let terrains = Object.values(database.getTerrains())
+	    
+	    let characters = Object.values(database.getUnits())
 
 	    let combatManagerData = {
 	    	units: JSON.parse(JSON.stringify(characters)).map((a) => a = a.id),
@@ -161,7 +92,6 @@ class CombatScreen extends Phaser.Scene {
 	    that.backgroundRect = backgroundRect
 	    backgroundRect.setStrokeStyle(visualVars.rectLineThickness, visualVars.rectLineColor)	   
 
-
 	     for(let terrain of terrains) {	    	
 	    	spriteContainer = [...spriteContainer, ...that.initializeTerrain(terrain, backgroundRect, tileOffset, that)]
 	    	tileOffset.tileWidthOffset = terrain.width	    	
@@ -189,7 +119,20 @@ class CombatScreen extends Phaser.Scene {
 	    		let spot = database.getSpotByIJ(i,j, terrain.id);
 				let widthPlacement = terrainVars.tileSize * (i + tileOffset.tileWidthOffset + 1/2)
 				let heightPlacement = terrainVars.tileSize * (j + tileOffset.tileHeightOffset + 1/2)
-				let tile = terrainVars.tile	    		
+				let tile
+				switch (spot.spotType) {
+					case tileTypeVars.summon:
+						tile = terrainVars.summonTile
+						break;
+					case tileTypeVars.roots:
+						tile = terrainVars.rootTile
+						break;
+					case tileTypeVars.dam:
+						tile = terrainVars.damTile;
+						break;
+					default:
+						tile = terrainVars.fullTile
+				}		
 	    		var text = i + ','+j;
 			    var style = { font: "10px Arial", fill: "#000000", align: "center" };
 
@@ -214,9 +157,11 @@ class CombatScreen extends Phaser.Scene {
 
 		    	sprite.on('pointerdown', function() {
 		    		let character = database.getUnit(that.selected)  
-		    		if(character && character.allegiance == terrain.allegiance && spot.isAvailable()) {		    			
-		    			that.moveSelectedToSpot(spot, that.spotsObj[spot.id].tileOffset, that)	   
-		    			that.unselectCharacter(that, that.characterObj[that.selected].obj)			
+		    		if(character && character.allegiance == terrain.allegiance) {
+		    			if(spot.isAvailable(character.id)) {
+		    				that.moveSelectedToSpot(spot, that.spotsObj[spot.id].tileOffset, that)	   
+		    				that.unselectCharacter(that, that.characterObj[that.selected].obj)
+		    			}
 		    		}
 		    	})
 	    	}
@@ -292,10 +237,10 @@ class CombatScreen extends Phaser.Scene {
 		that.hideIlluminatedSpots(that)
 	}
 
-	showSpotsAvailable(character, that) {
+	showSpotsAvailable(character, that) {		
 		let spot = database.getSpot(character.position)
 		let terrain = database.getTerrain(spot.terrain)
-		let spotsAvailable = terrain.getAvailableSpots()
+		let spotsAvailable = terrain.getAvailableSpots(character.id)
 		that.hideIlluminatedSpots(that)
 		that.spotsIlluminated = spotsAvailable;
 		for(let spotAvailable of spotsAvailable) {

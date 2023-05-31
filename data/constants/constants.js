@@ -17,7 +17,15 @@ var visualVars= {
 
 var unitTypeVars = {
     summon: 'summon',
-    full: 'full'
+    full: 'full',
+    general: 'general',
+}
+
+var tileTypeVars = {
+    summon: 'summon',
+    full: 'full',
+    dam: 'dam',
+    roots: 'roots'
 }
 
 var allegianceVars = {
@@ -38,6 +46,9 @@ var terrainVars = {
     collumnAmount: 5,
     rowAmount: 4,
     wall: 1028,
-    tile: 967,
+    fullTile: 967,
+    summonTile: 966,
+    damTile: 1028,
+    rootTile: 950,
     tileSize: 32
 }

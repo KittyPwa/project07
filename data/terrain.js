@@ -64,14 +64,14 @@ function Terrain() {
 		return spots
 	}
 
-	this.getAvailableSpots = function() {
+	this.getAvailableSpots = function(unitId) {		
 		let spot
 		let availableSpots = []
 		for(let i = 0; i < this.width; i++) {
 			for(let j = 0; j < this.height; j++) {
 				spot = database.getSpotByIJ(i,j, this.id);				
 				if(spot) {
-					if(spot.isAvailable()) {
+					if(spot.isAvailable(unitId)) {
 						availableSpots.push(spot)
 					}
 				}
@@ -106,15 +106,26 @@ function Terrain() {
 		return foes
 	}
 
-	this.databaseFunctions = {
-		'getTerrainByAllegiance' : this.getTerrainByAllegiance,
+	this.updateSpotsType = function(i,j,k,l,type) {
+		for(let n = i; n <= j; n++) {			
+			for(let o = k; o <= l; o++) {
+				let spot = database.getSpotByIJ(n,o,this.id)
+				spot.updateSpot({
+					spotType: type
+				})
+			}
+		}
 	}
 
 	this.getTerrainByAllegiance = function(allegiance) {
-		for(let terrain of this.data.terrains) {
+		for(let terrain of Object.values(this.data.terrains)) {
 			if(terrain.allegiance == allegiance)
 				return terrain
 		}
+	}
+
+	this.databaseFunctions = {
+		'getTerrainByAllegiance' : this.getTerrainByAllegiance,
 	}
 	database.setTerrainToDatabase(this)	
 }

@@ -9,10 +9,18 @@ function Spot() {
 
 	this.unitInSpot = null;
 
-	this.terrain = null
+	this.terrain = null;
 
-	this.isAvailable = function() {
-		return this.unitInSpot == null
+	this.spotType = null	
+
+	this.isAvailable = function(unitId) {		
+		let unit = database.getUnit(unitId)
+		let isAccessible = (this.unitInSpot == null)
+		if(this.spotType != null) {
+			isAccessible = isAccessible && this.spotType == unit.unitType
+		}
+		return isAccessible
+
 	}
 
 	this.setUnit = function(unit) {
@@ -52,14 +60,13 @@ function Spot() {
 		this.i = data.i != undefined ? data.i : this.i
 		this.j = data.j != undefined ? data.j : this.j
 		this.terrain = data.terrain != undefined ? data.terrain : this.terrain
-		this.identifier = data.i + '_' + data.j
-		this.unitInSpot = data.unitInSpot
+		this.identifier = data.i != undefined && data.j != undefined ? data.i + '_' + data.j : this.identifier
+		this.unitInSpot = data.unitInSpot != undefined ? data.unitInSpot : this.unitInSpot;
+		this.spotType = data.spotType != undefined ? data.spotType : this.spotType;
 		database.setSpotToDatabase(this)
 	}
 
 	this.type = 'Spot'
-
-	this.accessible = true
 
 	database.setSpotToDatabase(this)
 }
