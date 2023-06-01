@@ -7,6 +7,8 @@ function Unit() {
 
 	this.position = null;
 
+	this.additionalPositions = null;
+
 	this.health = null;
 
 	this.speed = null
@@ -28,6 +30,7 @@ function Unit() {
 				return skillId;
 			}
 		}
+		return false;
 	}
 
 	this.updateFromSkill = function() {
@@ -37,22 +40,28 @@ function Unit() {
 	}
 
 	this.inflictDamage = function() {
-		let dmgSkill = database.getSkill(this.getDamagingSkill())
-		return dmgSkill.launchEffect()		
+		let dmgSkill = database.getSkill(this.getDamagingSkill())	
+		let effect = null
+		if(dmgSkill)
+			effect = dmgSkill.launchEffect()
+		return effect
 	}
 
 	this.takeDamage = function(damage) {
 		this.health -= damage
-		if(this.health < 0) {
-			this.health = 0			
+		if(this.health <= 0) {
+			this.health = 0		
+			this.die()
 		}
 	}
 
 	this.getDescription = function() {
 		let description = this.name + '\n'
 		description += language.unit.description.health[0] + this.health +'\n'
-		description += language.unit.description.speed[0] + this.speed + '\n'
-		description += language.unit.description.attack[0] + this.attack + '\n'
+		if(this.speed != null)
+			description += language.unit.description.speed[0] + this.speed + '\n'
+		if(this.attack != null)
+			description += language.unit.description.attack[0] + this.attack + '\n'
 		description += language.unit.description.unitType[0] + this.unitType + '\n'
 		for(let skillId of this.skills) {
 			let skill = database.getSkill(skillId)
@@ -64,7 +73,7 @@ function Unit() {
 	this.die = function() {
 		if(!this.isAlive()) {
 			let spot = database.getSpot(this.position)
-			spot.removeUnit()			
+			spot.removeUnit()		
 		}
 	}
 
@@ -80,6 +89,13 @@ function Unit() {
 		this.skills = data.skills != undefined ? data.skills : this.skills;
 		this.updateFromSkill()
 
+		this.additionalPositions = data.additionalPositions != undefined ? data.additionalPositions : this.additionalPositions
+		if(this.additionalPositions != null) {
+			for(let additionalPosition of this.additionalPositions) {
+				let additionalSpot = database.getSpot(additionalPosition)
+				additionalSpot.setUnit(this)
+			}
+		}
 		let oldPosition = this.position
 		this.position = data.position != undefined ? data.position : this.position;
 		let oldSpot = database.getSpot(oldPosition)
@@ -94,6 +110,16 @@ function Unit() {
 		this.spriteInfos = data.spriteInfos != undefined ? data.spriteInfos : this.spriteInfos;
 		this.id = data.id != undefined ? data.id : this.id;
 		database.setUnitToDatabase(this)
+	}
+
+	this.getGenerals = function() {
+		let units = Object.values(database.getUnits())
+		let generals = units.filter((a) => a.unitType == unitTypeVars.general)
+		return generals
+	}
+
+	this.databaseFunctions = {
+		'getGenerals' : this.getGenerals,
 	}
 
 	database.setUnitToDatabase(this)

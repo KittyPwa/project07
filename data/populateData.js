@@ -31,9 +31,8 @@ function populateTerrains() {
     	height: terrainVars.collumnAmount
     })
     allyTerrain.updateSpots()
-    allyTerrain.updateSpotsType(1, 3, 0, 0, tileTypeVars.summon)
-    allyTerrain.updateSpotsType(1, 3, 4, 4, tileTypeVars.summon)
-    allyTerrain.updateSpotsType(0, 0, 0, 4, tileTypeVars.dam)
+    allyTerrain.updateSpotsType(0, 3, 0, 0, tileTypeVars.summon)
+    allyTerrain.updateSpotsType(0, 3, 4, 4, tileTypeVars.summon)
 
     let foeTerrain = new Terrain()
     foeTerrain.updateTerrain({
@@ -44,16 +43,53 @@ function populateTerrains() {
     foeTerrain.updateSpots()
     foeTerrain.updateSpotsType(0, 3, 0, 0, tileTypeVars.summon)
     foeTerrain.updateSpotsType(0, 3, 4, 4, tileTypeVars.summon)
-    foeTerrain.updateSpotsType(3, 3, 0, 4, tileTypeVars.roots)
 }
 
 function populateUnits() {
     new Unit().updateUnit({
-    	name: 'Unit1',
+        name: 'Dam',
+        allegiance: allegianceVars.ally,
+        position: database.getSpotByIJ(0,2, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
+        additionalPositions: [
+            database.getSpotByIJ(0,0, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
+            database.getSpotByIJ(0,1, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
+            database.getSpotByIJ(0,3, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
+            database.getSpotByIJ(0,4, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
+        ],
+        health: 6,
+        spriteInfos: {
+            spriteName:null,
+            spriteSheet: 'tilesets',
+            spriteNumber:1028
+        },
+        skills: [],
+        unitType: unitTypeVars.general
+    })
+    new Unit().updateUnit({
+        name: 'Roots',
+        allegiance: allegianceVars.foe,
+        position: database.getSpotByIJ(3,2, database.getTerrainByAllegiance(allegianceVars.foe).id).id,
+        additionalPositions: [
+            database.getSpotByIJ(3,0, database.getTerrainByAllegiance(allegianceVars.foe).id).id,
+            database.getSpotByIJ(3,1, database.getTerrainByAllegiance(allegianceVars.foe).id).id,
+            database.getSpotByIJ(3,3, database.getTerrainByAllegiance(allegianceVars.foe).id).id,
+            database.getSpotByIJ(3,4, database.getTerrainByAllegiance(allegianceVars.foe).id).id,
+        ],
+        health: 3,
+        spriteInfos: {
+            spriteName:null,
+            spriteSheet: 'tilesets',
+            spriteNumber:951
+        },
+        skills: [],
+        unitType: unitTypeVars.general
+    })
+    new Unit().updateUnit({
+    	name: 'Barbarian',
     	allegiance: allegianceVars.ally,
     	position: database.getSpotByIJ(1,1, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
     	health: 3,
-    	speed: 4,
+    	speed: 1,
     	attack: 1,
     	spriteInfos: {
 			spriteName:null,
@@ -65,7 +101,7 @@ function populateUnits() {
     })
 
     new Unit().updateUnit({
-    	name: 'Unit2',
+    	name: 'Gryphon',
     	allegiance: allegianceVars.ally,
     	position: database.getSpotByIJ(1,2, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
     	health: 4,
@@ -82,7 +118,7 @@ function populateUnits() {
     })
 
     new Unit().updateUnit({
-    	name: 'Unit3',
+    	name: 'Goblin',
     	allegiance: allegianceVars.foe,
     	position: database.getSpotByIJ(0,1, database.getTerrainByAllegiance(allegianceVars.foe).id).id,
     	health: 4,

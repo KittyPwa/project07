@@ -97,7 +97,7 @@ class CombatScreen extends Phaser.Scene {
 
 	    let characterContainer = this.intializeCharacters(characters, height, this)
 
- 	    this.terrainScreen = that.add.container(0,terrainVars.heightOffset, [...spriteContainer, ...characterContainer]);
+ 	    this.terrainScreen = that.add.container(terrainVars.widthOffset,terrainVars.heightOffset, [...spriteContainer, ...characterContainer]);
 
 	    this.terrainScreen.setSize(backgroundRect.width, backgroundRect.height)	
 
@@ -157,7 +157,7 @@ class CombatScreen extends Phaser.Scene {
 		    		if(character && character.allegiance == terrain.allegiance) {
 		    			if(spot.isAvailable(character.id)) {
 		    				that.moveSelectedToSpot(spot, that.spotsObj[spot.id].tileOffset, that)	   
-		    				that.unselectCharacter(that, that.characterObj[that.selected].obj)
+		    				that.unselectCharacter(that, that.characterObj[that.selected].obj[0])
 		    			}
 		    		}
 		    	})
@@ -171,65 +171,100 @@ class CombatScreen extends Phaser.Scene {
 		let characterContainer = []
 
 	    for(let character of characters) {
-	    	let spot = database.getSpot(character.position);
-	    	let tileOffset = that.terrainObj[spot.terrain]['tileOffset']
-	    	let widthPlacement =  terrainVars.tileSize * (spot.i + tileOffset.tileWidthOffset + 1/2)
-			let heightPlacement =  terrainVars.tileSize * (spot.j + tileOffset.tileHeightOffset + 1/2)
-	    	let sprite = that.add.sprite(widthPlacement, heightPlacement, character.spriteInfos.spriteSheet, character.spriteInfos.spriteNumber);
-	    	characterContainer.push(sprite)
-    		that.characterObj[character.id] = {
-    			character: character,
-    			obj: sprite,
-    		}
+	    	let spots = [database.getSpot(character.position)]	    	
+	    	if(character.additionalPositions != null) {
+	    		for(let additionalPosition of character.additionalPositions) {
+	    			spots.push(database.getSpot(additionalPosition))
+	    		}
+	    	}
+	    	for(let spot of spots) {
+		    	let tileOffset = that.terrainObj[spot.terrain]['tileOffset']
+		    	let widthPlacement =  terrainVars.tileSize * (spot.i + tileOffset.tileWidthOffset + 1/2)
+				let heightPlacement =  terrainVars.tileSize * (spot.j + tileOffset.tileHeightOffset + 1/2)
+		    	let sprite = that.add.sprite(widthPlacement, heightPlacement, character.spriteInfos.spriteSheet, character.spriteInfos.spriteNumber);
+		    	let healthBar = null
+		    	if(!spot.isAdditionSpot()) {
+		    		let heightOffset = terrainVars.tileSize * ((character.additionalPositions != null ? (character.additionalPositions.length / 2) +1: 1))
+
+			    	healthBar = new HealthBar(
+				        that,
+				        widthPlacement - terrainVars.tileSize*0.5,
+				        heightPlacement - heightOffset,
+				        terrainVars.tileSize,
+				        5, // Adjust the height of the health bar as needed
+				        character.health
+				      );			    	
+			     	 characterContainer.push(sprite, healthBar);
+		     	} else {
+		     		characterContainer.push(sprite)
+		     	}
+
+		    	if(that.characterObj[character.id] != undefined){
+	    			that.characterObj[character.id]['obj'].push(sprite) 
+		    	}
+	    		else {
+	    			that.characterObj[character.id] = {
+	    				character: character,
+	    				obj: [sprite],
+	    			}
+	    			if(healthBar != null) {
+	    				that.characterObj[character.id]['healthBar'] = healthBar
+	    			}
+	    		}
+	    	}
 	    }	    
 	        
 
 	    for(let character of Object.values(that.characterObj)) {
-	    	let sprite = character.obj	    	
+	    	let sprites = character.obj	    	
 	    	character = character.character
-	    	sprite.setInteractive()
-	    	if(character.allegiance == allegianceVars.ally) {
-	    		sprite.on('pointerdown', function() {
-		    		if(!that.selected) {
-		    			that.selectCharacter(character, sprite, that)
-		    		} else {
-		    			if(that.selected != character.id) {
-		    				that.unselectCharacter(that, that.characterObj[that.selected].obj)
-		    				that.selectCharacter(character, sprite, that)
-		    			} else {
-		    				that.unselectCharacter(that, sprite)
-		    			}
-		    		}
-		    	})		    	
-	    	}
-	    	sprite.setDepth(3)
-	    	sprite.on('pointerover', function(pointer, pointerX, pointerY) {
-	    		sprite.on('pointermove', function(pointer, pointerX, pointerY){
-			            let placement = {
-			                x: pointer.x,
-			                y: pointer.y,
-			                pointerX: pointerX,
-			                pointerY: pointerY
-			            }
-			            if(that.infoBox){
-			            	that.infoBox.destroy()
-			            }
-			            that.infoBox = that.createInfoBox(character.id, placement, that)
+	    	for(let sprite of sprites){
+		    	sprite.setInteractive()
+		    	if(character.allegiance == allegianceVars.ally && character.unitType != unitTypeVars.general) {
+		    		sprite.on('pointerdown', function() {
+			    		if(!that.selected) {
+			    			that.selectCharacter(character, sprite, that)
+			    		} else {
+			    			if(that.selected != character.id) {
+			    				that.unselectCharacter(that, that.characterObj[that.selected].obj)
+			    				that.selectCharacter(character, sprite, that)
+			    			} else {
+			    				that.unselectCharacter(that, sprite)
+			    			}
+			    		}
+			    	})		    	
+		    	}
+		    	sprite.setDepth(3)
+		    	sprite.on('pointerover', function(pointer, pointerX, pointerY) {
+		    		sprite.on('pointermove', function(pointer, pointerX, pointerY){
+				            let placement = {
+				                x: pointer.x,
+				                y: pointer.y,
+				                pointerX: pointerX,
+				                pointerY: pointerY
+				            }
+				            if(that.infoBox){
+				            	that.infoBox.destroy()
+				            }
+				            that.infoBox = that.createInfoBox(character.id, placement, that)
+				        })
 			        })
-		        })
 
-	        sprite.on('pointerout', function () {
-	            that.infoBox.destroy()
-	        });
-    }
+		        sprite.on('pointerout', function () {
+		        	if(that.infoBox)
+		            	that.infoBox.destroy()
+		        });
+		    }
+		}
 	    return characterContainer
 	}
 
 	moveSelectedToSpot(spot, tileOffset, that) {
 		let character = database.getUnit(that.selected)
 		character.updateUnit({position: spot.id})		
-		let sprite = that.characterObj[character.id].obj;
-		that.updateSpritePosition(sprite, spot, tileOffset, that);
+		let sprite = that.characterObj[character.id].obj[0];
+		let healthBar = that.characterObj[character.id]['healthBar']
+		that.updateSpritePosition(sprite, healthBar, spot, tileOffset, that);
 		that.showSpotsAvailable(character, that)
 	}
 
@@ -265,9 +300,10 @@ class CombatScreen extends Phaser.Scene {
 		}
 	}
 
-	updateSpritePosition(sprite, newSpot, tileOffset, that) {
+	updateSpritePosition(sprite, healthBar, newSpot, tileOffset, that) {
 	    let widthPlacement = terrainVars.tileSize * (newSpot.i + tileOffset.tileWidthOffset + 1/2)
 		let heightPlacement = terrainVars.tileSize * (newSpot.j + tileOffset.tileHeightOffset + 1/2)
+		healthBar.updatePosition(widthPlacement - terrainVars.tileSize*0.5, heightPlacement - terrainVars.tileSize)
 		sprite.x = widthPlacement
 		sprite.y = heightPlacement
 	}
@@ -292,15 +328,25 @@ class CombatScreen extends Phaser.Scene {
 	update() {
 		if (Phaser.Input.Keyboard.JustDown(this.keyT)) {
 			if(this.selected) {
-				this.unselectCharacter(this, this.characterObj[this.selected].obj)
-			}
-			this.combatManager.executeTurn()
-			for(let unit of Object.values(this.characterObj)) {
-				if(!unit.character.isAlive()) {
-					this.destroySprite(unit.obj)
+				this.unselectCharacter(this, this.characterObj[this.selected].obj[0])
+			}	
+			let generals = database.getGenerals()
+			let deadGenerals = generals.filter((a) => {
+				return !a.isAlive()
+			})
+			if(deadGenerals.length == 0){
+				this.combatManager.executeTurn()
+				for(let unit of Object.values(this.characterObj)) {
+					unit.healthBar.setHealth(unit.character.health)
+					if(!unit.character.isAlive()) {
+						for(let sprite of unit.obj){
+							this.destroySprite(sprite)
+						}
+						this.destroySprite(unit.healthBar)
+					}
 				}
+				this.textObject.setText(database.getLogger().getLogs())
 			}
-			this.textObject.setText(database.getLogger().getLogs())
 		}
 	}
 

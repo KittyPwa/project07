@@ -13,6 +13,14 @@ function Spot() {
 
 	this.spotType = null	
 
+	this.isAdditionSpot = function() {
+		let unit = database.getUnit(this.unitInSpot)
+		if(unit && unit.additionalPositions != null) {
+			return unit.additionalPositions.some((id) => id == this.id)
+		}
+		return false;		
+	}
+
 	this.isAvailable = function(unitId) {		
 		let unit = database.getUnit(unitId)
 		let isAccessible = (this.unitInSpot == null)
