@@ -31,27 +31,32 @@ function CombatManager() {
 		let attacker = database.getUnit(attackerId)
 		let damageSkill = database.getSkill(attacker.getDamagingSkill())
 		if(damageSkill) {
-			console.log(damageSkill)
 			let foesToAttack = damageSkill.targeting(attacker)				
 			for(let foeToAttack of foesToAttack){				
 				let damage = attacker.inflictDamage()
-				foeToAttack.takeDamage(damage)
-				let logger = database.getLogger()
-				let attackLog = attacker.name + language.combat.attacks[0] + foeToAttack.name + language.combat.attacks[1] + damage + language.combat.attacks[2]
-				logger.addLog(attackLog)		
-				healthLog = foeToAttack.name + language.status.health[0] + foeToAttack.health + language.status.health[1]
-				logger.addLog(healthLog)
-				if(!foeToAttack.isAlive()) {
-					this.units = this.units.filter((a) => {
-						return a != foeToAttack.id
-					})
-				}	
+				if(damage != null) {
+					foeToAttack.takeDamage(damage)
+					let logger = database.getLogger()
+					let attackLog = attacker.name + language.combat.attacks[0] + foeToAttack.name + language.combat.attacks[1] + damage + language.combat.attacks[2]
+					logger.addLog(attackLog)		
+					healthLog = foeToAttack.name + language.status.health[0] + foeToAttack.health + language.status.health[1]
+					logger.addLog(healthLog)
+					if(!foeToAttack.isAlive()) {
+						this.units = this.units.filter((a) => {
+							return a != foeToAttack.id
+						})
+					}	
+				}
 			}
 			
 		}
 	}	
 
 	this.executeTurn = function() {
+		let newUnits = database.getNewUnits()
+		for(let newUnit of newUnits) {
+			newUnit.newUnit = false;
+		}
 		let logger = database.getLogger()
 		let targeting = database.getTargeting()
 		let log = language.turn.turn[0] + this.turn

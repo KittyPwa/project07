@@ -18,6 +18,19 @@ var messageFr = {
 			speed: ['Vitesse : '],
 			unitType: ['Type : '],
 			skill : ['Compétences: '],
+			stackSize: ['Stock: '],
+		},
+		support: {
+			stackable: {
+				log: ['Bûche']
+			},
+		},
+		mamal: {
+			beaver: {
+				militia: ['Milice castor'],
+				warrior: ['Guerrier castor'],
+				builder: ['Bâtisseur castor']
+			}
 		}
 	},
 	skill: {
@@ -28,7 +41,15 @@ var messageFr = {
 		pierce: {
 			name: ['Transperce'],
 			description: ['Transperce adversaire pour', 'dégâts']
-		}
+		},
+		chop: {
+			name: ['Hacher'],
+			description: ['Hache adversaire pour', ' dégâts, produisant ', ' Bûche']
+		},
+		logLug: {
+			name: ['Lancé de bûche'],
+			description: ['Lance des bûches aux adversaires pour ', ' dégâts, consommant ', ' Bûche']
+		},
 	}
 
 }

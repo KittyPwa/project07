@@ -18,6 +18,19 @@ var messageEn = {
 			speed: ['Speed : '],
 			unitType: ['Type : '],
 			skill : ['Skills: '],
+			stackSize: ['Stack: ']
+		},
+		support: {
+			stackable: {
+				log: ['Log']
+			},
+		},
+		mamal: {
+			beaver: {
+				militia: ['Beaver militia'],
+				warrior: ['Beaver warrior'],
+				builder: ['Beaver builder']
+			}
 		}
 	},
 	skill: {
@@ -28,6 +41,14 @@ var messageEn = {
 		pierce: {
 			name: ['Pierce'],
 			description: ['Pierce foe for', 'damage']
-		}
+		},
+		chop: {
+			name: ['Chop'],
+			description: ['Chop foe for', 'damage, producing ', ' Log']
+		},
+		logLug: {
+			name: ['Log Lug'],
+			description: ['Log lugs at foe for', 'damage, consuming ', ' Log']
+		},
 	}
 }

@@ -25,6 +25,59 @@ function populateSkills() {
             damage: 1
         }
     })
+    let chop = new Skill()
+    chop.updateSkill({
+        name: language.skill.chop.name[0],
+        skillId: skillVar.chop,
+        skillType: skillType.damage,        
+        targeting: function(unit) {
+            return database.getTargeting().classicTargeting(unit)
+        },
+        effect: function() {
+            let log = database.getUnitByName(language.unit.support.stackable.log[0])            
+            if(log.stackSize == 0) {
+                log.newUnit = true;
+            }
+            log.updateUnit({
+                position: log.position == null ? database.getSpotByIJ(1,0, database.getTerrainByAllegiance(allegianceVars.ally).id).id : log.position,        
+                stackSize: log.stackSize + 1,
+            })            
+            return this.data.damage
+        },        
+        effectDescription: function() {
+            return language.skill.chop.description[0] + this.data.damage + language.skill.chop.description[1] + this.data.stackSize + language.skill.chop.description[2]  
+        },
+        data: {
+            damage: 1
+        }
+    })
+
+    let logLug = new Skill()
+    logLug.updateSkill({
+        name: language.skill.logLug.name[0],
+        skillId: skillVar.logLug,
+        skillType: skillType.damage,        
+        targeting: function(unit) {
+            return database.getTargeting().classicTargeting(unit)
+        },
+        effect: function() {
+            let log = database.getUnitByName(language.unit.support.stackable.log[0])            
+            if(log.stackSize > 1) {            
+                log.updateUnit({
+                    stackSize: log.stackSize - 2,
+                })           
+                return this.data.damage 
+            }
+            return null
+        },        
+        effectDescription: function() {
+            return language.skill.logLug.description[0] + this.data.damage + language.skill.logLug.description[1] + this.data.stackSize + language.skill.logLug.description[2]  
+        },
+        data: {
+            damage: 3
+        }
+    })
+
     let pierce = new Skill()
     pierce.updateSkill({
         name: language.skill.pierce.name[0],
@@ -53,8 +106,8 @@ function populateTerrains() {
     	height: terrainVars.collumnAmount
     })
     allyTerrain.updateSpots()
-    allyTerrain.updateSpotsType(0, 3, 0, 0, tileTypeVars.summon)
-    allyTerrain.updateSpotsType(0, 3, 4, 4, tileTypeVars.summon)
+    allyTerrain.updateSpotsType(0, 3, 0, 0, tileTypeVars.support)
+    allyTerrain.updateSpotsType(0, 3, 4, 4, tileTypeVars.support)
 
     let foeTerrain = new Terrain()
     foeTerrain.updateTerrain({
@@ -63,8 +116,8 @@ function populateTerrains() {
     	height: terrainVars.collumnAmount
     })	    
     foeTerrain.updateSpots()
-    foeTerrain.updateSpotsType(0, 3, 0, 0, tileTypeVars.summon)
-    foeTerrain.updateSpotsType(0, 3, 4, 4, tileTypeVars.summon)
+    foeTerrain.updateSpotsType(0, 3, 0, 0, tileTypeVars.support)
+    foeTerrain.updateSpotsType(0, 3, 4, 4, tileTypeVars.support)
 }
 
 function populateUnits() {
@@ -88,6 +141,19 @@ function populateUnits() {
         unitType: unitTypeVars.general
     })
     new Unit().updateUnit({
+        name: language.unit.support.stackable.log[0],
+        allegiance: allegianceVars.ally,
+        //position: database.getSpotByIJ(1,0, database.getTerrainByAllegiance(allegianceVars.ally).id).id,        
+        stackSize: 0,
+        spriteInfos: {
+            spriteName:null,
+            spriteSheet: 'tilesets',
+            spriteNumber:750
+        },
+        skills: [],
+        unitType: unitTypeVars.support
+    })
+    new Unit().updateUnit({
         name: 'Roots',
         allegiance: allegianceVars.foe,
         position: database.getSpotByIJ(3,2, database.getTerrainByAllegiance(allegianceVars.foe).id).id,
@@ -106,13 +172,13 @@ function populateUnits() {
         skills: [],
         unitType: unitTypeVars.general
     })
-    new Unit().updateUnit({
-    	name: 'Barbarian',
+    /*new Unit().updateUnit({
+    	name: language.unit.mamal.beaver.militia[0],
     	allegiance: allegianceVars.ally,
     	position: database.getSpotByIJ(1,1, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
     	health: 3,
     	speed: 1,
-    	damageMultiplier: 2,
+    	damageMultiplier: 1,
     	spriteInfos: {
 			spriteName:null,
 			spriteSheet: 'tilesets',
@@ -120,6 +186,22 @@ function populateUnits() {
 		},
         skills: [database.getSkillByName(skillVar.strike).id],
     	unitType: unitTypeVars.full
+    })*/
+
+    new Unit().updateUnit({
+        name: language.unit.mamal.beaver.warrior[0],
+        allegiance: allegianceVars.ally,
+        position: database.getSpotByIJ(1,1, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
+        health: 3,
+        speed: 2,
+        damageMultiplier: 2,
+        spriteInfos: {
+            spriteName:null,
+            spriteSheet: 'tilesets',
+            spriteNumber:129
+        },
+        skills: [database.getSkillByName(skillVar.chop).id],
+        unitType: unitTypeVars.full
     })
 
     new Unit().updateUnit({
@@ -127,14 +209,14 @@ function populateUnits() {
     	allegiance: allegianceVars.ally,
     	position: database.getSpotByIJ(1,2, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
     	health: 4,
-    	speed: 3,
+    	speed: 1,
     	attack: 2,
     	spriteInfos: {
 			spriteName:null,
 			spriteSheet: 'tilesets',
 			spriteNumber:130
 		},
-        skills: [database.getSkillByName(skillVar.pierce).id],
+        skills: [database.getSkillByName(skillVar.logLug).id],
     	unitType: unitTypeVars.full
 
     })

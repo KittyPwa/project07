@@ -25,14 +25,31 @@ function Unit() {
 
 	this.damageMultiplier = null
 
+	this.stackSize = null
+
+	this.newUnit = true
+
 	this.getDamagingSkill = function() {
+		return this.getTypeSkills(skillType.damage)[0]
+	}
+
+	this.getTypeSkills = function(type) {
+		let skills = []
 		for(let skillId of this.skills) {
 			let skill = database.getSkill(skillId);
 			if(skill.skillType == skillType.damage) {
-				return skillId;
+				skills.push(skillId)
 			}
 		}
-		return false;
+		return skills;
+	}
+
+	this.getSupportSkill = function() {
+		return this.getTypeSkills(skillType.support)[0]
+	}
+
+	this.getPassiveSkill = function() {
+		return this.getTypeSkills(skillType.passive)[0]
 	}
 
 	this.updateFromSkill = function() {
@@ -43,9 +60,12 @@ function Unit() {
 
 	this.inflictDamage = function() {
 		let dmgSkill = database.getSkill(this.getDamagingSkill())	
-		let effect = null
-		if(dmgSkill)
-			effect = dmgSkill.launchEffect() * (this.damageMultiplier != null ? this.damageMultiplier : 1);
+		let effect = null		
+		if(dmgSkill){
+			let dmgEffect = dmgSkill.launchEffect()
+			if(dmgEffect != null)
+				effect = dmgEffect * (this.damageMultiplier != null ? this.damageMultiplier : 1);
+		}
 		return effect
 	}
 
@@ -59,7 +79,13 @@ function Unit() {
 
 	this.getDescription = function() {
 		let description = this.name + '\n'
-		description += language.unit.description.health[0] + this.health +'\n'
+		if(this.health != null) {
+			description += language.unit.description.health[0] + this.health +'\n'
+		}
+		if(this.stackSize != null) {
+			description += language.unit.description.stackSize[0] + this.stackSize +'\n'
+
+		}
 		if(this.speed != null)
 			description += language.unit.description.speed[0] + this.speed + '\n'
 		if(this.attack != null)
@@ -80,7 +106,12 @@ function Unit() {
 	}
 
 	this.isAlive = function() {
-		return this.health > 0
+		let isAlive = true
+		if(this.health != null)
+			isAlive = this.health > 0
+		if(this.stackSize != null)
+			isAlive = isAlive && this.stackSize > 0
+		return isAlive
 	}
 
 	this.updateUnit = function(data) {
@@ -112,6 +143,8 @@ function Unit() {
 		this.health = data.health != undefined ? data.health : this.health;
 		this.spriteInfos = data.spriteInfos != undefined ? data.spriteInfos : this.spriteInfos;
 		this.id = data.id != undefined ? data.id : this.id;
+		this.stackSize = data.stackSize != undefined ? data.stackSize : this.stackSize;
+		this.newUnit = data.newUnit != undefined ? data.newUnit : this.newUnit
 		database.setUnitToDatabase(this)
 	}
 
@@ -121,8 +154,22 @@ function Unit() {
 		return generals
 	}
 
+	this.getUnitByName = function(name) {
+		let units = Object.values(database.getUnits())
+		let unit = units.filter((a) => a.name == name)
+		return unit[0]
+	}
+
+	this.getNewUnits = function() {
+		let units = Object.values(database.getUnits())
+		let unitArray = units.filter((a) => a.newUnit == true)
+		return unitArray
+	}
+
 	this.databaseFunctions = {
 		'getGenerals' : this.getGenerals,
+		'getUnitByName': this.getUnitByName,
+		'getNewUnits': this.getNewUnits
 	}
 
 	database.setUnitToDatabase(this)

@@ -12,7 +12,7 @@ class CombatScreen extends Phaser.Scene {
         this.terrainObj = {}
         this.characterObj = {}
         this.terrainScreen
-        this.backgrounds = []
+        this.backgroundRect
         this.tileWidthOffset = 1
         this.tileHeightOffset = 1
         this.keyT = null
@@ -88,18 +88,18 @@ class CombatScreen extends Phaser.Scene {
  	    	height:height
  	    } 	     	
 
- 	    let backgroundRect = that.add.rectangle(0,0 ,background.width*2*terrainVars.tileSize, background.height*2*terrainVars.tileSize)      
+ 	    this.backgroundRect = that.add.rectangle(0,0 ,background.width*2*terrainVars.tileSize, background.height*2*terrainVars.tileSize)      
 
 	     for(let terrain of terrains) {	    	
-	    	spriteContainer = [...spriteContainer, ...that.initializeTerrain(terrain, backgroundRect, tileOffset, that)]
+	    	spriteContainer = [...spriteContainer, ...that.initializeTerrain(terrain, this.backgroundRect, tileOffset, that)]
 	    	tileOffset.tileWidthOffset = terrain.width	    	
 	    }
 
-	    let characterContainer = this.intializeCharacters(characters, height, this)
+	    let characterContainer = this.intializeCharacters(characters, this)
 
  	    this.terrainScreen = that.add.container(terrainVars.widthOffset,terrainVars.heightOffset, [...spriteContainer, ...characterContainer]);
 
-	    this.terrainScreen.setSize(backgroundRect.width, backgroundRect.height)	
+	    this.terrainScreen.setSize(this.backgroundRect.width, this.backgroundRect.height)	
 
 	    this.cameras.main.setViewport(this.parent.x, this.parent.y+visualVars.windowGrabOffset, this.terrainScreen.width, this.terrainScreen.height);
 	}
@@ -117,8 +117,8 @@ class CombatScreen extends Phaser.Scene {
 				let heightPlacement = terrainVars.tileSize * (j + tileOffset.tileHeightOffset + 1/2)
 				let tile
 				switch (spot.spotType) {
-					case tileTypeVars.summon:
-						tile = terrainVars.summonTile
+					case tileTypeVars.support:
+						tile = terrainVars.supportTile
 						break;
 					case tileTypeVars.roots:
 						tile = terrainVars.rootTile
@@ -167,51 +167,53 @@ class CombatScreen extends Phaser.Scene {
 	    return spriteContainer
 	}
 
-	intializeCharacters(characters, background, that) {
+	intializeCharacters(characters, that) {
 		let characterContainer = []
 
 	    for(let character of characters) {
-	    	let spots = [database.getSpot(character.position)]	    	
-	    	if(character.additionalPositions != null) {
-	    		for(let additionalPosition of character.additionalPositions) {
-	    			spots.push(database.getSpot(additionalPosition))
-	    		}
-	    	}
-	    	for(let spot of spots) {
-		    	let tileOffset = that.terrainObj[spot.terrain]['tileOffset']
-		    	let widthPlacement =  terrainVars.tileSize * (spot.i + tileOffset.tileWidthOffset + 1/2)
-				let heightPlacement =  terrainVars.tileSize * (spot.j + tileOffset.tileHeightOffset + 1/2)
-		    	let sprite = that.add.sprite(widthPlacement, heightPlacement, character.spriteInfos.spriteSheet, character.spriteInfos.spriteNumber);
-		    	let healthBar = null
-		    	if(!spot.isAdditionSpot()) {
-		    		let heightOffset = terrainVars.tileSize * ((character.additionalPositions != null ? (character.additionalPositions.length / 2) +1: 1))
-
-			    	healthBar = new HealthBar(
-				        that,
-				        widthPlacement - terrainVars.tileSize*0.5,
-				        heightPlacement - heightOffset,
-				        terrainVars.tileSize,
-				        5, // Adjust the height of the health bar as needed
-				        character.health
-				      );			    	
-			     	 characterContainer.push(sprite, healthBar);
-		     	} else {
-		     		characterContainer.push(sprite)
-		     	}
-
-		    	if(that.characterObj[character.id] != undefined){
-	    			that.characterObj[character.id]['obj'].push(sprite) 
+	    	if(character.position) {
+		    	let spots = [database.getSpot(character.position)]	    	
+		    	if(character.additionalPositions != null) {
+		    		for(let additionalPosition of character.additionalPositions) {
+		    			spots.push(database.getSpot(additionalPosition))
+		    		}
 		    	}
-	    		else {
-	    			that.characterObj[character.id] = {
-	    				character: character,
-	    				obj: [sprite],
-	    			}
-	    			if(healthBar != null) {
-	    				that.characterObj[character.id]['healthBar'] = healthBar
-	    			}
-	    		}
-	    	}
+		    	for(let spot of spots) {
+			    	let tileOffset = that.terrainObj[spot.terrain]['tileOffset']
+			    	let widthPlacement =  terrainVars.tileSize * (spot.i + tileOffset.tileWidthOffset + 1/2)
+					let heightPlacement =  terrainVars.tileSize * (spot.j + tileOffset.tileHeightOffset + 1/2)
+			    	let sprite = that.add.sprite(widthPlacement, heightPlacement, character.spriteInfos.spriteSheet, character.spriteInfos.spriteNumber);
+			    	let healthBar = null
+			    	if(!spot.isAdditionSpot() && spot.spotType == terrainVars.support) {
+			    		let heightOffset = terrainVars.tileSize * ((character.additionalPositions != null ? (character.additionalPositions.length / 2) +1: 1))
+
+				    	healthBar = new HealthBar(
+					        that,
+					        widthPlacement - terrainVars.tileSize*0.5,
+					        heightPlacement - heightOffset,
+					        terrainVars.tileSize,
+					        5,
+					        character.health
+					      );			    	
+				     	 characterContainer.push(sprite, healthBar);
+			     	} else {
+			     		characterContainer.push(sprite)
+			     	}
+
+			    	if(that.characterObj[character.id] != undefined){
+		    			that.characterObj[character.id]['obj'].push(sprite) 
+			    	}
+		    		else {
+		    			that.characterObj[character.id] = {
+		    				character: character,
+		    				obj: [sprite],
+		    			}
+		    			if(healthBar != null) {
+		    				that.characterObj[character.id]['healthBar'] = healthBar
+		    			}
+		    		}
+		    	}
+		    }
 	    }	    
 	        
 
@@ -333,17 +335,24 @@ class CombatScreen extends Phaser.Scene {
 			let generals = database.getGenerals()
 			let deadGenerals = generals.filter((a) => {
 				return !a.isAlive()
-			})
+			})			
 			if(deadGenerals.length == 0){
 				this.combatManager.executeTurn()
 				for(let unit of Object.values(this.characterObj)) {
-					unit.healthBar.setHealth(unit.character.health)
+					if(unit.healthBar)
+						unit.healthBar.setHealth(unit.character.health)
 					if(!unit.character.isAlive()) {
 						for(let sprite of unit.obj){
 							this.destroySprite(sprite)
 						}
-						this.destroySprite(unit.healthBar)
+						if(unit.healthBar)
+							this.destroySprite(unit.healthBar)
 					}
+				}
+				let newUnits = database.getNewUnits()
+				if(newUnits.length > 0) {
+					let characterContainer = this.intializeCharacters(database.getNewUnits(), this)
+					this.terrainScreen = this.add.container(terrainVars.widthOffset,terrainVars.heightOffset, [...characterContainer]);
 				}
 				this.textObject.setText(database.getLogger().getLogs())
 			}

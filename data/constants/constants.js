@@ -17,26 +17,31 @@ var visualVars= {
 
 var skillVar = {
     strike: 'Strike',
-    pierce: 'Pierce'
+    pierce: 'Pierce',
+    chop: 'Chop',
+    logLug: 'LogLug'
 }
 
 var targetingVar = {
-    classic: 'Classic',
-    pierce: 'pierce'
+    classic: 'classic',
+    pierce: 'pierce',
 }
 
 var skillType = {
-    damage: 'damage'
+    damage: 'damage',
+    support: 'support',
+    passive: 'passive'
 }
 
 var unitTypeVars = {
     summon: 'Summon',
+    support: 'Support',
     full: 'Unit',
     general: 'General',
 }
 
 var tileTypeVars = {
-    summon: 'Summon',
+    support: 'Support',
     full: 'Unit',
     dam: 'Dam',
     roots: 'Root'
@@ -61,7 +66,7 @@ var terrainVars = {
     rowAmount: 4,
     wall: 1028,
     fullTile: 967,
-    summonTile: 966,
+    supportTile: 966,
     damTile: 1028,
     rootTile: 950,
     tileSize: 32,
