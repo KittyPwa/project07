@@ -121,7 +121,7 @@ function populateTerrains() {
 }
 
 function populateUnits() {
-    new Unit().updateUnit({
+    /*new Unit().updateUnit({
         name: 'Dam',
         allegiance: allegianceVars.ally,
         position: database.getSpotByIJ(0,2, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
@@ -186,7 +186,7 @@ function populateUnits() {
 		},
         skills: [database.getSkillByName(skillVar.strike).id],
     	unitType: unitTypeVars.full
-    })*/
+    })
 
     new Unit().updateUnit({
         name: language.unit.mamal.beaver.warrior[0],
@@ -235,7 +235,7 @@ function populateUnits() {
     	},
         skills: [database.getSkillByName(skillVar.strike).id],
     	unitType: unitTypeVars.full
-    })
+    })*/
 }
 
 function populateLogger() {

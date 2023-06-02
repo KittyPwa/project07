@@ -25,6 +25,8 @@ class CombatScreen extends Phaser.Scene {
 
     	this.combatManager = new CombatManager()
 
+    	this.scene.launch('UnitSelectionScreen')
+
     	// Create a container for the text box
 		const textBox = this.add.container(300, 0);
 

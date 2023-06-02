@@ -31,6 +31,9 @@ var messageEn = {
 				warrior: ['Beaver warrior'],
 				builder: ['Beaver builder']
 			}
+		},
+		treant: {
+			grunt: ['Treant grunt']
 		}
 	},
 	skill: {

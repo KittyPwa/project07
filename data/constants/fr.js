@@ -30,6 +30,9 @@ var messageFr = {
 				militia: ['Milice castor'],
 				warrior: ['Guerrier castor'],
 				builder: ['Bâtisseur castor']
+			},
+			treant: {
+				grunt: ['Tréant basique']
 			}
 		}
 	},
