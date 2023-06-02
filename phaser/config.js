@@ -5,7 +5,7 @@ class Controller extends Phaser.Scene {
 
     constructor ()
     {
-        super();
+        super({ key: 'controller' });
 
         this.inventoryOpen = false;
         this.pathfindOpen = false;
@@ -26,7 +26,7 @@ class Controller extends Phaser.Scene {
     create() {
         var sky = this.add.image(0, 0, 'sky');
         sky.setScale(2)
-        this.createWindow(CombatScreen, 'combatScreen')
+        this.scene.launch('combatScreen');
     }
 
     update() {        
@@ -43,21 +43,20 @@ class Controller extends Phaser.Scene {
     }
 }
 
-    var config = {
-        type: Phaser.AUTO,
-        width: visualVars.screenWidth,
-        height: visualVars.screenHeight,
-        backgroundColor: '#010101',
-        parent: 'phaser-example',
-        scene: [Controller],
-        physics: {
-            default: 'arcade',
-            arcade: {
-                debug: false,
-                gravity: { y: 0 }
-            }
-        }
-    };
+var config = {
+  type: Phaser.AUTO,
+  width: visualVars.screenWidth,
+  height: visualVars.screenHeight,
+  backgroundColor: '#010101',
+  parent: 'phaser-example',
+  scene: [Controller, CombatScreen, UnitSelectionScreen],
+  physics: {
+    default: 'arcade',
+    arcade: {
+      debug: false,
+      gravity: { y: 0 },
+    },
+  },
+};
 
-    var game = new Phaser.Game(config);
-
+var game = new Phaser.Game(config);

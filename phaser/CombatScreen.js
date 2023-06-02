@@ -1,8 +1,8 @@
 class CombatScreen extends Phaser.Scene {
 
-    constructor (handle, parent)
+    constructor ()
     {
-        super(handle);
+        super({ key: 'combatScreen' });
 
         this.parent = parent;
         this.backgroundRect
@@ -21,11 +21,13 @@ class CombatScreen extends Phaser.Scene {
     }
     
     create() {
+    	console.log('there')
     	this.keyT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.T);
 
     	this.combatManager = new CombatManager()
 
-    	this.scene.launch('UnitSelectionScreen')
+    	//this.createWindow(UnitSelectionScreen, 'unitSelectionScreen')
+    	this.scene.launch('unitSelectionScreen');
 
     	// Create a container for the text box
 		const textBox = this.add.container(300, 0);
