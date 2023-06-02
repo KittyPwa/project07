@@ -24,6 +24,10 @@ var messageFr = {
 		strike: {
 			name: ['Frappe'],
 			description: ['Frappe adversaire pour ', ' dégâts']
+		},
+		pierce: {
+			name: ['Transperce'],
+			description: ['Transperce adversaire pour', 'dégâts']
 		}
 	}
 

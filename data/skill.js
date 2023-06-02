@@ -20,6 +20,8 @@ function Skill() {
 
 	this.effectDescription = null
 
+	this.targeting = null
+
 	this.updateSkill = function(data) {
 		this.id = data.id != undefined ? data.id : this.id;		
 		this.name = data.name != undefined ? data.name : this.name;
@@ -27,6 +29,7 @@ function Skill() {
 		this.skillType = data.skillType != undefined ? data.skillType : this.skillType;
 		this.effect = data.effect != undefined ? data.effect : this.effect;
 		this.effectDescription = data.effectDescription != undefined ? data.effectDescription : this.effectDescription;
+		this.targeting = data.targeting != undefined ? data.targeting : this.targeting;
 		this.data = data.data != undefined ? data.data : this.data;
 
 	}

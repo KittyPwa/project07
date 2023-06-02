@@ -23,6 +23,8 @@ function Unit() {
 
 	this.skills = null
 
+	this.damageMultiplier = null
+
 	this.getDamagingSkill = function() {
 		for(let skillId of this.skills) {
 			let skill = database.getSkill(skillId);
@@ -36,14 +38,14 @@ function Unit() {
 	this.updateFromSkill = function() {
 		let dmgSkill = database.getSkill(this.getDamagingSkill())
 		if(dmgSkill != undefined)
-			this.attack = dmgSkill.data.damage;
+			this.attack = dmgSkill.data.damage * (this.damageMultiplier != null ? this.damageMultiplier : 1);
 	}
 
 	this.inflictDamage = function() {
 		let dmgSkill = database.getSkill(this.getDamagingSkill())	
 		let effect = null
 		if(dmgSkill)
-			effect = dmgSkill.launchEffect()
+			effect = dmgSkill.launchEffect() * (this.damageMultiplier != null ? this.damageMultiplier : 1);
 		return effect
 	}
 
@@ -86,6 +88,7 @@ function Unit() {
 		this.allegiance = data.allegiance != undefined ? data.allegiance : this.allegiance;
 		this.speed = data.speed != undefined ? data.speed : this.speed;		
 		//this.attack = data.attack != undefined ? data.attack : this.attack;
+		this.damageMultiplier = data.damageMultiplier != undefined ? data.damageMultiplier : this.damageMultiplier;
 		this.skills = data.skills != undefined ? data.skills : this.skills;
 		this.updateFromSkill()
 

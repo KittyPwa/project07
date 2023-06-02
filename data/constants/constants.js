@@ -16,7 +16,13 @@ var visualVars= {
 }
 
 var skillVar = {
-    strike: 'Strike'
+    strike: 'Strike',
+    pierce: 'Pierce'
+}
+
+var targetingVar = {
+    classic: 'Classic',
+    pierce: 'pierce'
 }
 
 var skillType = {
@@ -48,7 +54,7 @@ var oppositeAllegianceVars = {
     foe: 'ally'
 }
 
-var dataTypes = ['terrain', 'spot', 'unit', 'combatManager', 'logger', 'skill']
+var dataTypes = ['terrain', 'spot', 'unit', 'combatManager', 'logger', 'skill', 'targeting']
 
 var terrainVars = {
     collumnAmount: 5,

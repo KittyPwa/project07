@@ -24,56 +24,43 @@ function CombatManager() {
 		}
 		unitArray.sort((a,b) => b.speed - a.speed)
 		this.units = unitArray.map((a) => a.id)		
-	}	
+	}		
 
 
-	this.attack = function(attackerId, victimId) {
+	this.attack = function(attackerId) {
 		let attacker = database.getUnit(attackerId)
-		if(attacker.getDamagingSkill()) {
-			let victim = database.getUnit(victimId)
-			let damage = attacker.inflictDamage()
-			victim.takeDamage(damage)
-			let logger = database.getLogger()
-			let attackLog = attacker.name + language.combat.attacks[0] + victim.name + language.combat.attacks[1] + damage + language.combat.attacks[2]
-			logger.addLog(attackLog)		
-			healthLog = victim.name + language.status.health[0] + victim.health + language.status.health[1]
-			logger.addLog(healthLog)
-			if(!victim.isAlive()) {
-				this.units = this.units.filter((a) => {
-					return a != victimId
-				})
+		let damageSkill = database.getSkill(attacker.getDamagingSkill())
+		if(damageSkill) {
+			console.log(damageSkill)
+			let foesToAttack = damageSkill.targeting(attacker)				
+			for(let foeToAttack of foesToAttack){				
+				let damage = attacker.inflictDamage()
+				foeToAttack.takeDamage(damage)
+				let logger = database.getLogger()
+				let attackLog = attacker.name + language.combat.attacks[0] + foeToAttack.name + language.combat.attacks[1] + damage + language.combat.attacks[2]
+				logger.addLog(attackLog)		
+				healthLog = foeToAttack.name + language.status.health[0] + foeToAttack.health + language.status.health[1]
+				logger.addLog(healthLog)
+				if(!foeToAttack.isAlive()) {
+					this.units = this.units.filter((a) => {
+						return a != foeToAttack.id
+					})
+				}	
 			}
+			
 		}
-	}
-
-	this.getFirstFoeAlive = function(foes) {
-		for(let foe of foes) {
-			if(foe.isAlive()) {
-				return foe
-			}
-		}
-		return null
-	}
+	}	
 
 	this.executeTurn = function() {
 		let logger = database.getLogger()
+		let targeting = database.getTargeting()
 		let log = language.turn.turn[0] + this.turn
 		logger.addLog(log)
 		this.orderUnitsBySpeed()		
 		for(let unitId of this.units) {					
 			let unit = database.getUnit(unitId)
 			if(unit.isAlive()) {
-				let spot = database.getSpot(unit.position)
-				let terrain = database.getTerrain(spot.terrain)
-				let foes = terrain.getRowOfFoes(spot.id)
-				if(foes.length > 0) {
-					foes.sort((a,b) => database.getSpot(b.position).i - database.getSpot(a.position).i)
-					if(unit.allegiance == allegianceVars.ally)
-						foes.sort((a,b) => database.getSpot(a.position).i - database.getSpot(b.position).i)					
-					let foeToAttack = this.getFirstFoeAlive(foes)
-					if(foeToAttack != null)
-						this.attack(unitId, foeToAttack.id)
-				}
+				this.attack(unitId)				
 			}
 		}		
 

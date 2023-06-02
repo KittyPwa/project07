@@ -1,5 +1,6 @@
 function populateDatabase() {
 	populateTerrains()
+    populateTargeting()
     populateSkills()
 	populateUnits()
 	populateLogger()
@@ -11,11 +12,32 @@ function populateSkills() {
         name: language.skill.strike.name[0],
         skillId: skillVar.strike,
         skillType: skillType.damage,
+        targeting: function(unit) {
+            return database.getTargeting().classicTargeting(unit)
+        },
         effect: function() {            
             return this.data.damage
         },        
         effectDescription: function() {
             return language.skill.strike.description[0] + this.data.damage + language.skill.strike.description[1]  
+        },
+        data: {
+            damage: 1
+        }
+    })
+    let pierce = new Skill()
+    pierce.updateSkill({
+        name: language.skill.pierce.name[0],
+        skillId: skillVar.pierce,
+        skillType: skillType.damage,
+        targeting: function(unit) {
+            return database.getTargeting().pierceTargeting(unit)
+        },
+        effect: function() {            
+            return this.data.damage
+        },        
+        effectDescription: function() {
+            return language.skill.pierce.description[0] + this.data.damage + language.skill.pierce.description[1]  
         },
         data: {
             damage: 1
@@ -90,7 +112,7 @@ function populateUnits() {
     	position: database.getSpotByIJ(1,1, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
     	health: 3,
     	speed: 1,
-    	attack: 1,
+    	damageMultiplier: 2,
     	spriteInfos: {
 			spriteName:null,
 			spriteSheet: 'tilesets',
@@ -112,7 +134,7 @@ function populateUnits() {
 			spriteSheet: 'tilesets',
 			spriteNumber:130
 		},
-        skills: [database.getSkillByName(skillVar.strike).id],
+        skills: [database.getSkillByName(skillVar.pierce).id],
     	unitType: unitTypeVars.full
 
     })
@@ -137,6 +159,10 @@ function populateUnits() {
 function populateLogger() {
     new Logger()
 
+}
+
+function populateTargeting() {
+    new Targeting()    
 }
 
 populateDatabase()

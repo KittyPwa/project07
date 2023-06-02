@@ -24,6 +24,10 @@ var messageEn = {
 		strike: {
 			name: ['Strike'],
 			description: ['Strike foe for ', ' damage']
+		},
+		pierce: {
+			name: ['Pierce'],
+			description: ['Pierce foe for', 'damage']
 		}
 	}
 }
