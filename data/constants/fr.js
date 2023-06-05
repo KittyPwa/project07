@@ -31,10 +31,14 @@ var messageFr = {
 				warrior: ['Guerrier castor'],
 				builder: ['Bâtisseur castor']
 			},
-			treant: {
-				grunt: ['Tréant basique']
-			}
-		}
+		},
+		treant: {
+			grunt: ['Tréant basique']
+		},
+		general: {
+			dam: ['Barrage'],
+			roots: ['Racines']
+		},		
 	},
 	skill: {
 		strike: {

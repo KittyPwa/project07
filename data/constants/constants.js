@@ -40,6 +40,32 @@ var unitTypeVars = {
     general: 'General',
 }
 
+var unitNameVars = {
+    mamal: {
+        beaver: {
+            militia: 'mbm',
+            warrior: 'mbw',
+            builder: 'mbb'
+
+        }
+    },
+    general: {
+        roots: 'gr',
+        dam: 'gd',
+    },
+    treant: {
+        greenForest: {
+            grunet: 'tgg'
+        },
+    },
+    support : {
+        wood: {
+            log: 'swl'
+        }
+    }
+
+}
+
 var tileTypeVars = {
     support: 'Support',
     full: 'Unit',
@@ -50,6 +76,11 @@ var tileTypeVars = {
 var allegianceVars = {
     ally: 'ally',
     foe: 'foe'
+}
+
+var unitAllegianceVars = {
+    ally: ['mamal', 'reptile', 'bird'],
+    foe: ['treant']
 }
 
 var language = JSON.parse(JSON.stringify(messageEn))

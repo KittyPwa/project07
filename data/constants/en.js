@@ -34,7 +34,11 @@ var messageEn = {
 		},
 		treant: {
 			grunt: ['Treant grunt']
-		}
+		},
+		general: {
+			dam: ['Dam'],
+			roots: ['Roots']
+		}		
 	},
 	skill: {
 		strike: {

@@ -61,7 +61,7 @@ function populateSkills() {
             return database.getTargeting().classicTargeting(unit)
         },
         effect: function() {
-            let log = database.getUnitByName(language.unit.support.stackable.log[0])            
+            let log = database.getUnitByName(language.unit.support.stackable.log[0])[0]            
             if(log.stackSize > 1) {            
                 log.updateUnit({
                     stackSize: log.stackSize - 2,

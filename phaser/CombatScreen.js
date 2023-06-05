@@ -16,19 +16,19 @@ class CombatScreen extends Phaser.Scene {
         this.tileWidthOffset = 1
         this.tileHeightOffset = 1
         this.keyT = null
+        this.keyS = null
         this.textObject
         this.infoBox
+        this.characterContainer
     }
     
     create() {
-    	console.log('there')
     	this.keyT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.T);
+    	this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
 
     	this.combatManager = new CombatManager()
 
     	//this.createWindow(UnitSelectionScreen, 'unitSelectionScreen')
-    	this.scene.launch('unitSelectionScreen');
-
     	// Create a container for the text box
 		const textBox = this.add.container(300, 0);
 
@@ -60,21 +60,13 @@ class CombatScreen extends Phaser.Scene {
 
 	    let that = this
 
-	    let terrains = Object.values(database.getTerrains())
-	    
-	    let characters = Object.values(database.getUnits())
-
-	    let combatManagerData = {
-	    	units: JSON.parse(JSON.stringify(characters)).map((a) => a = a.id),
-	    	terrains: JSON.parse(JSON.stringify(terrains)).map((a) => a = a.id),
-	    	turn: 1
-	    }
-	    this.combatManager.updateCombatManager(combatManagerData)
+	    let terrains = Object.values(database.getTerrains())	    
 
 	    let tileOffset = {
 	    	tileWidthOffset: 0,
 	    	tileHeightOffset: 0
 	    }
+
 	    let spriteContainer = []	   
 
 	    let width = 0
@@ -99,13 +91,79 @@ class CombatScreen extends Phaser.Scene {
 	    	tileOffset.tileWidthOffset = terrain.width	    	
 	    }
 
-	    let characterContainer = this.intializeCharacters(characters, this)
 
- 	    this.terrainScreen = that.add.container(terrainVars.widthOffset,terrainVars.heightOffset, [...spriteContainer, ...characterContainer]);
+ 	    this.terrainScreen = that.add.container(terrainVars.widthOffset,terrainVars.heightOffset, [...spriteContainer]); 	    
 
-	    this.terrainScreen.setSize(this.backgroundRect.width, this.backgroundRect.height)	
+	    this.terrainScreen.setSize(this.backgroundRect.width, this.backgroundRect.height)
 
-	    this.cameras.main.setViewport(this.parent.x, this.parent.y+visualVars.windowGrabOffset, this.terrainScreen.width, this.terrainScreen.height);
+	    this.add.existing(this.terrainScreen)
+
+	    let roots = new Unit()
+	    roots.updateUnit(unitBase.general.roots)
+
+	    let dam = new Unit()
+	    dam.updateUnit(unitBase.general.dam)
+	    this.selectFoes(3)
+	    this.selectNewCharacters(1,3)
+
+	    this.characterContainer = this.intializeCharacters([roots, dam], this)		    	    
+
+	    this.terrainScreen.add(this.characterContainer)   
+	}
+
+	selectFoes(amount) {
+		let units = []
+		for(let i = 0; i < amount; i++) {
+    		let randomUnitBases = getNUnitBases(1, allegianceVars.foe);
+    		let unit = new Unit()
+			unit.updateUnit(randomUnitBases[0]);
+      		units.push(unit);
+		}
+
+		this.updateCharacters();		
+	}
+
+	selectNewCharacter() {
+		this.selectNewCharacters(1,1)
+	}
+
+	selectNewCharacters(i, total) {	
+		this.scene.launch('unitSelectionScreen');
+	  	this.scene.bringToTop('unitSelectionScreen');
+
+	  	this.scene.get('unitSelectionScreen').events.once('shutdown', () => {
+			this.updateCharacters();
+			if(i < total) {
+				i++
+				this.selectNewCharacters(i, total)
+			}
+		});
+	}
+
+	updateCharacters() {
+	    let terrains = Object.values(database.getTerrains())	    
+
+		let characters = Object.values(database.getUnits())	
+		console.log(JSON.parse(JSON.stringify(characters)))
+		characters = characters.filter((a) => {
+			return a.position == null
+		})
+		for(let character of characters) {
+			character.updateUnit({
+				position: database.getRandomAvailableSpot(database.getTerrainByAllegiance(character.allegiance).id, unitBase.unitType).id  
+			})
+		}						
+
+	    let combatManagerData = {
+	    	units: JSON.parse(JSON.stringify(characters)).map((a) => a = a.id),
+	    	terrains: JSON.parse(JSON.stringify(terrains)).map((a) => a = a.id),
+	    	turn: 1
+	    }
+	    this.combatManager.updateCombatManager(combatManagerData)
+
+	    let newContainer = this.intializeCharacters(characters, this)
+
+	    this.terrainScreen.add(newContainer)	    
 	}
 
 	initializeTerrain(terrain, background, tileOffset, that) {	
@@ -159,7 +217,7 @@ class CombatScreen extends Phaser.Scene {
 		    	sprite.on('pointerdown', function() {
 		    		let character = database.getUnit(that.selected)  
 		    		if(character && character.allegiance == terrain.allegiance) {
-		    			if(spot.isAvailable(character.id)) {
+		    			if(spot.isAvailable(character.unitType)) {
 		    				that.moveSelectedToSpot(spot, that.spotsObj[spot.id].tileOffset, that)	   
 		    				that.unselectCharacter(that, that.characterObj[that.selected].obj[0])
 		    			}
@@ -172,6 +230,7 @@ class CombatScreen extends Phaser.Scene {
 	}
 
 	intializeCharacters(characters, that) {
+		console.log(characters)
 		let characterContainer = []
 
 	    for(let character of characters) {
@@ -320,13 +379,15 @@ class CombatScreen extends Phaser.Scene {
 
 	createInfoBox(unitId, placement, that) {				
         let x = placement.x 
-        let y = placement.y 
+        let y = placement.y
         let unit = database.getUnit(unitId)
         let text = unit.getDescription();                
         var style = { font: "12px Arial", fill: "#FFFFFF", align: "center", color: "white" };
         var t = that.add.text(x,y, text, style);
         t.x = x - this.parent.x - terrainVars.widthOffset
         t.y = y - (this.parent.y + visualVars.windowGrabOffset + terrainVars.tileSize*2 + terrainVars.heightOffset/3)
+        t.x = 125
+        t.y = 350
         t.setDepth(4)
         return t
     }
@@ -342,6 +403,7 @@ class CombatScreen extends Phaser.Scene {
 			})			
 			if(deadGenerals.length == 0){
 				this.combatManager.executeTurn()
+				console.log(this.characterObj)
 				for(let unit of Object.values(this.characterObj)) {
 					if(unit.healthBar)
 						unit.healthBar.setHealth(unit.character.health)

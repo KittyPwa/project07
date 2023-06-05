@@ -21,11 +21,10 @@ function Spot() {
 		return false;		
 	}
 
-	this.isAvailable = function(unitId) {		
-		let unit = database.getUnit(unitId)
+	this.isAvailable = function(type) {	
 		let isAccessible = (this.unitInSpot == null)
 		if(this.spotType != null) {
-			isAccessible = isAccessible && this.spotType == unit.unitType
+			isAccessible = isAccessible && this.spotType == type
 		}
 		return isAccessible
 
@@ -59,9 +58,19 @@ function Spot() {
 		return rowSpots
 	}
 
+	this.getRandomAvailableSpot = function(terrainId, type) {
+		let spots = shuffleArray(Object.values(database.getSpots()))
+		for(let spot of spots) {
+			if(spot.terrain == terrainId && spot.isAvailable(type)) {
+				return spot
+			}
+		}
+	}
+
 	this.databaseFunctions = {
 		'getSpotByIJ' : this.getSpotByIJ,
-		'getSpotsInRow' : this.getSpotsInRow
+		'getSpotsInRow' : this.getSpotsInRow,
+		'getRandomAvailableSpot': this.getRandomAvailableSpot,
 	}
 
 	this.updateSpot = function(data) {
