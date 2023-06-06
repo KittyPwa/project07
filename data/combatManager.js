@@ -52,6 +52,25 @@ function CombatManager() {
 		}
 	}	
 
+	this.support = function(supporterId) {
+		let supporter = database.getUnit(supporterId)
+		let supportSkill = database.getSkill(supporter.getSupportSkill())
+		if(supportSkill) {
+			let alliesToSupport = supportSkill.targeting(supporter)
+			for(let ally of alliesToSupport) {
+				let heal = supporter.healDamage()
+				if(heal != null) {
+					ally.takeHeal(heal)
+					let logger = database.getLogger()
+					let healLog = supporter.name + language.combat.heals[0] + ally.name + language.combat.heals[1] + heal + language.combat.heals[2]
+					logger.addLog(healLog)		
+					healthLog = ally.name + language.status.health[0] + ally.health + language.status.health[1]
+					logger.addLog(healthLog)
+				}
+			}
+		}
+	}
+
 	this.executeTurn = function() {		
 		let newUnits = database.getNewUnits()
 		for(let newUnit of newUnits) {
@@ -70,7 +89,8 @@ function CombatManager() {
 			let unit = database.getUnit(unitId)
 			if(generals.length == 2) {
 				if(unit && unit.isAlive()) {
-					this.attack(unitId)				
+					this.attack(unitId)	
+					this.support(unitId)			
 				}	
 			}	else {
 				let toKill = database.getUnitsByAllegiance(oppositeAllegianceVars[generals[0].allegiance])				

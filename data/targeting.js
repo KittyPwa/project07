@@ -21,11 +21,12 @@ function Targeting() {
 		let spot = database.getSpot(unit.position)
 		let terrain = database.getTerrain(spot.terrain)
 		let foes = terrain.getRowOfFoes(spot.id)
+		let foeToAttack = []
 		if(foes.length > 0) {
 			foes.sort((a,b) => database.getSpot(b.position).i - database.getSpot(a.position).i)
 			if(unit.allegiance == allegianceVars.ally)
 				foes.sort((a,b) => database.getSpot(a.position).i - database.getSpot(b.position).i)					
-			let foeToAttack = this.getNFoeAlive(foes,1)
+			foeToAttack = this.getNFoeAlive(foes,1)
 			for(let foe of foeToAttack) {
 				if(foe != undefined){
 					foesToAttack.push(foe)
@@ -35,16 +36,55 @@ function Targeting() {
 		return foesToAttack
 	}
 
+	this.orderFoesByAttribute = function(unit, attribute) {
+		let foesToAttack = []
+		let spot = database.getSpot(unit.position)
+		let terrain = database.getTerrain(spot.terrain)
+		let foes = terrain.getUnitsOnTerrain(unit.unitType)
+		foes.sort((a,b) => {
+			return a[attribute] - b[attribute]
+		})
+		let foeToAttack = []
+		if(foes.length > 0){
+			foeToAttack = this.getNFoeAlive(foes,foes.length)
+			for(let foe of foeToAttack) {
+				if(foe != undefined){
+					foesToAttack.push(foe)
+				}
+			}
+		}
+		return foeToAttack
+	}
+
+	this.deathliestTargeting = function(unit) {		
+		return [this.orderFoesByAttribute(unit, 'health')[0]]
+	}
+
+	this.healthiestTargeting = function(unit) {
+		let foes = this.orderFoesByAttribute(unit, 'health')
+		return [foes[foes.length - 1]]
+	}
+
+	this.strongestTargeting = function(unit) {
+		let foes = this.orderFoesByAttribute(unit, 'attack')
+		return [foes[foes.length - 1]]
+	}
+
+	this.weakestTargeting = function(unit) {
+		return [this.orderFoesByAttribute(unit, 'attack')[0]]
+	}
+
 	this.pierceTargeting = function(unit) {
 		let foesToAttack = []
 		let spot = database.getSpot(unit.position)
 		let terrain = database.getTerrain(spot.terrain)
 		let foes = terrain.getRowOfFoes(spot.id)
+		let foeToAttack = []
 		if(foes.length > 0) {
 			foes.sort((a,b) => database.getSpot(b.position).i - database.getSpot(a.position).i)
 			if(unit.allegiance == allegianceVars.ally)
 				foes.sort((a,b) => database.getSpot(a.position).i - database.getSpot(b.position).i)					
-			let foeToAttack = this.getNFoeAlive(foes,2)
+			foeToAttack = this.getNFoeAlive(foes,2)
 			for(let foe of foeToAttack) {
 				if(foe != undefined){
 					foesToAttack.push(foe)

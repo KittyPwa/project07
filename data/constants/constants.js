@@ -19,7 +19,10 @@ var skillVar = {
     strike: 'Strike',
     pierce: 'Pierce',
     chop: 'Chop',
-    logLug: 'LogLug'
+    logLug: 'LogLug',
+    challengeTheStrong: 'ChallengeTheStrong',
+    cullVermin: 'CullVermin',
+    damRepairs: 'DamRepairs'
 }
 
 var targetingVar = {
@@ -45,8 +48,8 @@ var unitNameVars = {
         beaver: {
             militia: 'mbm',
             warrior: 'mbw',
-            builder: 'mbb'
-
+            builder: 'mbb',
+            alpha: 'mba'
         }
     },
     general: {
@@ -55,7 +58,9 @@ var unitNameVars = {
     },
     treant: {
         greenForest: {
-            grunet: 'tgg'
+            grunt: 'tgg',
+            barkBiter: 'tgbb',
+            ogre: 'tgo',
         },
     },
     support : {

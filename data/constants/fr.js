@@ -1,6 +1,7 @@
 var messageFr = {
 	combat: {
-		attacks: [' attaque ', ' et inflige ', ' dégâts']
+		attacks: [' attaque ', ' et inflige ', ' dégâts'],
+		heals: [' soigne', ' et rend ', ' HP'],
 	},
 	status: {
 		health: [' a ', ' points de vie restants']
@@ -29,11 +30,16 @@ var messageFr = {
 			beaver: {
 				militia: ['Milice castor'],
 				warrior: ['Guerrier castor'],
-				builder: ['Bâtisseur castor']
+				builder: ['Bâtisseur castor'],
+				alpha: ['Castor alpha'],
 			},
 		},
 		treant: {
-			grunt: ['Tréant basique']
+			greenForest : {
+				grunt: ['Tréant basique'],
+				barkBiter: ['Dévoreur d\'écorce'],
+				ogre: ['Tréant ogre'],
+			}
 		},
 		general: {
 			dam: ['Barrage'],
@@ -57,6 +63,18 @@ var messageFr = {
 			name: ['Lancé de bûche'],
 			description: ['Lance des bûches aux adversaires pour ', ' dégâts, consommant ', ' Bûche']
 		},
+		challengeTheStrong: {
+			name: ['Ego des puissants'],
+			description: ['Frappe adversaire avec le plus de HP pour', ' dégâts']
+		},
+		cullVermin: {
+			name: ['Eradiquer la vermine'],
+			description: ['Frappe adversaire avec le moins de HP pour', ' dégâts']
+		},
+		damRepairs: {
+			name: ['Réparations de barrage'],
+			description: ['Répare le barrage pour ', ' HP, consommant ', ' Bûche']
+		}
 	}
 
 }

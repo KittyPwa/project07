@@ -19,15 +19,25 @@ class UnitSelectionScreen extends Phaser.Scene {
     let style = { font: "10px Arial", fill: "#000000", align: "center" };
 
     // Create rectangles for each text window
-    const leftRect = this.add.rectangle(150, 200, 200, 100, 0xCCCCCC);
-    const middleRect = this.add.rectangle(300, 200, 200, 100, 0xCCCCCC);
-    const rightRect = this.add.rectangle(450, 200, 200, 100, 0xCCCCCC);
+    const leftRect = this.add.rectangle(150, 200, 125, 100, 0xCCCCCC);
+    const middleRect = this.add.rectangle(300, 200, 125, 100, 0xCCCCCC);
+    const rightRect = this.add.rectangle(450, 200, 125, 100, 0xCCCCCC);
 
     // Create text windows inside the rectangles
     this.leftTextWindow = this.add.text(150, 200, units[0].getDescription(), style);
     this.middleTextWindow = this.add.text(300, 200, units[1].getDescription(), style);
     this.rightTextWindow = this.add.text(450, 200, units[2].getDescription(), style);
 
+    // Disable input on text windows
+    this.leftTextWindow.disableInteractive();
+    this.middleTextWindow.disableInteractive();
+    this.rightTextWindow.disableInteractive();
+
+    // Make the rectangles clickable
+    leftRect.setInteractive();
+    middleRect.setInteractive();
+    rightRect.setInteractive();
+    
     for(let unit of units) {
         unit.purge()       
       }    
@@ -38,21 +48,17 @@ class UnitSelectionScreen extends Phaser.Scene {
     this.middleTextWindow.setOrigin(0.5);
     this.rightTextWindow.setOrigin(0.5);
 
-    // Make the text windows clickable
-    this.leftTextWindow.setInteractive();
-    this.middleTextWindow.setInteractive();
-    this.rightTextWindow.setInteractive();
     let that = this
-    this.leftTextWindow.on('pointerdown', () => {
+    leftRect.on('pointerdown', () => {
       that.createNewUnit(units[0])      
       // Handle left text window click
     });
 
-    this.middleTextWindow.on('pointerdown', () => {
+    middleRect.on('pointerdown', () => {
       that.createNewUnit(units[1])
     });
 
-    this.rightTextWindow.on('pointerdown', () => {
+    rightRect.on('pointerdown', () => {
       that.createNewUnit(units[2])
     });
   }

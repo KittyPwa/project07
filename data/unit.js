@@ -33,13 +33,13 @@ function Unit() {
 
 	this.getDamagingSkill = function() {
 		return this.getTypeSkills(skillType.damage)[0]
-	}
+	}	
 
 	this.getTypeSkills = function(type) {
 		let skills = []
 		for(let skillId of this.skills) {
 			let skill = database.getSkill(skillId);
-			if(skill.skillType == skillType.damage) {
+			if(skill.skillType == type) {
 				skills.push(skillId)
 			}
 		}
@@ -60,6 +60,17 @@ function Unit() {
 			this.attack = dmgSkill.data.damage * (this.damageMultiplier != null ? this.damageMultiplier : 1);
 	}
 
+	this.healDamage = function() {
+		let supportSkill = database.getSkill(this.getSupportSkill())
+		let effect = null
+		if(supportSkill) {
+			let healEffect = supportSkill.launchEffect()
+			if(healEffect != null)
+				effect = healEffect * (this.damageMultiplier != null ? this.damageMultiplier : 1);			
+		}
+		return effect
+	}
+
 	this.inflictDamage = function() {
 		let dmgSkill = database.getSkill(this.getDamagingSkill())	
 		let effect = null		
@@ -77,6 +88,10 @@ function Unit() {
 			this.health = 0		
 			this.die()
 		}
+	}
+
+	this.takeHeal = function(heal) {
+		this.health += heal
 	}
 
 	this.getDescription = function() {

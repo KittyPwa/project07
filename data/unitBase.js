@@ -1,3 +1,4 @@
+
 let unitBase = {
 	mamal: {
 		beaver: {
@@ -43,9 +44,27 @@ let unitBase = {
 					spriteSheet: 'tilesets',
 					spriteNumber:130
 				},
+		        skills: [database.getSkillByName(skillVar.damRepairs).id],
+		    	unitType: unitTypeVars.full
+		    },
+		    alpha: {
+		    	name: language.unit.mamal.beaver.alpha[0],
+		    	unitName: unitNameVars.mamal.beaver.alpha,
+		    	allegiance: allegianceVars.ally,
+		    	health: 6,
+		    	speed: 1,
+		    	attack: 2,
+		    	spriteInfos: {
+					spriteName:null,
+					spriteSheet: 'tilesets',
+					spriteNumber:130
+				},
 		        skills: [database.getSkillByName(skillVar.logLug).id],
 		    	unitType: unitTypeVars.full
 		    }
+		},
+		wolf: {
+
 		}
 	},
 	general: {
@@ -60,7 +79,7 @@ let unitBase = {
 	            database.getSpotByIJ(0,3, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
 	            database.getSpotByIJ(0,4, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
 	        ],
-	        health: 6,
+	        health: 10,
 	        spriteInfos: {
 	            spriteName:null,
 	            spriteSheet: 'tilesets',
@@ -80,7 +99,7 @@ let unitBase = {
 	            database.getSpotByIJ(3,3, database.getTerrainByAllegiance(allegianceVars.foe).id).id,
 	            database.getSpotByIJ(3,4, database.getTerrainByAllegiance(allegianceVars.foe).id).id,
 	        ],
-	        health: 3,
+	        health: 10,
 	        spriteInfos: {
 	            spriteName:null,
 	            spriteSheet: 'tilesets',
@@ -93,20 +112,50 @@ let unitBase = {
 	treant: {
 		greenForest: {
 			grunt: {
-			    	name: language.unit.treant.grunt[0],
-			    	unitName: unitNameVars.treant.greenForest.grunt,
-			    	allegiance: allegianceVars.foe,
-			    	health: 4,
-			    	speed: 5,
-			    	attack: 1,
-			    	spriteInfos: {
-			    		spriteName: null,
-			    		spriteSheet: 'tilesets',
-			    		spriteNumber: 131
-			    	},
-			        skills: [database.getSkillByName(skillVar.strike).id],
-			    	unitType: unitTypeVars.full
-			    }
+		    	name: language.unit.treant.greenForest.grunt[0],
+		    	unitName: unitNameVars.treant.greenForest.grunt,
+		    	allegiance: allegianceVars.foe,
+		    	health: 4,
+		    	speed: 5,
+		    	attack: 1,
+		    	spriteInfos: {
+		    		spriteName: null,
+		    		spriteSheet: 'tilesets',
+		    		spriteNumber: 131
+		    	},
+		        skills: [database.getSkillByName(skillVar.strike).id],
+		    	unitType: unitTypeVars.full
+		    },
+			barkBiter: {
+				name: language.unit.treant.greenForest.barkBiter[0],
+		    	unitName: unitNameVars.treant.greenForest.barkBiter,
+		    	allegiance: allegianceVars.foe,
+		    	health: 2,
+		    	speed: 6,
+		    	attack: 1,
+		    	spriteInfos: {
+		    		spriteName: null,
+		    		spriteSheet: 'tilesets',
+		    		spriteNumber: 121
+		    	},
+		        skills: [database.getSkillByName(skillVar.cullVermin).id],
+		    	unitType: unitTypeVars.full
+			},
+			ogre: {
+				name: language.unit.treant.greenForest.ogre[0],
+		    	unitName: unitNameVars.treant.greenForest.ogre,
+		    	allegiance: allegianceVars.foe,
+		    	health: 6,
+		    	speed: 2,
+		    	attack: 1,
+		    	spriteInfos: {
+		    		spriteName: null,
+		    		spriteSheet: 'tilesets',
+		    		spriteNumber: 163
+		    	},
+		        skills: [database.getSkillByName(skillVar.challengeTheStrong).id],
+		    	unitType: unitTypeVars.full
+			}
 		}				
 	},
 	support: {
@@ -139,5 +188,6 @@ function getNUnitBases(n, allegiance) {
 			}
 		}
 	}
+	shuffleArray(alleged)
 	return alleged.slice(0,n)
 }

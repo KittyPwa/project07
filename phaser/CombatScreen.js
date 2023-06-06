@@ -248,7 +248,7 @@ class CombatScreen extends Phaser.Scene {
 					        that,
 					        widthPlacement - terrainVars.tileSize*0.5,
 					        heightPlacement - heightOffset,
-					        terrainVars.tileSize,
+					        terrainVars.tileSize - 3,
 					        5,
 					        character.health
 					      );			    	
@@ -408,7 +408,7 @@ class CombatScreen extends Phaser.Scene {
 				this.combatManager.executeTurn()
 				this.textObject.setText(database.getLogger().getLogs())
 			} else {
-				let toKill = database.getUnitsByAllegiance(oppositeAllegianceVars.generals[0])
+				let toKill = database.getUnitsByAllegiance(oppositeAllegianceVars[generals[0].allegiance])
 				for(let unit of toKill) {
 					unit.die()
 				}

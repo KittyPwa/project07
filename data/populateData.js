@@ -68,7 +68,7 @@ function populateSkills() {
             return database.getTargeting().classicTargeting(unit)
         },
         effect: function() {
-            let logs = database.getUnitByName(language.unit.support.stackable.log[0])            
+            let logs = database.getUnitByName(unitNameVars.support.wood.log)           
             let log = logs[0]
             if(log && log.stackSize > 1) {            
                 log.updateUnit({
@@ -102,6 +102,73 @@ function populateSkills() {
         },
         data: {
             damage: 1
+        }
+    })
+
+    let cullVermin = new Skill()
+    cullVermin.updateSkill({
+        name: language.skill.cullVermin.name[0],
+        skillId: skillVar.cullVermin,
+        skillType: skillType.damage,
+        targeting: function(unit) {
+            return database.getTargeting().deathliestTargeting(unit)
+        },
+        effect: function() {            
+            return this.data.damage
+        },        
+        effectDescription: function() {
+            return language.skill.cullVermin.description[0] + this.data.damage + language.skill.cullVermin.description[1]  
+        },
+        data: {
+            damage: 1
+        }
+    })
+
+    let challengeTheStrong = new Skill()
+    challengeTheStrong.updateSkill({
+        name: language.skill.challengeTheStrong.name[0],
+        skillId: skillVar.challengeTheStrong,
+        skillType: skillType.damage,
+        targeting: function(unit) {
+            return database.getTargeting().healthiestTargeting(unit)
+        },
+        effect: function() {            
+            return this.data.damage
+        },        
+        effectDescription: function() {
+            return language.skill.challengeTheStrong.description[0] + this.data.damage + language.skill.challengeTheStrong.description[1]  
+        },
+        data: {
+            damage: 2
+        }
+    })
+
+    let damRepairs = new Skill()
+    damRepairs.updateSkill({
+        name: language.skill.damRepairs.name[0],
+        skillId: skillVar.damRepairs,
+        skillType: skillType.support,
+        targeting: function(unit) {
+            let generals = database.getGenerals()
+            generals = generals.filter((a) => a.allegiance == allegianceVars.ally)
+            return generals
+        },
+        effect: function() {            
+            let logs = database.getUnitByName(unitNameVars.support.wood.log)            
+            let log = logs[0]
+            if(log && log.stackSize > 1) {            
+                log.updateUnit({
+                    stackSize: log.stackSize - 2,
+                })           
+                return this.data.heal 
+            }
+            return null
+        },        
+        effectDescription: function() {
+            return language.skill.damRepairs.description[0] + this.data.heal + language.skill.damRepairs.description[1]  
+        },
+        data: {
+            heal: 1
         }
     })
 }
