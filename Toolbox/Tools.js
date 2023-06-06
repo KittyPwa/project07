@@ -55,7 +55,7 @@ function Database() {
         let functionized = 'delete' + capitalized
         let plural = dataName + 's'
         this[functionized] = function(toDelete) {
-            delete this.data[plural][toDelete.id]
+            delete this.data[plural][toDelete]
         }
     }
 
@@ -100,7 +100,7 @@ function Database() {
             }
         }
         let capitalized = capitalizeFirstLetter(temp.type)
-        this['delete'+capitalized](temp)
+        this['delete'+capitalized](temp.id)
     }
 
 }

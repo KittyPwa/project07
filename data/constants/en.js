@@ -1,6 +1,7 @@
 var messageEn = {
 	combat: {
-		attacks: [' attacks ', ' for ', ' damage']
+		attacks: [' attacks ', ' for ', ' damage'],
+		heals: [' heals ', ' for ', ' HP'],
 	},
 	status: {
 		health: [' has ', ' health points remaining']
@@ -29,9 +30,21 @@ var messageEn = {
 			beaver: {
 				militia: ['Beaver militia'],
 				warrior: ['Beaver warrior'],
-				builder: ['Beaver builder']
+				builder: ['Beaver builder'],
+				alpha: ['Beaver alpha'],
 			}
-		}
+		},
+		treant: {
+			greenForest: {
+				grunt: ['Treant grunt'],
+				barkBiter: ['Bark biter'],
+				ogre: ['Treant ogre'],
+			}
+		},
+		general: {
+			dam: ['Dam'],
+			roots: ['Roots']
+		}		
 	},
 	skill: {
 		strike: {
@@ -50,5 +63,17 @@ var messageEn = {
 			name: ['Log Lug'],
 			description: ['Log lugs at foe for', 'damage, consuming ', ' Log']
 		},
+		challengeTheStrong: {
+			name: ['Challenge the strong'],
+			description: ['Strikes the foe with the most HP for ', ' damage']
+		},
+		cullVermin: {
+			name: ['Cull vermin'],
+			description: ['Strikes the foe with the least HP for', ' damage']
+		},
+		damRepairs: {
+			name: ['Dam repairs'],
+			description: ['Repairs the dam for ', ' health, consuming ', ' Log']
+		}
 	}
 }

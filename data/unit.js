@@ -3,6 +3,8 @@ function Unit() {
 
 	this.name = null;
 
+	this.unitName = null
+
 	this.allegiance = null;
 
 	this.position = null;
@@ -31,13 +33,13 @@ function Unit() {
 
 	this.getDamagingSkill = function() {
 		return this.getTypeSkills(skillType.damage)[0]
-	}
+	}	
 
 	this.getTypeSkills = function(type) {
 		let skills = []
 		for(let skillId of this.skills) {
 			let skill = database.getSkill(skillId);
-			if(skill.skillType == skillType.damage) {
+			if(skill.skillType == type) {
 				skills.push(skillId)
 			}
 		}
@@ -58,6 +60,17 @@ function Unit() {
 			this.attack = dmgSkill.data.damage * (this.damageMultiplier != null ? this.damageMultiplier : 1);
 	}
 
+	this.healDamage = function() {
+		let supportSkill = database.getSkill(this.getSupportSkill())
+		let effect = null
+		if(supportSkill) {
+			let healEffect = supportSkill.launchEffect()
+			if(healEffect != null)
+				effect = healEffect * (this.damageMultiplier != null ? this.damageMultiplier : 1);			
+		}
+		return effect
+	}
+
 	this.inflictDamage = function() {
 		let dmgSkill = database.getSkill(this.getDamagingSkill())	
 		let effect = null		
@@ -75,6 +88,10 @@ function Unit() {
 			this.health = 0		
 			this.die()
 		}
+	}
+
+	this.takeHeal = function(heal) {
+		this.health += heal
 	}
 
 	this.getDescription = function() {
@@ -99,11 +116,17 @@ function Unit() {
 	}
 
 	this.die = function() {
-		if(!this.isAlive()) {
-			let spot = database.getSpot(this.position)
-			spot.removeUnit()		
-		}
+		let spot = database.getSpot(this.position)
+		spot.removeUnit()	
+		this.updateUnit({
+			health: 0,
+			position: null,
+		})
 	}
+
+	this.purge = function() {
+		database.deleteUnit(this.id)
+	} 
 
 	this.isAlive = function() {
 		let isAlive = true
@@ -116,6 +139,7 @@ function Unit() {
 
 	this.updateUnit = function(data) {
 		this.name = data.name != undefined ? data.name : this.name;
+		this.unitName = data.unitName != undefined ? data.unitName : this.unitName;		
 		this.allegiance = data.allegiance != undefined ? data.allegiance : this.allegiance;
 		this.speed = data.speed != undefined ? data.speed : this.speed;		
 		//this.attack = data.attack != undefined ? data.attack : this.attack;
@@ -148,6 +172,13 @@ function Unit() {
 		database.setUnitToDatabase(this)
 	}
 
+	this.getNRandomUnits = function(n, faction) {
+		let units = database.getUnits()
+		units = units.filter((a) => a.allegiance == faction)
+		units = shuffleArray(units)
+		return units.slice(0,n)
+	}
+
 	this.getGenerals = function() {
 		let units = Object.values(database.getUnits())
 		let generals = units.filter((a) => a.unitType == unitTypeVars.general)
@@ -156,8 +187,8 @@ function Unit() {
 
 	this.getUnitByName = function(name) {
 		let units = Object.values(database.getUnits())
-		let unit = units.filter((a) => a.name == name)
-		return unit[0]
+		let unitArray = units.filter((a) => a.unitName == name)
+		return unitArray
 	}
 
 	this.getNewUnits = function() {
@@ -166,10 +197,17 @@ function Unit() {
 		return unitArray
 	}
 
+	this.getUnitsByAllegiance = function(allegiance) {
+		let units = Object.values(database.getUnits())
+		let unitArray = units.filter((a) => a.allegiance == allegiance)
+		return unitArray
+	}
+
 	this.databaseFunctions = {
 		'getGenerals' : this.getGenerals,
 		'getUnitByName': this.getUnitByName,
-		'getNewUnits': this.getNewUnits
+		'getNewUnits': this.getNewUnits,
+		'getUnitsByAllegiance': this.getUnitsByAllegiance,
 	}
 
 	database.setUnitToDatabase(this)
