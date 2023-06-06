@@ -2,7 +2,6 @@ function populateDatabase() {
 	populateTerrains()
     populateTargeting()
     populateSkills()
-	populateUnits()
 	populateLogger()
 }
 
@@ -34,7 +33,15 @@ function populateSkills() {
             return database.getTargeting().classicTargeting(unit)
         },
         effect: function() {
-            let log = database.getUnitByName(language.unit.support.stackable.log[0])            
+            let logs = database.getUnitByName(unitNameVars.support.wood.log)
+            if(logs.length == 0) {
+                log = new Unit()
+                log.updateUnit(unitBase.support.wood.log)
+                let position = database.getRandomAvailableSpot(database.getTerrainByAllegiance(log.allegiance).id, log.unitType).id
+                log.updateUnit({
+                    position: position
+                })
+            }   
             if(log.stackSize == 0) {
                 log.newUnit = true;
             }
@@ -61,8 +68,9 @@ function populateSkills() {
             return database.getTargeting().classicTargeting(unit)
         },
         effect: function() {
-            let log = database.getUnitByName(language.unit.support.stackable.log[0])[0]            
-            if(log.stackSize > 1) {            
+            let logs = database.getUnitByName(language.unit.support.stackable.log[0])            
+            let log = logs[0]
+            if(log && log.stackSize > 1) {            
                 log.updateUnit({
                     stackSize: log.stackSize - 2,
                 })           
@@ -118,124 +126,6 @@ function populateTerrains() {
     foeTerrain.updateSpots()
     foeTerrain.updateSpotsType(0, 3, 0, 0, tileTypeVars.support)
     foeTerrain.updateSpotsType(0, 3, 4, 4, tileTypeVars.support)
-}
-
-function populateUnits() {
-    /*new Unit().updateUnit({
-        name: 'Dam',
-        allegiance: allegianceVars.ally,
-        position: database.getSpotByIJ(0,2, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
-        additionalPositions: [
-            database.getSpotByIJ(0,0, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
-            database.getSpotByIJ(0,1, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
-            database.getSpotByIJ(0,3, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
-            database.getSpotByIJ(0,4, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
-        ],
-        health: 6,
-        spriteInfos: {
-            spriteName:null,
-            spriteSheet: 'tilesets',
-            spriteNumber:1028
-        },
-        skills: [],
-        unitType: unitTypeVars.general
-    })
-    new Unit().updateUnit({
-        name: language.unit.support.stackable.log[0],
-        allegiance: allegianceVars.ally,
-        //position: database.getSpotByIJ(1,0, database.getTerrainByAllegiance(allegianceVars.ally).id).id,        
-        stackSize: 0,
-        spriteInfos: {
-            spriteName:null,
-            spriteSheet: 'tilesets',
-            spriteNumber:750
-        },
-        skills: [],
-        unitType: unitTypeVars.support
-    })
-    new Unit().updateUnit({
-        name: 'Roots',
-        allegiance: allegianceVars.foe,
-        position: database.getSpotByIJ(3,2, database.getTerrainByAllegiance(allegianceVars.foe).id).id,
-        additionalPositions: [
-            database.getSpotByIJ(3,0, database.getTerrainByAllegiance(allegianceVars.foe).id).id,
-            database.getSpotByIJ(3,1, database.getTerrainByAllegiance(allegianceVars.foe).id).id,
-            database.getSpotByIJ(3,3, database.getTerrainByAllegiance(allegianceVars.foe).id).id,
-            database.getSpotByIJ(3,4, database.getTerrainByAllegiance(allegianceVars.foe).id).id,
-        ],
-        health: 3,
-        spriteInfos: {
-            spriteName:null,
-            spriteSheet: 'tilesets',
-            spriteNumber:951
-        },
-        skills: [],
-        unitType: unitTypeVars.general
-    })
-    /*new Unit().updateUnit({
-    	name: language.unit.mamal.beaver.militia[0],
-    	allegiance: allegianceVars.ally,
-    	position: database.getSpotByIJ(1,1, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
-    	health: 3,
-    	speed: 1,
-    	damageMultiplier: 1,
-    	spriteInfos: {
-			spriteName:null,
-			spriteSheet: 'tilesets',
-			spriteNumber:129
-		},
-        skills: [database.getSkillByName(skillVar.strike).id],
-    	unitType: unitTypeVars.full
-    })
-
-    new Unit().updateUnit({
-        name: language.unit.mamal.beaver.warrior[0],
-        allegiance: allegianceVars.ally,
-        position: database.getSpotByIJ(1,1, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
-        health: 3,
-        speed: 2,
-        damageMultiplier: 2,
-        spriteInfos: {
-            spriteName:null,
-            spriteSheet: 'tilesets',
-            spriteNumber:129
-        },
-        skills: [database.getSkillByName(skillVar.chop).id],
-        unitType: unitTypeVars.full
-    })
-
-    new Unit().updateUnit({
-    	name: 'Gryphon',
-    	allegiance: allegianceVars.ally,
-    	position: database.getSpotByIJ(1,2, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
-    	health: 4,
-    	speed: 1,
-    	attack: 2,
-    	spriteInfos: {
-			spriteName:null,
-			spriteSheet: 'tilesets',
-			spriteNumber:130
-		},
-        skills: [database.getSkillByName(skillVar.logLug).id],
-    	unitType: unitTypeVars.full
-
-    })
-
-    new Unit().updateUnit({
-    	name: 'Goblin',
-    	allegiance: allegianceVars.foe,
-    	position: database.getSpotByIJ(0,1, database.getTerrainByAllegiance(allegianceVars.foe).id).id,
-    	health: 4,
-    	speed: 5,
-    	attack: 1,
-    	spriteInfos: {
-    		spriteName: null,
-    		spriteSheet: 'tilesets',
-    		spriteNumber: 131
-    	},
-        skills: [database.getSkillByName(skillVar.strike).id],
-    	unitType: unitTypeVars.full
-    })*/
 }
 
 function populateLogger() {

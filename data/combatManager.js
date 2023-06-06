@@ -52,7 +52,7 @@ function CombatManager() {
 		}
 	}	
 
-	this.executeTurn = function() {
+	this.executeTurn = function() {		
 		let newUnits = database.getNewUnits()
 		for(let newUnit of newUnits) {
 			newUnit.newUnit = false;
@@ -61,12 +61,24 @@ function CombatManager() {
 		let targeting = database.getTargeting()
 		let log = language.turn.turn[0] + this.turn
 		logger.addLog(log)
-		this.orderUnitsBySpeed()		
-		for(let unitId of this.units) {					
+		this.orderUnitsBySpeed()	
+		for(let unitId of this.units) {		
+			let generals = database.getGenerals()			
+			generals = generals.filter((a) => {
+				return a.isAlive()
+			})
 			let unit = database.getUnit(unitId)
-			if(unit.isAlive()) {
-				this.attack(unitId)				
-			}
+			if(generals.length == 2) {
+				if(unit && unit.isAlive()) {
+					this.attack(unitId)				
+				}	
+			}	else {
+				let toKill = database.getUnitsByAllegiance(oppositeAllegianceVars[generals[0].allegiance])				
+				for(let unit of toKill) {
+					unit.die()
+				}
+				break;
+			}		
 		}		
 
 		this.turn++

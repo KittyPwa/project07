@@ -101,11 +101,12 @@ function Unit() {
 	}
 
 	this.die = function() {
-		if(!this.isAlive()) {
-			let spot = database.getSpot(this.position)
-			spot.removeUnit()	
-			this.purge()				
-		}
+		let spot = database.getSpot(this.position)
+		spot.removeUnit()	
+		this.updateUnit({
+			health: 0,
+			position: null,
+		})
 	}
 
 	this.purge = function() {
@@ -181,10 +182,17 @@ function Unit() {
 		return unitArray
 	}
 
+	this.getUnitsByAllegiance = function(allegiance) {
+		let units = Object.values(database.getUnits())
+		let unitArray = units.filter((a) => a.allegiance == allegiance)
+		return unitArray
+	}
+
 	this.databaseFunctions = {
 		'getGenerals' : this.getGenerals,
 		'getUnitByName': this.getUnitByName,
-		'getNewUnits': this.getNewUnits
+		'getNewUnits': this.getNewUnits,
+		'getUnitsByAllegiance': this.getUnitsByAllegiance,
 	}
 
 	database.setUnitToDatabase(this)

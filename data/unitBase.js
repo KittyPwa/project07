@@ -11,7 +11,7 @@ let unitBase = {
 		    	spriteInfos: {
 					spriteName:null,
 					spriteSheet: 'tilesets',
-					spriteNumber:129
+					spriteNumber:128
 				},
 		        skills: [database.getSkillByName(skillVar.strike).id],
 		    	unitType: unitTypeVars.full
@@ -94,7 +94,7 @@ let unitBase = {
 		greenForest: {
 			grunt: {
 			    	name: language.unit.treant.grunt[0],
-			    	unitName: unitNameVars.treant.grunt,
+			    	unitName: unitNameVars.treant.greenForest.grunt,
 			    	allegiance: allegianceVars.foe,
 			    	health: 4,
 			    	speed: 5,
@@ -113,7 +113,7 @@ let unitBase = {
 		wood: {
 			log: {
 		        name: language.unit.support.stackable.log[0],
-		        unitName: unitNameVars.support.log,
+		        unitName: unitNameVars.support.wood.log,
 		        allegiance: allegianceVars.ally,
 		        stackSize: 0,
 		        spriteInfos: {

@@ -8,7 +8,7 @@ function Targeting() {
 		let counter = 0
 		let foesAlive = []
 		for(let foe of foes) {
-			if(foe.isAlive() && counter < n) {
+			if(foe && foe.isAlive() && counter < n) {
 				foesAlive.push(foe)
 				counter++
 			}

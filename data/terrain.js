@@ -31,7 +31,8 @@ function Terrain() {
 					i: i,
 					j: j,
 					unitInSpot: null,	
-					terrain: this.id,		
+					terrain: this.id,
+					spotType: unitTypeVars.full,		
 				})
 				this.terrain[i][j] = spot.id
 			}
@@ -67,11 +68,12 @@ function Terrain() {
 	this.getAvailableSpots = function(unitId) {		
 		let spot
 		let availableSpots = []
+		let unit = database.getUnit(unitId)
 		for(let i = 0; i < this.width; i++) {
 			for(let j = 0; j < this.height; j++) {
 				spot = database.getSpotByIJ(i,j, this.id);				
 				if(spot) {
-					if(spot.isAvailable(unitId)) {
+					if(spot.isAvailable(unit.unitType)) {
 						availableSpots.push(spot)
 					}
 				}
