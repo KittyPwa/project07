@@ -11,6 +11,12 @@ function Logger() {
 		this.logs = data.logs != undefined ? data.logs : this.logs
 	}
 
+	this.clearLogger = function() {
+		this.updateLogger({
+			logs: []
+		})
+	}
+
 	this.addLog = function(log) {
 		this.logs.push(log)
 	}

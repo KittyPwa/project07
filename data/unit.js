@@ -162,7 +162,11 @@ function Unit() {
 		if(this.allegiance == allegianceVars.ally && this.unitType == unitTypeVars.full) {
 			let gameState = database.getGameState()
 			let deadAllies = gameState.getDeadAllies()
-			deadAllies.push(this.unitName);
+			deadAllies.push({
+				unitName: this.unitName,
+				distinctions: this.distinctions,
+				level: this.level,
+			});
 			gameState.updateGameState({
 				deadAllies: deadAllies
 			})

@@ -9,6 +9,7 @@ var visualVars= {
     rectSpacing : 30,
     rectSize : 30,
 
+    unitSelectedColor: 0x98FB98,
     validColor: 0x44ff44,
     invalidColor: 0xFF0000,
     selectedColor: 0xffffe0,

@@ -22,6 +22,7 @@ class CombatScreen extends Phaser.Scene {
         this.characterContainer
         this.gameState
         this.distinguishUnit = false
+        this.canLaunchTurn = false
     }
     
     create() {
@@ -109,7 +110,7 @@ class CombatScreen extends Phaser.Scene {
 
 	    let dam = new Unit()
 	    dam.updateUnit(unitBase.general.dam)	
-	    this.selectFoes(3, this.gameState.getFoeLevel())
+	    this.selectFoes(3, this.gameState.getGlobalLevel())
 	    this.selectNewCharacters(1,3)
 
 	    this.characterContainer = this.intializeCharacters([roots, dam], this)		    	    
@@ -119,20 +120,29 @@ class CombatScreen extends Phaser.Scene {
 
 	reinitializeGame() {
 		let gameState = database.getGameState()		
-		let deadUnitNames = gameState.getDeadAllies()
-		for(let name of deadUnitNames) {
+		let logger = database.getLogger()
+		logger.clearLogger()
+		this.textObject.setText(logger.getLogs())
+		gameState.increaseBattleAmount()
+		let deadUnitInfos = gameState.getDeadAllies()
+		for(let deadUnitInfo of deadUnitInfos) {
 			let unit = new Unit()
-			let base = getUnitBaseFromUnitName(name)
+			let base = getUnitBaseFromUnitName(deadUnitInfo['unitName'])
+			for(let info in deadUnitInfo) {
+				base[info] = deadUnitInfo[info]
+			}			
 			base['bitter'] = true
 			unit.updateUnit(base)
 		}
-		let units = Object.values(database.getUnits())
+		let units = Object.values(database.getUnitsByAllegianceAndTypes(allegianceVars.ally, unitTypeVars.full))
 		for(let unit of units) {			
 			unit.healFull()
 		}
+		console.log(units)
 		let roots = new Unit()
 	    roots.updateUnit(unitBase.general.roots)
-	    let level = database.getGameState().getFoeLevel()
+	    let level = gameState.getGlobalLevel()
+	    console.log(level)
 	    this.selectFoes(3, level);
 	    this.combatManager.updateCombatManager({
     		turn: 1
@@ -156,7 +166,7 @@ class CombatScreen extends Phaser.Scene {
 	}
 
 	selectNewCharacters(i, total) {			
-		this.scene.launch('unitSelectionScreen', this.gameState.getAllyLevel());
+		this.scene.launch('unitSelectionScreen', this.gameState.getGlobalLevel());
 	  	this.scene.bringToTop('unitSelectionScreen');
 
 	  	this.scene.get('unitSelectionScreen').events.once('shutdown', () => {
@@ -164,6 +174,8 @@ class CombatScreen extends Phaser.Scene {
 			if(i < total) {
 				i++
 				this.selectNewCharacters(i, total)
+			} else {
+				this.canLaunchTurn = true;
 			}
 		});
 	}
@@ -306,10 +318,13 @@ class CombatScreen extends Phaser.Scene {
 		    	sprite.setInteractive()
 		    	if(character.allegiance == allegianceVars.ally && character.unitType != unitTypeVars.general) {
 		    		sprite.on('pointerdown', function() {	
+		    			console.log(character)
 		    			if(that.distinguishUnit && character.getDistinctions() != null) {
 			    			let isDistinguished = character.distinguishUnit()
-			    			if(isDistinguished)
+			    			if(isDistinguished) {
 			    				that.selectNewCharacter()
+			    				that.distinguishUnit = false			    				
+			    			}
 			    		} else {
 			    			if(!that.selected) {
 				    			that.selectCharacter(character, sprite, that)
@@ -368,7 +383,7 @@ class CombatScreen extends Phaser.Scene {
 
 	selectCharacter(character, sprite, that) {
 		that.selected = character.id;
-		sprite.tint = visualVars.selectedColor
+		sprite.tint = visualVars.unitSelectedColor
 		that.showSpotsAvailable(character, that)
 	}
 
@@ -427,7 +442,7 @@ class CombatScreen extends Phaser.Scene {
 	    	terrains: Object.keys(terrains),
 	    }
 	    this.combatManager.updateCombatManager(combatManagerData)
-		if (Phaser.Input.Keyboard.JustDown(this.keyT)) {
+		if (Phaser.Input.Keyboard.JustDown(this.keyT) && this.canLaunchTurn) {
 			if(this.selected) {
 				this.unselectCharacter(this, this.characterObj[this.selected].obj)
 			}	
@@ -446,6 +461,7 @@ class CombatScreen extends Phaser.Scene {
 				if(generals[0].allegiance == allegianceVars.ally) {
 					this.distinguishUnit = true
 					this.reinitializeGame()
+					this.canLaunchTurn = false;
 				}
 			}
 		this.updateVisuals()
