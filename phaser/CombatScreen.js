@@ -20,13 +20,16 @@ class CombatScreen extends Phaser.Scene {
         this.textObject
         this.infoBox
         this.characterContainer
+        this.gameState
+        this.distinguishUnit = false
     }
     
     create() {
     	this.keyT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.T);
     	this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
 
-    	this.combatManager = new CombatManager()
+    	this.combatManager = new CombatManager()    
+    	this.gameState = database.getGameState()
     	this.combatManager.updateCombatManager({
     		turn: 1
     	})
@@ -105,8 +108,8 @@ class CombatScreen extends Phaser.Scene {
 	    roots.updateUnit(unitBase.general.roots)
 
 	    let dam = new Unit()
-	    dam.updateUnit(unitBase.general.dam)
-	    this.selectFoes(3)
+	    dam.updateUnit(unitBase.general.dam)	
+	    this.selectFoes(3, this.gameState.getFoeLevel())
 	    this.selectNewCharacters(1,3)
 
 	    this.characterContainer = this.intializeCharacters([roots, dam], this)		    	    
@@ -114,10 +117,32 @@ class CombatScreen extends Phaser.Scene {
 	    this.terrainScreen.add(this.characterContainer)   
 	}
 
-	selectFoes(amount) {
+	reinitializeGame() {
+		let gameState = database.getGameState()		
+		let deadUnitNames = gameState.getDeadAllies()
+		for(let name of deadUnitNames) {
+			let unit = new Unit()
+			let base = getUnitBaseFromUnitName(name)
+			base['bitter'] = true
+			unit.updateUnit(base)
+		}
+		let units = Object.values(database.getUnits())
+		for(let unit of units) {			
+			unit.healFull()
+		}
+		let roots = new Unit()
+	    roots.updateUnit(unitBase.general.roots)
+	    let level = database.getGameState().getFoeLevel()
+	    this.selectFoes(3, level);
+	    this.combatManager.updateCombatManager({
+    		turn: 1
+    	})	    
+	}
+
+	selectFoes(amount, level) {
 		let units = []
 		for(let i = 0; i < amount; i++) {
-    		let randomUnitBases = getNUnitBases(1, allegianceVars.foe);
+    		let randomUnitBases = getNUnitBases(1, allegianceVars.foe, level);
     		let unit = new Unit()
 			unit.updateUnit(randomUnitBases[0]);
       		units.push(unit);
@@ -130,8 +155,8 @@ class CombatScreen extends Phaser.Scene {
 		this.selectNewCharacters(1,1)
 	}
 
-	selectNewCharacters(i, total) {	
-		this.scene.launch('unitSelectionScreen');
+	selectNewCharacters(i, total) {			
+		this.scene.launch('unitSelectionScreen', this.gameState.getAllyLevel());
 	  	this.scene.bringToTop('unitSelectionScreen');
 
 	  	this.scene.get('unitSelectionScreen').events.once('shutdown', () => {
@@ -281,15 +306,21 @@ class CombatScreen extends Phaser.Scene {
 		    	sprite.setInteractive()
 		    	if(character.allegiance == allegianceVars.ally && character.unitType != unitTypeVars.general) {
 		    		sprite.on('pointerdown', function() {	
-			    		if(!that.selected) {
-			    			that.selectCharacter(character, sprite, that)
+		    			if(that.distinguishUnit && character.getDistinctions() != null) {
+			    			let isDistinguished = character.distinguishUnit()
+			    			if(isDistinguished)
+			    				that.selectNewCharacter()
 			    		} else {
-			    			if(that.selected != character.id) {
-			    				that.unselectCharacter(that, that.characterObj[that.selected].obj)
-			    				that.selectCharacter(character, sprite, that)
-			    			} else {
-			    				that.unselectCharacter(that, [sprite])
-			    			}
+			    			if(!that.selected) {
+				    			that.selectCharacter(character, sprite, that)
+				    		} else {
+				    			if(that.selected != character.id) {
+				    				that.unselectCharacter(that, that.characterObj[that.selected].obj)
+				    				that.selectCharacter(character, sprite, that)
+				    			} else {
+				    				that.unselectCharacter(that, [sprite])
+				    			}
+				    		}	
 			    		}
 			    	})		    	
 		    	}
@@ -411,6 +442,10 @@ class CombatScreen extends Phaser.Scene {
 				let toKill = database.getUnitsByAllegiance(oppositeAllegianceVars[generals[0].allegiance])
 				for(let unit of toKill) {
 					unit.die()
+				}
+				if(generals[0].allegiance == allegianceVars.ally) {
+					this.distinguishUnit = true
+					this.reinitializeGame()
 				}
 			}
 		this.updateVisuals()

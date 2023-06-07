@@ -14,12 +14,15 @@ var messageEn = {
 	},
 	unit: {
 		description: {
+			level: ['Level : '],
 			health: ['Health : '],
+			distinctions: ['Distinctions: '],
 			attack : ['Attack : '],
 			speed: ['Speed : '],
 			unitType: ['Type : '],
 			skill : ['Skills: '],
-			stackSize: ['Stack: ']
+			stackSize: ['Stack: '],
+			bitter: ['Bitter']
 		},
 		support: {
 			stackable: {

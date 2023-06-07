@@ -106,14 +106,7 @@ function Terrain() {
 			}
 		}
 		return foes
-	}
-
-	this.getUnitsOnTerrain = function(type) {
-		let units = Object.values(database.getUnits())
-		let allegiance = this.allegiance
-		units = units.filter((a) => a.allegiance == oppositeAllegianceVars[allegiance] && a.unitType == type)
-		return units
-	}
+	}	
 
 	this.updateSpotsType = function(i,j,k,l,type) {
 		for(let n = i; n <= j; n++) {			

@@ -95,7 +95,7 @@ var oppositeAllegianceVars = {
     foe: 'ally'
 }
 
-var dataTypes = ['terrain', 'spot', 'unit', 'combatManager', 'logger', 'skill', 'targeting']
+var dataTypes = ['terrain', 'spot', 'unit', 'combatManager', 'logger', 'skill', 'targeting', 'gameState']
 
 var terrainVars = {
     collumnAmount: 5,

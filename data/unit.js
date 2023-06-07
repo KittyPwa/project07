@@ -13,6 +13,8 @@ function Unit() {
 
 	this.health = null;
 
+	this.maxHealth = null;
+
 	this.speed = null
 
 	this.attack = null
@@ -30,6 +32,26 @@ function Unit() {
 	this.stackSize = null
 
 	this.newUnit = true
+
+	this.level = null
+
+	this.distinctions = null
+
+	this.bitter = null
+
+	this.distinguishUnit = function() {
+		if(this.bitter == null || !this.bitter) {
+			this.distinctions = this.distinctions != null ? this.distinctions + 1 : 1;
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+	this.getDistinctions = function() {
+		return this.distinctions
+	}
 
 	this.getDamagingSkill = function() {
 		return this.getTypeSkills(skillType.damage)[0]
@@ -56,8 +78,9 @@ function Unit() {
 
 	this.updateFromSkill = function() {
 		let dmgSkill = database.getSkill(this.getDamagingSkill())
-		if(dmgSkill != undefined)
-			this.attack = dmgSkill.data.damage * (this.damageMultiplier != null ? this.damageMultiplier : 1);
+		if(dmgSkill != undefined)			
+			this.attack = dmgSkill.data.damage * (this.damageMultiplier != null ? this.damageMultiplier : 1)
+			
 	}
 
 	this.healDamage = function() {
@@ -92,10 +115,20 @@ function Unit() {
 
 	this.takeHeal = function(heal) {
 		this.health += heal
+		if(this.health >= this.maxHealth) {
+			this.health = this.maxHealth	
+		}
+	}
+
+	this.healFull = function() {
+		this.health = this.maxHealth
 	}
 
 	this.getDescription = function() {
 		let description = this.name + '\n'
+		if(this.level != null) {
+			description += language.unit.description.level + this.level + '\n'
+		}
 		if(this.health != null) {
 			description += language.unit.description.health[0] + this.health +'\n'
 		}
@@ -107,7 +140,11 @@ function Unit() {
 			description += language.unit.description.speed[0] + this.speed + '\n'
 		if(this.attack != null)
 			description += language.unit.description.attack[0] + this.attack + '\n'
-		description += language.unit.description.unitType[0] + this.unitType + '\n'
+		if(this.distinctions != null && this.distinctions != 0) {
+			description += language.unit.description.distinctions[0] + this.distinctions +'\n'
+		}
+		if(this.bitter != null)
+			description += language.unit.description.bitter[0] + '\n'		
 		for(let skillId of this.skills) {
 			let skill = database.getSkill(skillId)
 			description += language.unit.description.skill[0] + skill.name + '\n'
@@ -122,6 +159,14 @@ function Unit() {
 			health: 0,
 			position: null,
 		})
+		if(this.allegiance == allegianceVars.ally && this.unitType == unitTypeVars.full) {
+			let gameState = database.getGameState()
+			let deadAllies = gameState.getDeadAllies()
+			deadAllies.push(this.unitName);
+			gameState.updateGameState({
+				deadAllies: deadAllies
+			})
+		}
 	}
 
 	this.purge = function() {
@@ -142,7 +187,7 @@ function Unit() {
 		this.unitName = data.unitName != undefined ? data.unitName : this.unitName;		
 		this.allegiance = data.allegiance != undefined ? data.allegiance : this.allegiance;
 		this.speed = data.speed != undefined ? data.speed : this.speed;		
-		//this.attack = data.attack != undefined ? data.attack : this.attack;
+		this.attack = data.attack != undefined ? data.attack : this.attack;
 		this.damageMultiplier = data.damageMultiplier != undefined ? data.damageMultiplier : this.damageMultiplier;
 		this.skills = data.skills != undefined ? data.skills : this.skills;
 		this.updateFromSkill()
@@ -163,8 +208,12 @@ function Unit() {
 		if(spot)
 			spot.setUnit(this)
 
+		this.bitter = data.bitter != undefined ? data.bitter : this.bitter;
+		this.level = data.level != undefined ? data.level : this.level;
+		this.distinctions = data.distinctions != undefined ? data.distinctions : this.distinctions;
 		this.unitType = data.unitType != undefined ? data.unitType : this.unitType;
 		this.health = data.health != undefined ? data.health : this.health;
+		this.maxHealth = data.maxHealth != undefined ? data.maxHealth : this.maxHealth;
 		this.spriteInfos = data.spriteInfos != undefined ? data.spriteInfos : this.spriteInfos;
 		this.id = data.id != undefined ? data.id : this.id;
 		this.stackSize = data.stackSize != undefined ? data.stackSize : this.stackSize;
@@ -203,11 +252,21 @@ function Unit() {
 		return unitArray
 	}
 
+	this.getUnitsByAllegianceAndTypes = function(typeArray, allegiance) {
+		let units = Object.values(database.getUnits())		
+		let retUnits = []
+		for(let type of typeArray) {
+			retUnits = [...retUnits, ...units.filter((a) => a.allegiance == allegiance && a.unitType == type)]
+		}
+		return units
+	}
+
 	this.databaseFunctions = {
 		'getGenerals' : this.getGenerals,
 		'getUnitByName': this.getUnitByName,
 		'getNewUnits': this.getNewUnits,
 		'getUnitsByAllegiance': this.getUnitsByAllegiance,
+		'getUnitsByAllegianceAndTypes': this.getUnitsByAllegianceAndTypes,
 	}
 
 	database.setUnitToDatabase(this)

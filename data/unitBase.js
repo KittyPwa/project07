@@ -4,9 +4,12 @@ let unitBase = {
 		beaver: {
 			militia: {
 		    	name: language.unit.mamal.beaver.militia[0],
+		    	level : 1,
+		    	distinctions: 0,
 		    	unitName: unitNameVars.mamal.beaver.militia,
 		    	allegiance: allegianceVars.ally,
 		    	health: 3,
+		    	maxHealth: 3,
 		    	speed: 1,
 		    	damageMultiplier: 1,
 		    	spriteInfos: {
@@ -19,9 +22,12 @@ let unitBase = {
 		    },
 		    warrior: {
 		    	name: language.unit.mamal.beaver.warrior[0],
+		    	level : 1,
+		    	distinctions: 0,
 		    	unitName: unitNameVars.mamal.beaver.warrior,
 		        allegiance: allegianceVars.ally,
 		        health: 3,
+		        maxHealth: 3,
 		        speed: 2,
 		        damageMultiplier: 2,
 		        spriteInfos: {
@@ -34,9 +40,12 @@ let unitBase = {
 		    },
 		    builder: {
 		    	name: language.unit.mamal.beaver.builder[0],
+		    	level : 2,
+		    	distinctions: 0,
 		    	unitName: unitNameVars.mamal.beaver.builder,
 		    	allegiance: allegianceVars.ally,
 		    	health: 4,
+		    	maxHealth: 4,
 		    	speed: 1,
 		    	attack: 2,
 		    	spriteInfos: {
@@ -49,9 +58,12 @@ let unitBase = {
 		    },
 		    alpha: {
 		    	name: language.unit.mamal.beaver.alpha[0],
+		    	level: 2,
+		    	distinctions: 0,
 		    	unitName: unitNameVars.mamal.beaver.alpha,
 		    	allegiance: allegianceVars.ally,
 		    	health: 6,
+		    	maxHealth: 6,
 		    	speed: 1,
 		    	attack: 2,
 		    	spriteInfos: {
@@ -80,6 +92,7 @@ let unitBase = {
 	            database.getSpotByIJ(0,4, database.getTerrainByAllegiance(allegianceVars.ally).id).id,
 	        ],
 	        health: 10,
+	        maxHealth: 10,
 	        spriteInfos: {
 	            spriteName:null,
 	            spriteSheet: 'tilesets',
@@ -100,6 +113,7 @@ let unitBase = {
 	            database.getSpotByIJ(3,4, database.getTerrainByAllegiance(allegianceVars.foe).id).id,
 	        ],
 	        health: 10,
+	        maxHealth: 10,
 	        spriteInfos: {
 	            spriteName:null,
 	            spriteSheet: 'tilesets',
@@ -113,9 +127,11 @@ let unitBase = {
 		greenForest: {
 			grunt: {
 		    	name: language.unit.treant.greenForest.grunt[0],
+		    	level: 1,
 		    	unitName: unitNameVars.treant.greenForest.grunt,
 		    	allegiance: allegianceVars.foe,
 		    	health: 4,
+		    	maxHealth: 4,
 		    	speed: 5,
 		    	attack: 1,
 		    	spriteInfos: {
@@ -128,9 +144,11 @@ let unitBase = {
 		    },
 			barkBiter: {
 				name: language.unit.treant.greenForest.barkBiter[0],
+				level: 2,
 		    	unitName: unitNameVars.treant.greenForest.barkBiter,
 		    	allegiance: allegianceVars.foe,
 		    	health: 2,
+		    	maxHealth: 2,
 		    	speed: 6,
 		    	attack: 1,
 		    	spriteInfos: {
@@ -143,9 +161,11 @@ let unitBase = {
 			},
 			ogre: {
 				name: language.unit.treant.greenForest.ogre[0],
+				level: 2,
 		    	unitName: unitNameVars.treant.greenForest.ogre,
 		    	allegiance: allegianceVars.foe,
 		    	health: 6,
+		    	maxHealth: 6,
 		    	speed: 2,
 		    	attack: 1,
 		    	spriteInfos: {
@@ -178,7 +198,7 @@ let unitBase = {
 	}
 }
 
-function getNUnitBases(n, allegiance) {
+function getNUnitBases(n, allegiance, level) {
 	let alleged = []
 	let races = unitAllegianceVars[allegiance]
 	for(let race of races) {		
@@ -188,6 +208,22 @@ function getNUnitBases(n, allegiance) {
 			}
 		}
 	}
+	if(level) {
+		alleged = alleged.filter((a) => a.level <= level)
+	}
 	shuffleArray(alleged)
 	return alleged.slice(0,n)
+}
+
+function getUnitBaseFromUnitName(name) {
+	for(let race in unitBase) {
+		for(let family in unitBase[race]) {
+			for(let uName in unitBase[race][family]) {
+				if(unitBase[race][family][uName].unitName == name) {
+					return unitBase[race][family][uName]
+				}
+			}
+		}
+	}
+	return null;
 }

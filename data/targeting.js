@@ -39,8 +39,7 @@ function Targeting() {
 	this.orderFoesByAttribute = function(unit, attribute) {
 		let foesToAttack = []
 		let spot = database.getSpot(unit.position)
-		let terrain = database.getTerrain(spot.terrain)
-		let foes = terrain.getUnitsOnTerrain(unit.unitType)
+		let foes = database.getUnitsByAllegianceAndTypes([unit.unitType,unitTypeVars.general], oppositeAllegianceVars[unit.allegiance])
 		foes.sort((a,b) => {
 			return a[attribute] - b[attribute]
 		})
