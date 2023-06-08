@@ -32,20 +32,22 @@ function CombatManager() {
 		let damageSkill = database.getSkill(attacker.getDamagingSkill())
 		if(damageSkill) {
 			let foesToAttack = damageSkill.targeting(attacker)				
-			for(let foeToAttack of foesToAttack){				
-				let damage = attacker.inflictDamage()
-				if(damage != null) {
-					foeToAttack.takeDamage(damage)
-					let logger = database.getLogger()
-					let attackLog = attacker.name + language.combat.attacks[0] + foeToAttack.name + language.combat.attacks[1] + damage + language.combat.attacks[2]
-					logger.addLog(attackLog)		
-					healthLog = foeToAttack.name + language.status.health[0] + foeToAttack.health + language.status.health[1]
-					logger.addLog(healthLog)
-					if(!foeToAttack.isAlive()) {
-						this.units = this.units.filter((a) => {
-							return a != foeToAttack.id
-						})
-					}	
+			for(let foeToAttack of foesToAttack){			
+				if(foeToAttack){
+					let damage = attacker.inflictDamage()
+					if(damage != null) {
+						foeToAttack.takeDamage(damage)
+						let logger = database.getLogger()
+						let attackLog = attacker.name + language.combat.attacks[0] + foeToAttack.name + language.combat.attacks[1] + damage + language.combat.attacks[2]
+						logger.addLog(attackLog)		
+						healthLog = foeToAttack.name + language.status.health[0] + foeToAttack.health + language.status.health[1]
+						logger.addLog(healthLog)
+						if(!foeToAttack.isAlive()) {
+							this.units = this.units.filter((a) => {
+								return a != foeToAttack.id
+							})
+						}	
+					}
 				}
 			}
 			
@@ -58,21 +60,23 @@ function CombatManager() {
 		if(supportSkill) {
 			let alliesToSupport = supportSkill.targeting(supporter)
 			for(let ally of alliesToSupport) {
-				let heal = supporter.healDamage()
-				if(heal != null) {
-					ally.takeHeal(heal)
-					let logger = database.getLogger()
-					let healLog = supporter.name + language.combat.heals[0] + ally.name + language.combat.heals[1] + heal + language.combat.heals[2]
-					logger.addLog(healLog)		
-					healthLog = ally.name + language.status.health[0] + ally.health + language.status.health[1]
-					logger.addLog(healthLog)
+				if(ally) {
+					let heal = supporter.healDamage()
+					if(heal != null) {
+						ally.takeHeal(heal)
+						let logger = database.getLogger()
+						let healLog = supporter.name + language.combat.heals[0] + ally.name + language.combat.heals[1] + heal + language.combat.heals[2]
+						logger.addLog(healLog)		
+						healthLog = ally.name + language.status.health[0] + ally.health + language.status.health[1]
+						logger.addLog(healthLog)
+					}
 				}
 			}
 		}
 	}
 
 	this.executeTurn = function() {		
-		let newUnits = database.getNewUnits()
+		let newUnits = database.getNewTypedUnits([unitTypeVars.summon, unitTypeVars.support])
 		for(let newUnit of newUnits) {
 			newUnit.newUnit = false;
 		}

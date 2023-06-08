@@ -14,12 +14,15 @@ var messageFr = {
 	},
 	unit: {
 		description: {
-			health: ['Vie : '],
+			level: ['Niveau : '],
+			health: ['HP : '],
+			distinctions: ['Distinctions: '],
 			attack : ['Attaque : '],
 			speed: ['Vitesse : '],
 			unitType: ['Type : '],
 			skill : ['Compétences: '],
 			stackSize: ['Stock: '],
+			bitter: ['Frustré']
 		},
 		support: {
 			stackable: {

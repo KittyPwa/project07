@@ -3,6 +3,7 @@ function populateDatabase() {
     populateTargeting()
     populateSkills()
 	populateLogger()
+    populateGameState()
 }
 
 function populateSkills() {
@@ -202,6 +203,10 @@ function populateLogger() {
 
 function populateTargeting() {
     new Targeting()    
+}
+
+function populateGameState() {
+    new GameState()
 }
 
 populateDatabase()
