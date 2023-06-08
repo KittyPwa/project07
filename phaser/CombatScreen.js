@@ -121,32 +121,41 @@ class CombatScreen extends Phaser.Scene {
 	reinitializeGame() {
 		let gameState = database.getGameState()		
 		let logger = database.getLogger()
+		let terrains = Object.values(database.getTerrains())
+		for(let terrain of terrains) {
+			terrain.clearExtraUnits()
+		}
+		this.updateVisuals()
 		logger.clearLogger()
 		this.textObject.setText(logger.getLogs())
 		gameState.increaseBattleAmount()
+		let units = Object.values(database.getUnitsByAllegianceAndTypes([unitTypeVars.full], allegianceVars.ally))
+		for(let unit of units) {	
+			unit.updateUnit({
+				bitter: null
+			})		
+			unit.healFull()
+		}
 		let deadUnitInfos = gameState.getDeadAllies()
 		for(let deadUnitInfo of deadUnitInfos) {
 			let unit = new Unit()
-			let base = getUnitBaseFromUnitName(deadUnitInfo['unitName'])
+			let base = JSON.parse(JSON.stringify(getUnitBaseFromUnitName(deadUnitInfo['unitName'])))
 			for(let info in deadUnitInfo) {
 				base[info] = deadUnitInfo[info]
 			}			
 			base['bitter'] = true
 			unit.updateUnit(base)
 		}
-		let units = Object.values(database.getUnitsByAllegianceAndTypes(allegianceVars.ally, unitTypeVars.full))
-		for(let unit of units) {			
-			unit.healFull()
-		}
-		console.log(units)
+		
 		let roots = new Unit()
 	    roots.updateUnit(unitBase.general.roots)
+	    this.terrainScreen.add(this.intializeCharacters([roots], this))
 	    let level = gameState.getGlobalLevel()
-	    console.log(level)
 	    this.selectFoes(3, level);
 	    this.combatManager.updateCombatManager({
     		turn: 1
-    	})	    
+    	})	  
+    	gameState.clearDeadAllies()
 	}
 
 	selectFoes(amount, level) {
@@ -191,8 +200,7 @@ class CombatScreen extends Phaser.Scene {
 			character.updateUnit({
 				position: database.getRandomAvailableSpot(database.getTerrainByAllegiance(character.allegiance).id, character.unitType).id  
 			})
-		}							    
-
+		}
 	    let newContainer = this.intializeCharacters(characters, this)
 
 	    this.terrainScreen.add(newContainer)	    
@@ -227,7 +235,9 @@ class CombatScreen extends Phaser.Scene {
 			    var style = { font: "10px Arial", fill: "#000000", align: "center" };
 
 			    var t = that.add.text(widthPlacement, heightPlacement, text, style);
+			    t['isDestroyable'] = false
 	    		let sprite = that.add.sprite(widthPlacement, heightPlacement, 'tilesets', tile);
+	    		sprite['isDestroyable'] = false
 	    		spriteContainer.push(sprite)
 	    		spriteContainer.push(t)
 	    		that.spotsObj[spot.id] = {
@@ -262,8 +272,7 @@ class CombatScreen extends Phaser.Scene {
 	}
 
 	intializeCharacters(characters, that) {
-		let characterContainer = []
-
+		let characterContainer = []		
 	    for(let character of characters) {
 	    	if(character.position) {
 		    	let spots = [database.getSpot(character.position)]	    	
@@ -277,6 +286,7 @@ class CombatScreen extends Phaser.Scene {
 			    	let widthPlacement =  terrainVars.tileSize * (spot.i + tileOffset.tileWidthOffset + 1/2)
 					let heightPlacement =  terrainVars.tileSize * (spot.j + tileOffset.tileHeightOffset + 1/2)
 			    	let sprite = that.add.sprite(widthPlacement, heightPlacement, character.spriteInfos.spriteSheet, character.spriteInfos.spriteNumber);
+			    	sprite['isDestroyable'] = true
 			    	let healthBar = null
 			    	if(!spot.isAdditionSpot() && spot.spotType != terrainVars.support) {
 			    		let heightOffset = terrainVars.tileSize * ((character.additionalPositions != null ? (character.additionalPositions.length / 2) +1: 1))
@@ -288,7 +298,8 @@ class CombatScreen extends Phaser.Scene {
 					        terrainVars.tileSize - 3,
 					        5,
 					        character.health
-					      );			    	
+					      );			
+					      healthBar['isDestroyable'] = true    	
 				     	 characterContainer.push(sprite, healthBar);
 			     	} else {
 			     		characterContainer.push(sprite)
@@ -296,6 +307,11 @@ class CombatScreen extends Phaser.Scene {
 
 			    	if(that.characterObj[character.id] != undefined){
 		    			that.characterObj[character.id]['obj'].push(sprite) 
+		    			that.characterObj[character.id]['obj'] = that.characterObj[character.id]['obj'].filter((obj, index, self) => {
+						  return index === self.findIndex((el) => (
+						    el.x === obj.x && el.y == obj.y
+						  ));
+						});
 			    	}
 		    		else {
 		    			that.characterObj[character.id] = {
@@ -309,7 +325,6 @@ class CombatScreen extends Phaser.Scene {
 		    	}
 		    }
 	    }	    
-	        
 	    for(let charac of characters) {
 	    	let character = that.characterObj[charac.id]
 	    	let sprites = character.obj	    	
@@ -317,31 +332,33 @@ class CombatScreen extends Phaser.Scene {
 	    	for(let sprite of sprites){
 		    	sprite.setInteractive()
 		    	if(character.allegiance == allegianceVars.ally && character.unitType != unitTypeVars.general) {
-		    		sprite.on('pointerdown', function() {	
-		    			console.log(character)
-		    			if(that.distinguishUnit && character.getDistinctions() != null) {
-			    			let isDistinguished = character.distinguishUnit()
-			    			if(isDistinguished) {
-			    				that.selectNewCharacter()
-			    				that.distinguishUnit = false			    				
-			    			}
-			    		} else {
-			    			if(!that.selected) {
-				    			that.selectCharacter(character, sprite, that)
-				    		} else {
-				    			if(that.selected != character.id) {
-				    				that.unselectCharacter(that, that.characterObj[that.selected].obj)
-				    				that.selectCharacter(character, sprite, that)
-				    			} else {
-				    				that.unselectCharacter(that, [sprite])
+		    		if(sprite['_events']['pointerdown'] == undefined) {
+			    		sprite.on('pointerdown', function() {	
+			    			if(that.distinguishUnit && character.getDistinctions() != null) {
+				    			let isDistinguished = character.distinguishUnit()
+				    			if(isDistinguished) {
+				    				that.selectNewCharacter()
+				    				that.distinguishUnit = false			    				
 				    			}
-				    		}	
-			    		}
-			    	})		    	
+				    		} else {
+				    			if(!that.selected) {
+					    			that.selectCharacter(character, sprite, that)
+					    		} else {
+					    			if(that.selected != character.id) {
+					    				that.unselectCharacter(that, that.characterObj[that.selected].obj)
+					    				that.selectCharacter(character, sprite, that)
+					    			} else {
+					    				that.unselectCharacter(that, [sprite])
+					    			}
+					    		}	
+				    		}
+				    	})	
+			    	}		    	
 		    	}
 		    	sprite.setDepth(3)
-		    	sprite.on('pointerover', function(pointer, pointerX, pointerY) {
-		    		sprite.on('pointermove', function(pointer, pointerX, pointerY){
+		    	if(sprite['_events']['pointerover'] == undefined) {
+			    	sprite.on('pointerover', function(pointer, pointerX, pointerY) {
+			    		sprite.on('pointermove', function(pointer, pointerX, pointerY){
 				            let placement = {
 				                x: pointer.x,
 				                y: pointer.y,
@@ -354,11 +371,13 @@ class CombatScreen extends Phaser.Scene {
 				            that.infoBox = that.createInfoBox(character.id, placement, that)
 				        })
 			        })
-
-		        sprite.on('pointerout', function () {
-		        	if(that.infoBox)
-		            	that.infoBox.destroy()
-		        });
+			    }
+		    	if(sprite['_events']['pointerout'] == undefined) {
+			        sprite.on('pointerout', function () {
+			        	if(that.infoBox)
+			            	that.infoBox.destroy()
+			        });
+			    }
 		    }
 		}
 	    return characterContainer
@@ -485,9 +504,9 @@ class CombatScreen extends Phaser.Scene {
 				unit.character.purge()
 			}
 		}
-		let newUnits = database.getNewUnits()
+		let newUnits = database.getNewTypedUnits([unitTypeVars.summon, unitTypeVars.support])
 		if(newUnits.length > 0) {
-			let characterContainer = this.intializeCharacters(database.getNewUnits(), this)
+			let characterContainer = this.intializeCharacters(newUnits, this)
 			this.terrainScreen = this.add.container(terrainVars.widthOffset,terrainVars.heightOffset, [...characterContainer]);
 		}
 	}

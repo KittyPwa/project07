@@ -76,7 +76,7 @@ function CombatManager() {
 	}
 
 	this.executeTurn = function() {		
-		let newUnits = database.getNewUnits()
+		let newUnits = database.getNewTypedUnits([unitTypeVars.summon, unitTypeVars.support])
 		for(let newUnit of newUnits) {
 			newUnit.newUnit = false;
 		}

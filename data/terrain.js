@@ -108,6 +108,12 @@ function Terrain() {
 		return foes
 	}	
 
+	this.clearExtraUnits = function() {
+		for(let unit of database.getUnitsByAllegianceAndTypes([unitTypeVars.support, unitTypeVars.summon], this.allegiance)) {
+			unit.die()
+		}
+	}
+
 	this.updateSpotsType = function(i,j,k,l,type) {
 		for(let n = i; n <= j; n++) {			
 			for(let o = k; o <= l; o++) {

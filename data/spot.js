@@ -31,11 +31,15 @@ function Spot() {
 	}
 
 	this.setUnit = function(unit) {
-		this.unitInSpot = unit.id;
+		this.updateSpot({
+			unitInSpot: unit.id
+		})
 	}
 
 	this.removeUnit = function() {
-		this.unitInSpot = null;
+		this.updateSpot({
+			unitInSpot: null
+		})
 	}
 
 	this.getSpotByIJ = function(i,j, terrain) {
@@ -74,12 +78,12 @@ function Spot() {
 	}
 
 	this.updateSpot = function(data) {
-		this.i = data.i != undefined ? data.i : this.i
-		this.j = data.j != undefined ? data.j : this.j
-		this.terrain = data.terrain != undefined ? data.terrain : this.terrain
-		this.identifier = data.i != undefined && data.j != undefined ? data.i + '_' + data.j : this.identifier
-		this.unitInSpot = data.unitInSpot != undefined ? data.unitInSpot : this.unitInSpot;
-		this.spotType = data.spotType != undefined ? data.spotType : this.spotType;
+		this.i = data.i !== undefined ? data.i : this.i
+		this.j = data.j !== undefined ? data.j : this.j
+		this.terrain = data.terrain !== undefined ? data.terrain : this.terrain
+		this.identifier = data.i !== undefined && data.j != undefined ? data.i + '_' + data.j : this.identifier
+		this.unitInSpot = data.unitInSpot !== undefined ? data.unitInSpot : this.unitInSpot;
+		this.spotType = data.spotType !== undefined ? data.spotType : this.spotType;
 		database.setSpotToDatabase(this)
 	}
 
