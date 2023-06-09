@@ -42,11 +42,15 @@ function Unit() {
 	this.distinguishUnit = function() {
 		if(this.bitter == null || !this.bitter) {
 			this.distinctions = this.distinctions !== null ? this.distinctions + 1 : 1;
+			let gameState = database.getGameState()
+			if(this.distinctions == gameState.distinctionsAmountForNextLevel) {
+				this.distinctions = 0;
+				this.level++
+			}
 			return true;
 		} else {
 			return false;
 		}
-
 	}
 
 	this.getDistinctions = function() {
@@ -152,7 +156,7 @@ function Unit() {
 		return description
 	}
 
-	this.die = function() {		
+	this.die = function(saveDead = true) {		
 		let spot = database.getSpot(this.position)		
 		if(spot)
 			spot.removeUnit()	
@@ -160,7 +164,7 @@ function Unit() {
 			health: 0,
 			position: null,			
 		})
-		if(this.allegiance == allegianceVars.ally && this.unitType == unitTypeVars.full) {
+		if(this.allegiance == allegianceVars.ally && this.unitType == unitTypeVars.full && saveDead) {
 			let gameState = database.getGameState()
 			let deadAllies = gameState.getDeadAllies()
 			deadAllies.push({

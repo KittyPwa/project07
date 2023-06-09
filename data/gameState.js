@@ -4,7 +4,7 @@ function GameState() {
 
 	this.globalLevel = 1
 
-	this.distinctionsAmountForNextLevel = 3
+	this.distinctionsAmountForNextLevel = 1
 
 	//this.battleAmountForNextLevel = getRandomInt(3,7)
 	this.battleAmountForNextLevel = 1

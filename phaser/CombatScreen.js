@@ -175,7 +175,15 @@ class CombatScreen extends Phaser.Scene {
 	}
 
 	selectNewCharacters(i, total) {			
-		this.scene.launch('unitSelectionScreen', this.gameState.getGlobalLevel());
+		let randomUnitBases = getNUnitBases(3, allegianceVars.ally, this.gameState.getGlobalLevel());
+	    let units = [];
+	    for (let randomUnitBase of randomUnitBases) {
+	      let newUnit = new Unit();
+	      newUnit.updateUnit(randomUnitBase);
+	      units.push(newUnit);
+	    }
+	    units = shuffleArray(units)
+		this.scene.launch('unitSelectionScreen', units);
 	  	this.scene.bringToTop('unitSelectionScreen');
 
 	  	this.scene.get('unitSelectionScreen').events.once('shutdown', () => {
@@ -186,6 +194,38 @@ class CombatScreen extends Phaser.Scene {
 			} else {
 				this.canLaunchTurn = true;
 			}
+		});
+	}
+
+	selectLevelUp(unitId) {		
+		let unit = database.getUnit(unitId)
+		let uB = getUnitBaseFromUnitName(unit.unitName)
+		let levelUps = uB.levelUp[unit.level]
+		let units = []
+		for(let levelUp of levelUps) {
+			let newUnit = new Unit()
+			let newUnitBase = getUnitBaseFromUnitName(levelUp.unitName)
+			newUnit.updateUnit(newUnitBase)
+			newUnit.updateUnit({
+				level: 1
+			})
+			if (unit.unitName == levelUp.unitName) {				
+				newUnit.updateUnit(
+					levelUp
+				)
+				newUnit.updateUnit({
+					level: unit.level
+				})
+			}
+			units.push(newUnit)
+		}
+		this.scene.launch('unitSelectionScreen', units);
+	  	this.scene.bringToTop('unitSelectionScreen');
+
+	  	this.scene.get('unitSelectionScreen').events.once('shutdown', () => {
+	  		unit.die(false)
+	  		this.updateVisuals()
+			this.updateCharacters();	
 		});
 	}
 
@@ -335,9 +375,13 @@ class CombatScreen extends Phaser.Scene {
 		    		if(sprite['_events']['pointerdown'] == undefined) {
 			    		sprite.on('pointerdown', function() {	
 			    			if(that.distinguishUnit && character.getDistinctions() != null) {
-				    			let isDistinguished = character.distinguishUnit()
+				    			let isDistinguished = character.distinguishUnit()				    			
 				    			if(isDistinguished) {
-				    				that.selectNewCharacter()
+				    				if(character.distinctions == 0) {
+				    					that.selectLevelUp(character.id)
+				    				} else {
+				    					that.selectNewCharacter()				    					
+				    				}
 				    				that.distinguishUnit = false			    				
 				    			}
 				    		} else {
