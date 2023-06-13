@@ -61,7 +61,9 @@ function CombatManager() {
 			let alliesToSupport = supportSkill.targeting(supporter)
 			for(let ally of alliesToSupport) {
 				if(ally) {
-					let heal = supporter.healDamage()
+					let heal = supporter.healDamage({
+						effectMultiplier: ally.effectMultiplier
+					})
 					if(heal != null) {
 						ally.takeHeal(heal)
 						let logger = database.getLogger()

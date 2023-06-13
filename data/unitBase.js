@@ -118,6 +118,7 @@ let unitBase = {
 		    			maxHealth: 5,
 		    			speed: 1,		    			
 		    			effectMultiplier: 2,
+		    			healMultiplier: 2,
 		    			skills: [database.getSkillByName(skillVar.damRepairs).id]		    			
 		    		},
 		    		{
@@ -125,18 +126,20 @@ let unitBase = {
 		    		}],
 		    		3: [{
 		    			unitName: unitNameVars.mamal.beaver.builder,
-		    			health: 8,
-		    			maxHealth: 8,
+		    			health: 7,
+		    			maxHealth: 7,
 		    			speed: 2,
 		    			effectMultiplier: 3,
+		    			healMultiplier: 3,
 		    			skills: [database.getSkillByName(skillVar.damRepairs).id]
 		    		},
 		    		{
 		    			unitName: unitNameVars.mamal.beaver.builder,
-		    			health: 6,
-		    			maxHealth: 6,
+		    			health: 5,
+		    			maxHealth: 5,
 		    			speed: 2,
-		    			effectMultiplier: 4,
+		    			effectMultiplier: 3,
+		    			effectMultiplier: 2,
 		    			skills: [database.getSkillByName(skillVar.damRepairs).id]
 		    		}
 		    		]
@@ -257,7 +260,22 @@ let unitBase = {
 		    		spriteNumber: 131
 		    	},
 		        skills: [database.getSkillByName(skillVar.strike).id],
-		    	unitType: unitTypeVars.full
+		    	unitType: unitTypeVars.full,
+		    	levelUp: {
+		    		2: [{
+		    			unitName: unitNameVars.treant.greenForest.grunt,
+		    			health: 6,
+		    			maxHealth: 6,
+		    			speed: 5,
+		    			skills: [database.getSkillByName(skillVar.strike).id]		    			
+		    		},
+		    		{
+		    			unitName: unitNameVars.treant.greenForest.barkBiter,
+		    		},
+		    		{
+		    			unitName: unitNameVars.treant.greenForest.ogre,
+		    		}],		    		
+		    	}
 		    },
 			barkBiter: {
 				name: language.unit.treant.greenForest.barkBiter[0],

@@ -29,6 +29,10 @@ function Unit() {
 
 	this.damageMultiplier = null
 
+	this.effectMultiplier = null
+
+	this.healMultiplier = null
+
 	this.stackSize = null
 
 	this.newUnit = true
@@ -93,7 +97,7 @@ function Unit() {
 		if(supportSkill) {
 			let healEffect = supportSkill.launchEffect()
 			if(healEffect !== null)
-				effect = healEffect * (this.damageMultiplier !== null ? this.damageMultiplier : 1);			
+				effect = healEffect * (this.healMultiplier !== null ? this.healMultiplier : 1);			
 		}
 		return effect
 	}
@@ -198,6 +202,8 @@ function Unit() {
 		this.speed = data.speed !== undefined ? data.speed : this.speed;		
 		this.attack = data.attack !== undefined ? data.attack : this.attack;
 		this.damageMultiplier = data.damageMultiplier !== undefined ? data.damageMultiplier : this.damageMultiplier;
+		this.effectMultiplier = data.effectMultiplier !== undefined ? data.effectMultiplier : this.effectMultiplier;
+		this.healEffect = data.healEffect !== undefined ? data.healEffect : this.healEffect;
 		this.skills = data.skills !== undefined ? data.skills : this.skills;
 		this.updateFromSkill()
 
@@ -265,7 +271,9 @@ function Unit() {
 
 	this.getUnitsByAllegiance = function(allegiance) {
 		let units = Object.values(database.getUnits())
+		
 		let unitArray = units.filter((a) => a.allegiance == allegiance)
+		
 		return unitArray
 	}
 

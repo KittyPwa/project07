@@ -46,9 +46,10 @@ function populateSkills() {
             if(log.stackSize == 0) {
                 log.newUnit = true;
             }
+            let effectMultiplier = this.data.effectMultiplier !== undefined ? this.data.effectMultiplier : 1
             log.updateUnit({
                 position: log.position == null ? database.getSpotByIJ(1,0, database.getTerrainByAllegiance(allegianceVars.ally).id).id : log.position,        
-                stackSize: log.stackSize + 1,
+                stackSize: log.stackSize + 1 * effectMultiplier,
             })            
             return this.data.damage
         },        
@@ -71,11 +72,12 @@ function populateSkills() {
         effect: function() {
             let logs = database.getUnitByName(unitNameVars.support.wood.log)           
             let log = logs[0]
+            let effectMultiplier = this.data.effectMultiplier !== undefined ? this.data.effectMultiplier : 1
             if(log && log.stackSize > 1) {            
                 log.updateUnit({
-                    stackSize: log.stackSize - 2,
+                    stackSize: log.stackSize - 2 * effectMultiplier,
                 })           
-                return this.data.damage 
+                return (this.data.damage)
             }
             return null
         },        
@@ -157,11 +159,12 @@ function populateSkills() {
         effect: function() {            
             let logs = database.getUnitByName(unitNameVars.support.wood.log)            
             let log = logs[0]
+            let effectMultiplier = this.data.effectMultiplier !== undefined ? this.data.effectMultiplier : 1            
             if(log && log.stackSize > 1) {            
                 log.updateUnit({
-                    stackSize: log.stackSize - 2,
+                    stackSize: log.stackSize - 2 * effectMultiplier,
                 })           
-                return this.data.heal 
+                return this.data.heal
             }
             return null
         },        

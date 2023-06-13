@@ -31,7 +31,6 @@ function Skill() {
 		this.effectDescription = data.effectDescription != undefined ? data.effectDescription : this.effectDescription;
 		this.targeting = data.targeting != undefined ? data.targeting : this.targeting;
 		this.data = data.data != undefined ? data.data : this.data;
-
 	}
 
 	this.getSkillByName = function(skillId) {
