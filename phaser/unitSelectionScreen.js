@@ -3,16 +3,8 @@ class UnitSelectionScreen extends Phaser.Scene {
     super({ key: 'unitSelectionScreen' });
   }
 
-  create(level) {
-    // Create and position the three text windows
-    let randomUnitBases = getNUnitBases(3, allegianceVars.ally, level);
-    let units = [];
-    for (let randomUnitBase of randomUnitBases) {
-      let newUnit = new Unit();
-      newUnit.updateUnit(randomUnitBase);
-      units.push(newUnit);
-    }
-    units = shuffleArray(units)
+  create(units) {
+    // Create and position the three text windows    
     let style = { font: "10px Arial", fill: "#000000", align: "center" };
 
     // Create rectangles for each text window

@@ -77,6 +77,10 @@ var messageFr = {
 		damRepairs: {
 			name: ['Réparations de barrage'],
 			description: ['Répare le barrage pour ', ' HP, consommant ', ' Bûche']
+		},
+		logSnap: {
+			name: ['Claquement de bûche'],
+			description: ['Fouette avec une bûche pour ', ' HP à chaque fois qu\'un castor attaque, consommant ', ' Bûche']
 		}
 	}
 

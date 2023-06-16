@@ -29,6 +29,10 @@ function Unit() {
 
 	this.damageMultiplier = null
 
+	this.effectMultiplier = null
+
+	this.healMultiplier = null
+
 	this.stackSize = null
 
 	this.newUnit = true
@@ -42,11 +46,15 @@ function Unit() {
 	this.distinguishUnit = function() {
 		if(this.bitter == null || !this.bitter) {
 			this.distinctions = this.distinctions !== null ? this.distinctions + 1 : 1;
+			let gameState = database.getGameState()
+			if(this.distinctions == gameState.distinctionsAmountForNextLevel) {
+				this.distinctions = 0;
+				this.level++
+			}
 			return true;
 		} else {
 			return false;
 		}
-
 	}
 
 	this.getDistinctions = function() {
@@ -54,26 +62,31 @@ function Unit() {
 	}
 
 	this.getDamagingSkill = function() {
-		return this.getTypeSkills(skillType.damage)[0]
+		return this.getSkillByElement('skillEffectType', skillEffectType.damage)
 	}	
 
-	this.getTypeSkills = function(type) {
+	this.getSkillByElement = function(property, comparer) {
 		let skills = []
 		for(let skillId of this.skills) {
 			let skill = database.getSkill(skillId);
-			if(skill.skillType == type) {
+			if(skill[property] == comparer) {
 				skills.push(skillId)
 			}
 		}
-		return skills;
+		return skills
 	}
 
-	this.getSupportSkill = function() {
-		return this.getTypeSkills(skillType.support)[0]
+	this.getSupportSkills = function() {
+		return this.getSkillByElement('skillEffectType', skillEffectType.support)		
 	}
 
-	this.getPassiveSkill = function() {
-		return this.getTypeSkills(skillType.passive)[0]
+	this.getPassiveSkills = function() {
+		return this.getSkillByElement('skillType', skillType.passive)		
+		
+	}
+
+	this.getActiveSkills = function() {
+		return this.getSkillByElement('skillType', skillType.active)		
 	}
 
 	this.updateFromSkill = function() {
@@ -83,21 +96,22 @@ function Unit() {
 			
 	}
 
-	this.healDamage = function() {
-		let supportSkill = database.getSkill(this.getSupportSkill())
+	this.healDamage = function(supportSkillId) {
+		let supportSkill = database.getSkill(supportSkillId)
 		let effect = null
 		if(supportSkill) {
 			let healEffect = supportSkill.launchEffect()
 			if(healEffect !== null)
-				effect = healEffect * (this.damageMultiplier !== null ? this.damageMultiplier : 1);			
+				effect = healEffect * (this.healMultiplier !== null ? this.healMultiplier : 1);			
 		}
 		return effect
 	}
 
-	this.inflictDamage = function() {
-		let dmgSkill = database.getSkill(this.getDamagingSkill())	
+	this.inflictDamage = function(dmgSkillId) {
+		dmgSkill = database.getSkill(dmgSkillId)
 		let effect = null		
 		if(dmgSkill){
+			
 			let dmgEffect = dmgSkill.launchEffect()
 			if(dmgEffect !== null)
 				effect = dmgEffect * (this.damageMultiplier !== null ? this.damageMultiplier : 1);
@@ -145,14 +159,16 @@ function Unit() {
 		}
 		if(this.bitter !== null)
 			description += language.unit.description.bitter[0] + '\n'		
+		if(this.skills.length > 0)
+			description += language.unit.description.skill[0]
 		for(let skillId of this.skills) {
 			let skill = database.getSkill(skillId)
-			description += language.unit.description.skill[0] + skill.name + '\n'
+			description += skill.name + '\n'
 		}
 		return description
 	}
 
-	this.die = function() {		
+	this.die = function(saveDead = true) {		
 		let spot = database.getSpot(this.position)		
 		if(spot)
 			spot.removeUnit()	
@@ -160,7 +176,7 @@ function Unit() {
 			health: 0,
 			position: null,			
 		})
-		if(this.allegiance == allegianceVars.ally && this.unitType == unitTypeVars.full) {
+		if(this.allegiance == allegianceVars.ally && this.unitType == unitTypeVars.full && saveDead) {
 			let gameState = database.getGameState()
 			let deadAllies = gameState.getDeadAllies()
 			deadAllies.push({
@@ -194,6 +210,8 @@ function Unit() {
 		this.speed = data.speed !== undefined ? data.speed : this.speed;		
 		this.attack = data.attack !== undefined ? data.attack : this.attack;
 		this.damageMultiplier = data.damageMultiplier !== undefined ? data.damageMultiplier : this.damageMultiplier;
+		this.effectMultiplier = data.effectMultiplier !== undefined ? data.effectMultiplier : this.effectMultiplier;
+		this.healEffect = data.healEffect !== undefined ? data.healEffect : this.healEffect;
 		this.skills = data.skills !== undefined ? data.skills : this.skills;
 		this.updateFromSkill()
 
@@ -230,6 +248,14 @@ function Unit() {
 		database.setUnitToDatabase(this)
 	}
 
+	this.getRace = function() {
+		return this.unitName.slice(0,1)
+	}
+
+	this.getFamily = function() {
+		return this.unitName.slice(0,2)
+	}
+
 	this.getNRandomUnits = function(n, faction) {
 		let units = database.getUnits()
 		units = units.filter((a) => a.allegiance == faction)
@@ -261,7 +287,9 @@ function Unit() {
 
 	this.getUnitsByAllegiance = function(allegiance) {
 		let units = Object.values(database.getUnits())
+		
 		let unitArray = units.filter((a) => a.allegiance == allegiance)
+
 		return unitArray
 	}
 

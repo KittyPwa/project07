@@ -77,6 +77,10 @@ var messageEn = {
 		damRepairs: {
 			name: ['Dam repairs'],
 			description: ['Repairs the dam for ', ' health, consuming ', ' Log']
+		},
+		logSnap: {
+			name: ['Log snap'],
+			description: ['Snap shoots a log for ', ' health every time a beaver strikes, consuming ', ' Log']
 		}
 	}
 }

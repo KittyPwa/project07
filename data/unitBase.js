@@ -17,8 +17,30 @@ let unitBase = {
 					spriteSheet: 'tilesets',
 					spriteNumber:128
 				},
-		        skills: [database.getSkillByName(skillVar.strike).id],
-		    	unitType: unitTypeVars.full
+		        skills: [database.getSkillByName(skillVar.logSnap).id],
+		    	unitType: unitTypeVars.full,
+		    	levelUp: {
+		    		2: [{
+		    			unitName: unitNameVars.mamal.beaver.militia,
+		    			health: 5,
+		    			maxHealth: 5,
+		    			speed: 4,
+		    			damageMultiplier: 2,
+		    			skills: [database.getSkillByName(skillVar.logSnap).id]		    			
+		    		},
+		    		{
+		    			unitName: unitNameVars.mamal.beaver.warrior
+		    		}],
+		    		3: [{
+		    			unitName: unitNameVars.mamal.beaver.militia,
+		    			health: 12,
+		    			maxHealth: 12,
+		    			speed: 4,
+		    			damageMultiplier: 2,
+		    			skills: [database.getSkillByName(skillVar.logSnap).id]
+		    		}
+		    		]
+		    	}
 		    },
 		    warrior: {
 		    	name: language.unit.mamal.beaver.warrior[0],
@@ -30,13 +52,47 @@ let unitBase = {
 		        maxHealth: 3,
 		        speed: 2,
 		        damageMultiplier: 2,
+		    	effectMultiplier: 1,
 		        spriteInfos: {
 		            spriteName:null,
 		            spriteSheet: 'tilesets',
 		            spriteNumber:129
 		        },
 		        skills: [database.getSkillByName(skillVar.chop).id],
-		        unitType: unitTypeVars.full
+		        unitType: unitTypeVars.full,
+		        levelUp: {
+		    		2: [{
+		    			unitName: unitNameVars.mamal.beaver.warrior,
+		    			health: 5,
+		    			maxHealth: 5,
+		    			speed: 4,
+		    			damageMultiplier: 3,
+		    			effectMultiplier: 2,
+		    			skills: [database.getSkillByName(skillVar.strike).id]		    			
+		    		},
+		    		{
+		    			unitName: unitNameVars.mamal.beaver.alpha
+		    		}],
+		    		3: [{
+		    			unitName: unitNameVars.mamal.beaver.warrior,
+		    			health: 8,
+		    			maxHealth: 8,
+		    			speed: 6,
+		    			damageMultiplier: 3,
+		    			effectMultiplier: 3,
+		    			skills: [database.getSkillByName(skillVar.strike).id]
+		    		},
+		    		{
+		    			unitName: unitNameVars.mamal.beaver.warrior,
+		    			health: 6,
+		    			maxHealth: 6,
+		    			speed: 5,
+		    			damageMultiplier: 3,
+		    			effectMultiplier: 4,
+		    			skills: [database.getSkillByName(skillVar.strike).id]
+		    		}
+		    		]
+		    	}
 		    },
 		    builder: {
 		    	name: language.unit.mamal.beaver.builder[0],
@@ -54,7 +110,40 @@ let unitBase = {
 					spriteNumber:130
 				},
 		        skills: [database.getSkillByName(skillVar.damRepairs).id],
-		    	unitType: unitTypeVars.full
+		    	unitType: unitTypeVars.full,
+		    	levelUp: {
+		    		2: [{
+		    			unitName: unitNameVars.mamal.beaver.builder,
+		    			health: 5,
+		    			maxHealth: 5,
+		    			speed: 1,		    			
+		    			effectMultiplier: 2,
+		    			healMultiplier: 2,
+		    			skills: [database.getSkillByName(skillVar.damRepairs).id]		    			
+		    		},
+		    		{
+		    			unitName: unitNameVars.mamal.beaver.alpha
+		    		}],
+		    		3: [{
+		    			unitName: unitNameVars.mamal.beaver.builder,
+		    			health: 7,
+		    			maxHealth: 7,
+		    			speed: 2,
+		    			effectMultiplier: 3,
+		    			healMultiplier: 3,
+		    			skills: [database.getSkillByName(skillVar.damRepairs).id]
+		    		},
+		    		{
+		    			unitName: unitNameVars.mamal.beaver.builder,
+		    			health: 5,
+		    			maxHealth: 5,
+		    			speed: 2,
+		    			effectMultiplier: 3,
+		    			effectMultiplier: 2,
+		    			skills: [database.getSkillByName(skillVar.damRepairs).id]
+		    		}
+		    		]
+		    	}
 		    },
 		    alpha: {
 		    	name: language.unit.mamal.beaver.alpha[0],
@@ -66,13 +155,44 @@ let unitBase = {
 		    	maxHealth: 6,
 		    	speed: 1,
 		    	attack: 2,
+		   		effectMultiplier: 2,
 		    	spriteInfos: {
 					spriteName:null,
 					spriteSheet: 'tilesets',
 					spriteNumber:130
 				},
 		        skills: [database.getSkillByName(skillVar.logLug).id],
-		    	unitType: unitTypeVars.full
+		    	unitType: unitTypeVars.full,
+		    	levelUp: {
+		    		2: [{
+		    			unitName: unitNameVars.mamal.beaver.alpha,
+		    			health: 9,
+		    			maxHealth: 9,
+		    			speed: 3,
+		    			damageMultiplier: 2,
+		    			effectMultiplier: 2,
+		    			skills: [database.getSkillByName(skillVar.logLug).id]		    			
+		    		}],		    		
+		    		3: [{
+		    			unitName: unitNameVars.mamal.beaver.alpha,
+		    			health: 11,
+		    			maxHealth: 11,
+		    			speed: 3,
+		    			damageMultiplier: 3,
+		    			effectMultiplier: 3,
+		    			skills: [database.getSkillByName(skillVar.logLug).id]
+		    		},
+		    		{
+		    			unitName: unitNameVars.mamal.beaver.alpha,
+		    			health: 9,
+		    			maxHealth: 9,
+		    			speed: 4,
+		    			damageMultiplier: 3,
+		    			effectMultiplier: 2,
+		    			skills: [database.getSkillByName(skillVar.logLug).id]
+		    		}
+		    		]
+		    	}
 		    }
 		},
 		wolf: {
@@ -140,7 +260,22 @@ let unitBase = {
 		    		spriteNumber: 131
 		    	},
 		        skills: [database.getSkillByName(skillVar.strike).id],
-		    	unitType: unitTypeVars.full
+		    	unitType: unitTypeVars.full,
+		    	levelUp: {
+		    		2: [{
+		    			unitName: unitNameVars.treant.greenForest.grunt,
+		    			health: 6,
+		    			maxHealth: 6,
+		    			speed: 5,
+		    			skills: [database.getSkillByName(skillVar.strike).id]		    			
+		    		},
+		    		{
+		    			unitName: unitNameVars.treant.greenForest.barkBiter,
+		    		},
+		    		{
+		    			unitName: unitNameVars.treant.greenForest.ogre,
+		    		}],		    		
+		    	}
 		    },
 			barkBiter: {
 				name: language.unit.treant.greenForest.barkBiter[0],
