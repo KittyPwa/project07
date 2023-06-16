@@ -11,9 +11,10 @@ function populateSkills() {
     strike.updateSkill({
         name: language.skill.strike.name[0],
         skillId: skillVar.strike,
-        skillType: skillType.damage,
-        targeting: function(unit) {
-            return database.getTargeting().classicTargeting(unit)
+        skillType: skillType.active,
+        skillEffectType: skillEffectType.damage,
+        targeting: function(data) {
+            return database.getTargeting().classicTargeting(data.unit)
         },
         effect: function() {            
             return this.data.damage
@@ -29,9 +30,10 @@ function populateSkills() {
     chop.updateSkill({
         name: language.skill.chop.name[0],
         skillId: skillVar.chop,
-        skillType: skillType.damage,        
-        targeting: function(unit) {
-            return database.getTargeting().classicTargeting(unit)
+        skillType: skillType.active,
+        skillEffectType: skillEffectType.damage,        
+        targeting: function(data) {
+            return database.getTargeting().classicTargeting(data.unit)
         },
         effect: function() {
             let logs = database.getUnitByName(unitNameVars.support.wood.log)
@@ -65,9 +67,10 @@ function populateSkills() {
     logLug.updateSkill({
         name: language.skill.logLug.name[0],
         skillId: skillVar.logLug,
-        skillType: skillType.damage,        
-        targeting: function(unit) {
-            return database.getTargeting().classicTargeting(unit)
+        skillType: skillType.active,
+        skillEffectType: skillEffectType.damage,        
+        targeting: function(data) {
+            return database.getTargeting().classicTargeting(data.unit)
         },
         effect: function() {
             let logs = database.getUnitByName(unitNameVars.support.wood.log)           
@@ -75,7 +78,7 @@ function populateSkills() {
             let effectMultiplier = this.data.effectMultiplier !== undefined ? this.data.effectMultiplier : 1
             if(log && log.stackSize > 1) {            
                 log.updateUnit({
-                    stackSize: log.stackSize - 2 * effectMultiplier,
+                    stackSize: log.stackSize - (2 * effectMultiplier),
                 })           
                 return (this.data.damage)
             }
@@ -93,9 +96,10 @@ function populateSkills() {
     pierce.updateSkill({
         name: language.skill.pierce.name[0],
         skillId: skillVar.pierce,
-        skillType: skillType.damage,
-        targeting: function(unit) {
-            return database.getTargeting().pierceTargeting(unit)
+        skillType: skillType.active,
+        skillEffectType: skillEffectType.damage,
+        targeting: function(data) {
+            return database.getTargeting().pierceTargeting(data.unit)
         },
         effect: function() {            
             return this.data.damage
@@ -112,9 +116,10 @@ function populateSkills() {
     cullVermin.updateSkill({
         name: language.skill.cullVermin.name[0],
         skillId: skillVar.cullVermin,
-        skillType: skillType.damage,
-        targeting: function(unit) {
-            return database.getTargeting().deathliestTargeting(unit)
+        skillType: skillType.active,
+        skillEffectType: skillEffectType.damage,
+        targeting: function(data) {
+            return database.getTargeting().deathliestTargeting(data.unit)
         },
         effect: function() {            
             return this.data.damage
@@ -131,9 +136,10 @@ function populateSkills() {
     challengeTheStrong.updateSkill({
         name: language.skill.challengeTheStrong.name[0],
         skillId: skillVar.challengeTheStrong,
-        skillType: skillType.damage,
-        targeting: function(unit) {
-            return database.getTargeting().healthiestTargeting(unit)
+        skillType: skillType.active,
+        skillEffectType: skillEffectType.damage,
+        targeting: function(data) {
+            return database.getTargeting().healthiestTargeting(data.unit)
         },
         effect: function() {            
             return this.data.damage
@@ -150,8 +156,9 @@ function populateSkills() {
     damRepairs.updateSkill({
         name: language.skill.damRepairs.name[0],
         skillId: skillVar.damRepairs,
-        skillType: skillType.support,
-        targeting: function(unit) {
+        skillType: skillType.active,
+        skillEffectType: skillEffectType.heal,
+        targeting: function(data) {
             let generals = database.getGenerals()
             generals = generals.filter((a) => a.allegiance == allegianceVars.ally)
             return generals
@@ -162,7 +169,7 @@ function populateSkills() {
             let effectMultiplier = this.data.effectMultiplier !== undefined ? this.data.effectMultiplier : 1            
             if(log && log.stackSize > 1) {            
                 log.updateUnit({
-                    stackSize: log.stackSize - 2 * effectMultiplier,
+                    stackSize: log.stackSize - (2 * effectMultiplier),
                 })           
                 return this.data.heal
             }
@@ -173,6 +180,45 @@ function populateSkills() {
         },
         data: {
             heal: 1
+        }
+    })
+
+    let logSnap = new Skill()
+    logSnap.updateSkill({
+        name: language.skill.logSnap.name[0],
+        skillId: skillVar.logSnap,
+        skillType: skillType.passive,
+        passiveIsActivated: function(event) { 
+            let isActivated = true            
+            let originUnit = database.getUnit(event.origin)      
+            if(event.eventType != skillCondition.damageGiven) 
+                isActivated = false
+            if(originUnit.getFamily() != familyNameVars.beaver)
+                isActivated = false
+            return isActivated
+        },
+        targeting: function(data) {
+            return [data.target]
+        },
+        orderType: orderingType.after,
+        effect: function() {            
+            let logs = database.getUnitByName(unitNameVars.support.wood.log)            
+            let log = logs[0]
+            let effectMultiplier = this.data.effectMultiplier !== undefined ? this.data.effectMultiplier : 1      
+            if(log && log.stackSize > 0) {            
+                log.updateUnit({
+                    stackSize: log.stackSize - (1 * effectMultiplier),
+                })          
+                console.log(log.isAlive()) 
+                return this.data.damage
+            }
+            return null
+        },        
+        effectDescription: function() {
+            return language.skill.logSnap.description[0] + this.data.damage + language.skill.logSnap.description[1]  
+        },
+        data: {
+            damage: 1
         }
     })
 }

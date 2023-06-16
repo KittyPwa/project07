@@ -62,26 +62,31 @@ function Unit() {
 	}
 
 	this.getDamagingSkill = function() {
-		return this.getTypeSkills(skillType.damage)[0]
+		return this.getSkillByElement('skillEffectType', skillEffectType.damage)
 	}	
 
-	this.getTypeSkills = function(type) {
+	this.getSkillByElement = function(property, comparer) {
 		let skills = []
 		for(let skillId of this.skills) {
 			let skill = database.getSkill(skillId);
-			if(skill.skillType == type) {
+			if(skill[property] == comparer) {
 				skills.push(skillId)
 			}
 		}
-		return skills;
+		return skills
 	}
 
-	this.getSupportSkill = function() {
-		return this.getTypeSkills(skillType.support)[0]
+	this.getSupportSkills = function() {
+		return this.getSkillByElement('skillEffectType', skillEffectType.support)		
 	}
 
-	this.getPassiveSkill = function() {
-		return this.getTypeSkills(skillType.passive)[0]
+	this.getPassiveSkills = function() {
+		return this.getSkillByElement('skillType', skillType.passive)		
+		
+	}
+
+	this.getActiveSkills = function() {
+		return this.getSkillByElement('skillType', skillType.active)		
 	}
 
 	this.updateFromSkill = function() {
@@ -91,8 +96,8 @@ function Unit() {
 			
 	}
 
-	this.healDamage = function() {
-		let supportSkill = database.getSkill(this.getSupportSkill())
+	this.healDamage = function(supportSkillId) {
+		let supportSkill = database.getSkill(supportSkillId)
 		let effect = null
 		if(supportSkill) {
 			let healEffect = supportSkill.launchEffect()
@@ -102,10 +107,11 @@ function Unit() {
 		return effect
 	}
 
-	this.inflictDamage = function() {
-		let dmgSkill = database.getSkill(this.getDamagingSkill())	
+	this.inflictDamage = function(dmgSkillId) {
+		dmgSkill = database.getSkill(dmgSkillId)
 		let effect = null		
 		if(dmgSkill){
+			
 			let dmgEffect = dmgSkill.launchEffect()
 			if(dmgEffect !== null)
 				effect = dmgEffect * (this.damageMultiplier !== null ? this.damageMultiplier : 1);
@@ -153,9 +159,11 @@ function Unit() {
 		}
 		if(this.bitter !== null)
 			description += language.unit.description.bitter[0] + '\n'		
+		if(this.skills.length > 0)
+			description += language.unit.description.skill[0]
 		for(let skillId of this.skills) {
 			let skill = database.getSkill(skillId)
-			description += language.unit.description.skill[0] + skill.name + '\n'
+			description += skill.name + '\n'
 		}
 		return description
 	}
@@ -240,6 +248,14 @@ function Unit() {
 		database.setUnitToDatabase(this)
 	}
 
+	this.getRace = function() {
+		return this.unitName.slice(0,1)
+	}
+
+	this.getFamily = function() {
+		return this.unitName.slice(0,2)
+	}
+
 	this.getNRandomUnits = function(n, faction) {
 		let units = database.getUnits()
 		units = units.filter((a) => a.allegiance == faction)
@@ -273,7 +289,7 @@ function Unit() {
 		let units = Object.values(database.getUnits())
 		
 		let unitArray = units.filter((a) => a.allegiance == allegiance)
-		
+
 		return unitArray
 	}
 

@@ -173,23 +173,30 @@ class CombatScreen extends Phaser.Scene {
 				foes = foes.filter((a) => a.unitType != unitTypeVars.general)
 			} while(foes.length < amount)		
 		}
-		this.updateCharacters();		
+		this.updateCharacters();
+		foes = database.getUnitsByAllegiance(allegianceVars.foe)
+		foes = foes.filter((a) => a.unitType != unitTypeVars.general)		
 		let levelCount = 0
 		for(let foe of foes) {
 			levelCount += foe.level
-		}
+		}		
 		if(levelCount < amountLevel) {
-			do {
+			do {				
 				let selected = foes[getRandomInt(0, foes.length - 1)]
 				this.levelUpFoe(selected.id)
-				foes = database.getUnitsByAllegiance(allegianceVars.foe)
-				foes = foes.filter((a) => a.unitType != unitTypeVars.general)
-
-				levelCount = 0
-				for(let foe of foes) {
-					levelCount += foe.level
+				let tempFoes = database.getUnitsByAllegiance(allegianceVars.foe)
+				tempFoes = foes.filter((a) => a.unitType != unitTypeVars.general)
+				let newLevelCount = 0
+				for(let foe of tempFoes) {
+					newLevelCount += foe.level
 				}
-			} while(levelCount < amountLevel)
+				if(levelCount < newLevelCount) {
+					levelCount = newLevelCount
+					foes = [...tempFoes]
+				} else {
+					foes = foes.filter((a) => a.id != selected.id)
+				}
+			} while(levelCount < amountLevel && foes.length > 0)
 		}
 	}
 
@@ -234,40 +241,49 @@ class CombatScreen extends Phaser.Scene {
 
 	levelUpFoe(unitId) {
 		let unit = database.getUnit(unitId)
-		let position = JSON.parse(JSON.stringify(unit.position))
-		unit.updateUnit({
-			level: unit.level + 1
-		})
-		let levelUps = this.getLevelUps(unitId)
-		for(let toPurge of levelUps) {
-	    	toPurge.purge()       
-	    }   
-		let selected = JSON.parse(JSON.stringify(levelUps[getRandomInt(0, levelUps.length - 1)]))
-		delete selected.id
-	    let newUnit = new Unit()     
-	    newUnit.updateUnit(selected) 
-	    unit.die()
-	    this.updateVisuals()
-		this.updateCharacters(position);	
+		if(unit) {
+			let position = JSON.parse(JSON.stringify(unit.position))
+			unit.updateUnit({
+				level: unit.level + 1
+			})
+			let levelUps = this.getLevelUps(unitId)
+			if(levelUps.length > 0) {
+				for(let toPurge of levelUps) {
+			    	toPurge.purge()       
+			    }   
+				let selected = JSON.parse(JSON.stringify(levelUps[getRandomInt(0, levelUps.length - 1)]))
+				delete selected.id
+			    let newUnit = new Unit()     
+			    newUnit.updateUnit(selected) 
+			    unit.die()
+			    this.updateVisuals()
+				this.updateCharacters(position);	
+			}
+		}
 	}
 
 	getLevelUps(unitId) {
 		let unit = database.getUnit(unitId)
 		let position = JSON.parse(JSON.stringify(unit.position))
 		let uB = getUnitBaseFromUnitName(unit.unitName)
-		let levelUps = uB.levelUp[unit.level]
-		let units = []
-		for(let levelUp of levelUps) {
-			let newUnit = new Unit()
-			let newUnitBase = getUnitBaseFromUnitName(levelUp.unitName)
-			newUnit.updateUnit(newUnitBase)
-			if (unit.unitName == levelUp.unitName) {				
-				newUnit.updateUnit(levelUp)
-				newUnit.updateUnit({
-					level: unit.level,
-				})
+		let units = []		
+		if(uB != null) {
+			
+			let levelUps = uB.levelUp[unit.level]
+			if(levelUps) {
+				for(let levelUp of levelUps) {
+					let newUnit = new Unit()
+					let newUnitBase = getUnitBaseFromUnitName(levelUp.unitName)
+					newUnit.updateUnit(newUnitBase)
+					if (unit.unitName == levelUp.unitName) {				
+						newUnit.updateUnit(levelUp)
+						newUnit.updateUnit({
+							level: unit.level,
+						})
+					}
+					units.push(newUnit)
+				}
 			}
-			units.push(newUnit)
 		}
 		return units
 	}
@@ -276,15 +292,17 @@ class CombatScreen extends Phaser.Scene {
 		let unit = database.getUnit(unitId)
 		let position = JSON.parse(JSON.stringify(unit.position))
 		let levelUps = this.getLevelUps(unitId)
-		this.scene.launch('unitSelectionScreen', levelUps);
-	  	this.scene.bringToTop('unitSelectionScreen');
+		if(levelUps.length > 0) {
+			this.scene.launch('unitSelectionScreen', levelUps);
+		  	this.scene.bringToTop('unitSelectionScreen');
 
-	  	this.scene.get('unitSelectionScreen').events.once('shutdown', () => {
-	  		unit.die(false)
-	  		this.updateVisuals()
-			this.updateCharacters(position);				
-			this.checkSelectNewUnit();
-		});
+		  	this.scene.get('unitSelectionScreen').events.once('shutdown', () => {
+		  		unit.die(false)
+		  		this.updateVisuals()
+				this.updateCharacters(position);				
+				this.checkSelectNewUnit();
+			});
+		}
 	}
 
 	checkSelectNewUnit() {
@@ -618,6 +636,7 @@ class CombatScreen extends Phaser.Scene {
 			}
 		}
 		let newUnits = database.getNewTypedUnits([unitTypeVars.summon, unitTypeVars.support])
+		newUnits = newUnits.filter((a) => a.isAlive())
 		if(newUnits.length > 0) {
 			let characterContainer = this.intializeCharacters(newUnits, this)
 			this.terrainScreen = this.add.container(terrainVars.widthOffset,terrainVars.heightOffset, [...characterContainer]);

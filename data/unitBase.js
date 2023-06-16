@@ -17,7 +17,7 @@ let unitBase = {
 					spriteSheet: 'tilesets',
 					spriteNumber:128
 				},
-		        skills: [database.getSkillByName(skillVar.strike).id],
+		        skills: [database.getSkillByName(skillVar.logSnap).id],
 		    	unitType: unitTypeVars.full,
 		    	levelUp: {
 		    		2: [{
@@ -26,7 +26,7 @@ let unitBase = {
 		    			maxHealth: 5,
 		    			speed: 4,
 		    			damageMultiplier: 2,
-		    			skills: [database.getSkillByName(skillVar.strike).id]		    			
+		    			skills: [database.getSkillByName(skillVar.logSnap).id]		    			
 		    		},
 		    		{
 		    			unitName: unitNameVars.mamal.beaver.warrior
@@ -35,9 +35,9 @@ let unitBase = {
 		    			unitName: unitNameVars.mamal.beaver.militia,
 		    			health: 12,
 		    			maxHealth: 12,
-		    			speed: 8,
-		    			damageMultiplier: 4,
-		    			skills: [database.getSkillByName(skillVar.strike).id]
+		    			speed: 4,
+		    			damageMultiplier: 2,
+		    			skills: [database.getSkillByName(skillVar.logSnap).id]
 		    		}
 		    		]
 		    	}

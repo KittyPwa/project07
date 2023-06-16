@@ -32,9 +32,32 @@ var targetingVar = {
 }
 
 var skillType = {
-    damage: 'damage',
-    support: 'support',
+    active: 'active',    
     passive: 'passive'
+}
+
+var skillEffectType = {
+    damage: 'damage',
+    heal: 'heal',
+    modify: 'modify',    
+}
+
+var skillCondition = {
+    damageTaken: 'damageTaken',
+    damageGiven: 'damageGiven',
+    healTaken: 'healTaken',
+    healGiven: 'healGiven',
+    buffTaken: 'buffTaken',
+    buffGiven: 'buffGiven',
+    turnStart: 'turnStart',
+    turnEnd: 'turnEnd',
+    unitDeath: 'unitDeath', 
+}
+
+var orderingType = {
+    before: 'before',
+    during: 'during',
+    after: 'after'
 }
 
 var unitTypeVars = {
@@ -44,8 +67,18 @@ var unitTypeVars = {
     general: 'General',
 }
 
+var raceNameVars = {
+    mamal: 'm',
+    treant: 't'
+}
+
+var familyNameVars= {
+    beaver: 'mb',
+    greenForest: 'tg'
+}
+
 var unitNameVars = {
-    mamal: {
+    mamal: {        
         beaver: {
             militia: 'mbm',
             warrior: 'mbw',
@@ -96,7 +129,7 @@ var oppositeAllegianceVars = {
     foe: 'ally'
 }
 
-var dataTypes = ['terrain', 'spot', 'unit', 'combatManager', 'logger', 'skill', 'targeting', 'gameState']
+var dataTypes = ['terrain', 'spot', 'unit', 'combatManager', 'logger', 'skill', 'targeting', 'gameState', 'event']
 
 var terrainVars = {
     collumnAmount: 5,
