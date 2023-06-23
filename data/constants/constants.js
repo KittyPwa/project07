@@ -28,6 +28,7 @@ var skillVar = {
     inflictDamage: 'InflictDamage',
     updateLog: 'UpdateLog',
     giveHeal: 'GiveHeal',
+    logCollect: 'LogCollect',
 }
 
 var targetingVar = {
@@ -89,7 +90,8 @@ var unitNameVars = {
             militia: 'mbm',
             warrior: 'mbw',
             builder: 'mbb',
-            alpha: 'mba'
+            alpha: 'mba',
+            trailBlazer: 'mbt',
         }
     },
     general: {

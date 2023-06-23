@@ -141,6 +141,82 @@ let unitBase = {
 		    		]
 		    	}
 		    },
+		    trailBlazer: {
+		    	name: language.unit.mamal.beaver.trailBlazer[0],
+		    	level : 1,
+		    	distinctions: 0,
+		    	unitName: unitNameVars.mamal.beaver.trailBlazer,
+		        allegiance: allegianceVars.ally,
+		        health: 2,
+		        maxHealth: 2,
+		        speed: 5,
+		        spriteInfos: {
+		            spriteName:null,
+		            spriteSheet: 'tilesets',
+		            spriteNumber:132,
+		        },
+		        skills: [database.getSkillByName(skillVar.logCollect).id, database.getSkillByName(skillVar.strike).id],
+		        unitType: unitTypeVars.full,
+		        levelUp: {
+		    		2: [{
+		    			unitName: unitNameVars.mamal.beaver.warrior,
+		    			health: 5,
+		    			maxHealth: 5,
+		    			speed: 4,
+		    			damageMultiplier: 3,
+		    			effectMultiplier: 2,
+		    			damageMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.chop).id,
+		    				skillEffectType: skillEffectType.damage,
+		    				damageMultiplier: 3
+		    			},
+		    			effectMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.chop).id,
+		    				skillEffectType: skillEffectType.summon,
+		    				effectMultiplier: 2
+		    			},
+		    			skills: [database.getSkillByName(skillVar.chop).id]		    			
+		    		},
+		    		{
+		    			unitName: unitNameVars.mamal.beaver.alpha
+		    		}],
+		    		3: [{
+		    			unitName: unitNameVars.mamal.beaver.warrior,
+		    			health: 9,
+		    			maxHealth: 9,
+		    			speed: 6,
+		    			damageMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.chop).id,
+		    				skillEffectType: skillEffectType.damage,
+		    				damageMultiplier: 3
+		    			},
+		    			effectMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.chop).id,
+		    				skillEffectType: skillEffectType.summon,
+		    				effectMultiplier: 3
+		    			},
+		    			skills: [database.getSkillByName(skillVar.chop).id]
+		    		},
+		    		{
+		    			unitName: unitNameVars.mamal.beaver.warrior,
+		    			health: 6,
+		    			maxHealth: 6,
+		    			speed: 5,
+		    			damageMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.chop).id,
+		    				skillEffectType: skillEffectType.damage,
+		    				damageMultiplier: 3
+		    			},
+		    			effectMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.chop).id,
+		    				skillEffectType: skillEffectType.summon,
+		    				effectMultiplier: 4
+		    			},
+		    			skills: [database.getSkillByName(skillVar.chop).id]
+		    		}
+		    		]
+		    	}
+		    },
 		    builder: {
 		    	name: language.unit.mamal.beaver.builder[0],
 		    	level : 2,

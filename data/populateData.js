@@ -341,7 +341,7 @@ function populateSkills() {
         },
     })
 
-   /* let logCollect = new Skill()
+    let logCollect = new Skill()
     logCollect.updateSkill({
         name: language.skill.logCollect.name[0],
         skillId: skillVar.logCollect,
@@ -354,31 +354,35 @@ function populateSkills() {
                 isActivated = false     
             if(event.eventType != skillCondition.unitDeath) 
                 isActivated = false
-            if(originUnit.allegiance() != allegianceVars.foe)
+            if(originUnit.allegiance != allegianceVars.foe)
                 isActivated = false
+            if(isActivated)
+                console.log(event)
             return isActivated
         },
-        targeting: function(data) {
-            return [data.target]
-        },
-        orderType: orderingType.after,
-        effect: function() {            
-            let logs = database.getUnitByName(unitNameVars.support.wood.log)            
-            let log = logs[0]
-            let effectMultiplier = this.data.effectMultiplier !== undefined ? this.data.effectMultiplier : 1      
-            if(log && log.stackSize > 0) {            
-                log.updateUnit({
-                    stackSize: log.stackSize - (1 * effectMultiplier),
-                })          
+        effects: [
+            {
+                skillEffectType: skillEffectType.summon,        
+                targeting: function(data) {
+                    return database.getTargeting().logTargeting(this.data)
+                },
+                order: 1,
+                effect: function(data) {
+                    database.getSkillByName(skillVar.updateLog).effects[skillEffectType.summon].effect(Object.assign({},this.data,data))
+                },
+                data: {
+                    logAmount: 1,
+                    skillId: logCollect.id,
+                }
             }
-        },        
+        ],     
         effectDescription: function() {
             return language.skill.logSnap.description[0] + this.data.damage + language.skill.logSnap.description[1]  
         },
         data: {
             damage: 1
         }
-    })*/
+    })
     updateSkillEffects()
 }
 

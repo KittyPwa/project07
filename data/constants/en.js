@@ -35,6 +35,7 @@ var messageEn = {
 				warrior: ['Beaver warrior'],
 				builder: ['Beaver builder'],
 				alpha: ['Beaver alpha'],
+				trailBlazer: ['Beaver trail blazer'],
 			}
 		},
 		treant: {
@@ -81,6 +82,9 @@ var messageEn = {
 		logSnap: {
 			name: ['Log snap'],
 			description: ['Snap shoots a log for ', ' health every time a beaver strikes, consuming ', ' Log']
+		},
+		logCollect: {
+			name: ['Log collect'],
 		}
 	}
 }
