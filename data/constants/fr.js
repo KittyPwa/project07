@@ -35,6 +35,8 @@ var messageFr = {
 				warrior: ['Guerrier castor'],
 				builder: ['Bâtisseur castor'],
 				alpha: ['Castor alpha'],
+				trailBlazer: ['Ecumeur de routes castor'],
+
 			},
 		},
 		treant: {
@@ -81,6 +83,9 @@ var messageFr = {
 		logSnap: {
 			name: ['Claquement de bûche'],
 			description: ['Fouette avec une bûche pour ', ' HP à chaque fois qu\'un castor attaque, consommant ', ' Bûche']
+		},
+		logCollect: {
+			name: ['Collecte de bûche'],
 		}
 	}
 

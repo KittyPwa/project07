@@ -94,6 +94,31 @@ function Targeting() {
 		return foesToAttack
 	}
 
+	this.logTargeting = function(data) {
+		let logs = database.getUnitByName(unitNameVars.support.wood.log)
+        let log = logs[0]
+        if(data.logAmount > 0) {
+            if(logs.length == 0) {
+                log = new Unit()
+                log.updateUnit(unitBase.support.wood.log)
+                let position = database.getRandomAvailableSpot(database.getTerrainByAllegiance(log.allegiance).id, log.unitType).id
+                log.updateUnit({
+                    position: position
+                })
+            }   
+            if(log.stackSize == 0) {
+                log.newUnit = true;
+            }
+        }
+        return [log]
+	}
+
+	this.alliedGeneralTargeting = function() {
+		let generals = database.getGenerals()
+        generals = generals.filter((a) => a.allegiance == allegianceVars.ally)
+        return generals
+	}
+
 	this.getTargeting = function() {
 		return Object.values(this.data.targetings)[0]
 	}

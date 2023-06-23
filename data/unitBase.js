@@ -25,7 +25,16 @@ let unitBase = {
 		    			health: 5,
 		    			maxHealth: 5,
 		    			speed: 4,
-		    			damageMultiplier: 2,
+		    			damageMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.logSnap).id,
+		    				skillEffectType: skillEffectType.damage,
+		    				damageMultiplier: 2
+		    			},
+		    			effectMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.logSnap).id,
+		    				skillEffectType: skillEffectType.summon,
+		    				effectMultiplier: 2
+		    			},
 		    			skills: [database.getSkillByName(skillVar.logSnap).id]		    			
 		    		},
 		    		{
@@ -36,8 +45,17 @@ let unitBase = {
 		    			health: 12,
 		    			maxHealth: 12,
 		    			speed: 4,
-		    			damageMultiplier: 2,
-		    			skills: [database.getSkillByName(skillVar.logSnap).id]
+		    			damageMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.logSnap).id,
+		    				skillEffectType: skillEffectType.damage,
+		    				damageMultiplier: 2
+		    			},
+		    			effectMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.logSnap).id,
+		    				skillEffectType: skillEffectType.summon,
+		    				effectMultiplier: 2
+		    			},
+		    			skills: [database.getSkillByName(skillVar.logSnap).id, database.getSkillByName(skillVar.strike).id]
 		    		}
 		    		]
 		    	}
@@ -51,8 +69,11 @@ let unitBase = {
 		        health: 3,
 		        maxHealth: 3,
 		        speed: 2,
-		        damageMultiplier: 2,
-		    	effectMultiplier: 1,
+		        damageMultiplier: {
+    				skillId: database.getSkillByName(skillVar.chop).id,
+    				skillEffectType: skillEffectType.damage,
+    				damageMultiplier: 2
+    			},
 		        spriteInfos: {
 		            spriteName:null,
 		            spriteSheet: 'tilesets',
@@ -68,28 +89,130 @@ let unitBase = {
 		    			speed: 4,
 		    			damageMultiplier: 3,
 		    			effectMultiplier: 2,
-		    			skills: [database.getSkillByName(skillVar.strike).id]		    			
+		    			damageMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.chop).id,
+		    				skillEffectType: skillEffectType.damage,
+		    				damageMultiplier: 3
+		    			},
+		    			effectMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.chop).id,
+		    				skillEffectType: skillEffectType.summon,
+		    				effectMultiplier: 2
+		    			},
+		    			skills: [database.getSkillByName(skillVar.chop).id]		    			
 		    		},
 		    		{
 		    			unitName: unitNameVars.mamal.beaver.alpha
 		    		}],
 		    		3: [{
 		    			unitName: unitNameVars.mamal.beaver.warrior,
-		    			health: 8,
-		    			maxHealth: 8,
+		    			health: 9,
+		    			maxHealth: 9,
 		    			speed: 6,
-		    			damageMultiplier: 3,
-		    			effectMultiplier: 3,
-		    			skills: [database.getSkillByName(skillVar.strike).id]
+		    			damageMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.chop).id,
+		    				skillEffectType: skillEffectType.damage,
+		    				damageMultiplier: 3
+		    			},
+		    			effectMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.chop).id,
+		    				skillEffectType: skillEffectType.summon,
+		    				effectMultiplier: 3
+		    			},
+		    			skills: [database.getSkillByName(skillVar.chop).id]
 		    		},
 		    		{
 		    			unitName: unitNameVars.mamal.beaver.warrior,
 		    			health: 6,
 		    			maxHealth: 6,
 		    			speed: 5,
+		    			damageMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.chop).id,
+		    				skillEffectType: skillEffectType.damage,
+		    				damageMultiplier: 3
+		    			},
+		    			effectMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.chop).id,
+		    				skillEffectType: skillEffectType.summon,
+		    				effectMultiplier: 4
+		    			},
+		    			skills: [database.getSkillByName(skillVar.chop).id]
+		    		}
+		    		]
+		    	}
+		    },
+		    trailBlazer: {
+		    	name: language.unit.mamal.beaver.trailBlazer[0],
+		    	level : 1,
+		    	distinctions: 0,
+		    	unitName: unitNameVars.mamal.beaver.trailBlazer,
+		        allegiance: allegianceVars.ally,
+		        health: 2,
+		        maxHealth: 2,
+		        speed: 5,
+		        spriteInfos: {
+		            spriteName:null,
+		            spriteSheet: 'tilesets',
+		            spriteNumber:132,
+		        },
+		        skills: [database.getSkillByName(skillVar.logCollect).id, database.getSkillByName(skillVar.strike).id],
+		        unitType: unitTypeVars.full,
+		        levelUp: {
+		    		2: [{
+		    			unitName: unitNameVars.mamal.beaver.warrior,
+		    			health: 5,
+		    			maxHealth: 5,
+		    			speed: 4,
 		    			damageMultiplier: 3,
-		    			effectMultiplier: 4,
-		    			skills: [database.getSkillByName(skillVar.strike).id]
+		    			effectMultiplier: 2,
+		    			damageMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.chop).id,
+		    				skillEffectType: skillEffectType.damage,
+		    				damageMultiplier: 3
+		    			},
+		    			effectMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.chop).id,
+		    				skillEffectType: skillEffectType.summon,
+		    				effectMultiplier: 2
+		    			},
+		    			skills: [database.getSkillByName(skillVar.chop).id]		    			
+		    		},
+		    		{
+		    			unitName: unitNameVars.mamal.beaver.alpha
+		    		}],
+		    		3: [{
+		    			unitName: unitNameVars.mamal.beaver.warrior,
+		    			health: 9,
+		    			maxHealth: 9,
+		    			speed: 6,
+		    			damageMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.chop).id,
+		    				skillEffectType: skillEffectType.damage,
+		    				damageMultiplier: 3
+		    			},
+		    			effectMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.chop).id,
+		    				skillEffectType: skillEffectType.summon,
+		    				effectMultiplier: 3
+		    			},
+		    			skills: [database.getSkillByName(skillVar.chop).id]
+		    		},
+		    		{
+		    			unitName: unitNameVars.mamal.beaver.warrior,
+		    			health: 6,
+		    			maxHealth: 6,
+		    			speed: 5,
+		    			damageMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.chop).id,
+		    				skillEffectType: skillEffectType.damage,
+		    				damageMultiplier: 3
+		    			},
+		    			effectMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.chop).id,
+		    				skillEffectType: skillEffectType.summon,
+		    				effectMultiplier: 4
+		    			},
+		    			skills: [database.getSkillByName(skillVar.chop).id]
 		    		}
 		    		]
 		    	}
@@ -117,8 +240,16 @@ let unitBase = {
 		    			health: 5,
 		    			maxHealth: 5,
 		    			speed: 1,		    			
-		    			effectMultiplier: 2,
-		    			healMultiplier: 2,
+		    			healMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.damRepairs).id,
+		    				skillEffectType: skillEffectType.damage,
+		    				healMultiplier: 2
+		    			},
+		    			effectMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.damRepairs).id,
+		    				skillEffectType: skillEffectType.summon,
+		    				effectMultiplier: 2
+		    			},
 		    			skills: [database.getSkillByName(skillVar.damRepairs).id]		    			
 		    		},
 		    		{
@@ -129,8 +260,16 @@ let unitBase = {
 		    			health: 7,
 		    			maxHealth: 7,
 		    			speed: 2,
-		    			effectMultiplier: 3,
-		    			healMultiplier: 3,
+		    			healMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.damRepairs).id,
+		    				skillEffectType: skillEffectType.heal,
+		    				healMultiplier: 3
+		    			},
+		    			effectMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.damRepairs).id,
+		    				skillEffectType: skillEffectType.summon,
+		    				effectMultiplier: 3
+		    			},
 		    			skills: [database.getSkillByName(skillVar.damRepairs).id]
 		    		},
 		    		{
@@ -138,8 +277,16 @@ let unitBase = {
 		    			health: 5,
 		    			maxHealth: 5,
 		    			speed: 2,
-		    			effectMultiplier: 3,
-		    			effectMultiplier: 2,
+		    			healMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.damRepairs).id,
+		    				skillEffectType: skillEffectType.heal,
+		    				healMultiplier: 3
+		    			},
+		    			effectMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.damRepairs).id,
+		    				skillEffectType: skillEffectType.summon,
+		    				effectMultiplier: 2
+		    			},
 		    			skills: [database.getSkillByName(skillVar.damRepairs).id]
 		    		}
 		    		]
@@ -169,8 +316,16 @@ let unitBase = {
 		    			health: 9,
 		    			maxHealth: 9,
 		    			speed: 3,
-		    			damageMultiplier: 2,
-		    			effectMultiplier: 2,
+		    			damageMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.logLug).id,
+		    				skillEffectType: skillEffectType.damage,
+		    				damageMultiplier: 2
+		    			},
+		    			effectMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.logLug).id,
+		    				skillEffectType: skillEffectType.summon,
+		    				effectMultiplier: 2
+		    			},
 		    			skills: [database.getSkillByName(skillVar.logLug).id]		    			
 		    		}],		    		
 		    		3: [{
@@ -178,8 +333,16 @@ let unitBase = {
 		    			health: 11,
 		    			maxHealth: 11,
 		    			speed: 3,
-		    			damageMultiplier: 3,
-		    			effectMultiplier: 3,
+		    			damageMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.logLug).id,
+		    				skillEffectType: skillEffectType.damage,
+		    				damageMultiplier: 2
+		    			},
+		    			effectMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.logLug).id,
+		    				skillEffectType: skillEffectType.summon,
+		    				effectMultiplier: 2
+		    			},
 		    			skills: [database.getSkillByName(skillVar.logLug).id]
 		    		},
 		    		{
@@ -187,8 +350,16 @@ let unitBase = {
 		    			health: 9,
 		    			maxHealth: 9,
 		    			speed: 4,
-		    			damageMultiplier: 3,
-		    			effectMultiplier: 2,
+		    			damageMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.logLug).id,
+		    				skillEffectType: skillEffectType.damage,
+		    				damageMultiplier: 3
+		    			},
+		    			effectMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.logLug).id,
+		    				skillEffectType: skillEffectType.summon,
+		    				effectMultiplier: 2
+		    			},
 		    			skills: [database.getSkillByName(skillVar.logLug).id]
 		    		}
 		    		]
@@ -274,7 +445,20 @@ let unitBase = {
 		    		},
 		    		{
 		    			unitName: unitNameVars.treant.greenForest.ogre,
-		    		}],		    		
+		    		}],
+		    		3: [
+		    		{
+		    			unitName: unitNameVars.treant.greenForest.grunt,
+		    			health: 8,
+		    			maxHealth: 8,
+		    			speed: 6,
+		    			damageMultiplier: {
+		    				skillId: database.getSkillByName(skillVar.strike).id,
+		    				skillEffectType: skillEffectType.damage,
+		    				damageMultiplier: 2
+		    			},
+		    		}
+		    		],		    		
 		    	}
 		    },
 			barkBiter: {

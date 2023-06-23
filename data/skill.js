@@ -16,13 +16,9 @@ function Skill() {
 
 	this.skillCondition = null
 
-	this.effect = null
+	this.effects = []
 
 	this.type = 'Skill'		
-
-	this.launchEffect = function(data) {		
-		return this.effect(data)
-	}
 
 	this.data = null
 
@@ -36,7 +32,7 @@ function Skill() {
 		this.skillId = data.skillId !== undefined ? data.skillId : this.skillId;
 		this.skillType = data.skillType !== undefined ? data.skillType : this.skillType;
 		this.skillEffectType = data.skillEffectType !== undefined ? data.skillEffectType : this.skillEffectType;
-		this.effect = data.effect !== undefined ? data.effect : this.effect;
+		this.effects = data.effects !== undefined ? data.effects : this.effects;
 		this.effectDescription = data.effectDescription !== undefined ? data.effectDescription : this.effectDescription;
 		this.targeting = data.targeting !== undefined ? data.targeting : this.targeting;
 		this.data = data.data !== undefined ? data.data : this.data;
