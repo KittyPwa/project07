@@ -30,48 +30,53 @@ function CombatManager() {
 		let origin = database.getUnit(event.origin)
 		let originalTarget = database.getUnit(event.target)
 		for(let skillId of skillObj.passives) {
-			
 			let skill = database.getSkill(skillId)
-			let skillUser = database.getUnit(skillObj.unitId)
-			let allies = database.getUnitsByAllegiance(allegianceVars.ally)
-			let foes = database.getUnitsByAllegiance(allegianceVars.foe)
-			let targets = skill.targeting({
-				target: originalTarget,
-				origin: origin,
-				allies: allies,
-				foes: foes,
-				unit: skillUser
-			})
-			for(let target of targets) {
-				if(target) {
-					switch (skill.effectType) {
-						case skillEffectType.heal: 
-							let heal = skillUser.healDamage(skill)
-							if(heal != null) {								
-								target.takeHeal(heal)
-								let logger = database.getLogger()
-								let healLog = skillUser.name + language.combat.heals[0] + target.name + language.combat.heals[1] + heal + language.combat.heals[2]
-								logger.addLog(healLog)		
-								healthLog = target.name + language.status.health[0] + target.health + language.status.health[1]
-								logger.addLog(healthLog)
+			let effects = Object.values(skill.effects).sort((a,b) => a.order - b.order)
+			for(let effect of effects) {
+				let skillUser = database.getUnit(skillObj.unitId)
+				let allies = database.getUnitsByAllegiance(allegianceVars.ally)
+				let foes = database.getUnitsByAllegiance(allegianceVars.foe)
+				let targets = effect.targeting({
+					target: originalTarget,
+					origin: origin,
+					allies: allies,
+					foes: foes,
+					unit: skillUser
+				})
+				for(let target of targets) {
+					if(target) {
+						switch (effect.skillEffectType) {
+							case skillEffectType.heal: 
+								let heal = skillUser.healDamage(skill)
+								if(heal != null) {								
+									target.takeHeal(heal)
+									let logger = database.getLogger()
+									let healLog = skillUser.name + language.combat.heals[0] + target.name + language.combat.heals[1] + heal + language.combat.heals[2]
+									logger.addLog(healLog)		
+									healthLog = target.name + language.status.health[0] + target.health + language.status.health[1]
+									logger.addLog(healthLog)
+								}
+								break;
+							case skillEffectType.summon: 
+								effect.effect({target:target, origin: origin})
+								break;
+							default: 
+								let damage = skillUser.inflictDamage(skill.id)
+								if(damage != null) {								
+									target.takeDamage(damage)
+									let logger = database.getLogger()
+									let attackLog = skillUser.name + ', passive : ' + language.combat.attacks[0] + target.name + language.combat.attacks[1] + damage + language.combat.attacks[2]
+									logger.addLog(attackLog)		
+									healthLog = target.name + language.status.health[0] + target.health + language.status.health[1]
+									logger.addLog(healthLog)
+									if(!target.isAlive()) {
+										this.units = this.units.filter((a) => {
+											return a != target.id
+										})
+									}	
+								}
 							}
-							break;
-						default: 
-							let damage = skillUser.inflictDamage(skill.id)
-							if(damage != null) {								
-								target.takeDamage(damage)
-								let logger = database.getLogger()
-								let attackLog = skillUser.name + ', passive : ' + language.combat.attacks[0] + target.name + language.combat.attacks[1] + damage + language.combat.attacks[2]
-								logger.addLog(attackLog)		
-								healthLog = target.name + language.status.health[0] + target.health + language.status.health[1]
-								logger.addLog(healthLog)
-								if(!target.isAlive()) {
-									this.units = this.units.filter((a) => {
-										return a != target.id
-									})
-								}	
-							}
-						}
+					}
 				}
 			}
 		}
@@ -80,85 +85,96 @@ function CombatManager() {
 	this.active = function(originId) {
 		let origin = database.getUnit(originId)
 		let activeSkills = origin.getActiveSkills()		
-		let originPassiveSkills = origin.getPassiveSkills()			
+		let originPassiveSkills = origin.getPassiveSkills()
 		for(let skill of activeSkills) {
 			let originSkill = database.getSkill(skill)
 			if(originSkill) {
-				let allies = database.getUnitsByAllegiance(allegianceVars.ally)
-				let foes = database.getUnitsByAllegiance(allegianceVars.foe)
-				let targets = originSkill.targeting({
-					allies: allies,
-					foes: foes,
-					unit: origin
-				})				
-				for(let target of targets){			
-					if(target){
-						let event = new Event()
-						event.updateEvent({
-							origin: originId,
-							target: target.id,
-						})
-						switch (originSkill.effectType) {
-							case skillEffectType.heal: 
-								let heal = origin.healDamage(skill)
-								if(heal != null) {
-									event.updateEvent({
-										eventType: skillCondition.healGiven
-									})
-									let passives = database.getPassivesByEvent(event)
-									event.updateEvent({
-										eventType: skillCondition.healTaken
-									})
-									passives = [...passives, database.getPassivesByEvent(event)]
-									let passivesBefore = passives.filter((a) => a.passive.orderType == orderingType.before)
-									let passivesAfter = passives.filter((a) => a.passive.orderType == orderingType.after)
-									this.passive(passivesBefore, event)
-									target.takeHeal(heal)
-									let logger = database.getLogger()
-									let healLog = origin.name + language.combat.heals[0] + target.name + language.combat.heals[1] + heal + language.combat.heals[2]
-									logger.addLog(healLog)		
-									healthLog = target.name + language.status.health[0] + target.health + language.status.health[1]
-									logger.addLog(healthLog)
-									this.passive(passivesAfter, event)									
-								}
-								break;
-							default: 
-								let damage = origin.inflictDamage(skill)
-								if(damage != null) {
-									event.updateEvent({
-										eventType: skillCondition.damageGiven
-									})
-									let passivesBefore = database.getPassivesByEvent(event)		
-									
-									for(let passives of passivesBefore) {															
-										if(passives.passives.length > 0)
-											this.passive(passives, event)
-									}
-									target.takeDamage(damage)
-									let logger = database.getLogger()
-									let attackLog = origin.name + language.combat.attacks[0] + target.name + language.combat.attacks[1] + damage + language.combat.attacks[2]
-									logger.addLog(attackLog)		
-									healthLog = target.name + language.status.health[0] + target.health + language.status.health[1]
-									logger.addLog(healthLog)
-
-									event.updateEvent({
-										eventType: skillCondition.damageTaken
-									})
-									let passivesAfter = database.getPassivesByEvent(event)
-									for(let passives of passivesAfter) {															
-										if(passives.passives.length > 0)
-											this.passive(passives, event)
-									}									
-									if(!target.isAlive()) {
-										this.units = this.units.filter((a) => {
-											return a != target.id
+				let effects = Object.values(originSkill.effects).sort((a,b) => a.order - b.order)
+				for(let effect of effects) {
+					let allies = database.getUnitsByAllegiance(allegianceVars.ally)
+					let foes = database.getUnitsByAllegiance(allegianceVars.foe)
+					let targets = effect.targeting({
+						allies: allies,
+						foes: foes,
+						unit: origin
+					})				
+					for(let target of targets){			
+						if(target){
+							let event = new Event()
+							event.updateEvent({
+								origin: originId,
+								target: target.id,
+							})
+							switch (effect.skillEffectType) {
+								case skillEffectType.heal: 
+									let heal = origin.healDamage(skill)
+									if(heal != null) {
+										event.updateEvent({
+											eventType: skillCondition.healGiven
 										})
-									}	
-								}
+										let passivesBefore = database.getPassivesByEvent(event)		
+										for(let passives of passivesBefore) {															
+											if(passives.passives.length > 0)
+												this.passive(passives, event)
+										}
+										
+										target.takeHeal(heal)
+										let logger = database.getLogger()
+										let healLog = origin.name + language.combat.heals[0] + target.name + language.combat.heals[1] + heal + language.combat.heals[2]
+										logger.addLog(healLog)		
+										healthLog = target.name + language.status.health[0] + target.health + language.status.health[1]
+										logger.addLog(healthLog)
+
+										event.updateEvent({
+											eventType: skillCondition.healTaken
+										})
+										let passivesAfter = database.getPassivesByEvent(event)
+										for(let passives of passivesAfter) {															
+											if(passives.passives.length > 0)
+												this.passive(passives, event)
+										}
+									}
+									break;
+								case skillEffectType.summon: 
+									effect.effect({target:target, origin: origin})
+									break;
+								default: 
+									let damage = origin.inflictDamage(skill)
+									if(damage != null) {
+										event.updateEvent({
+											eventType: skillCondition.damageGiven
+										})
+										let passivesBefore = database.getPassivesByEvent(event)		
+										for(let passives of passivesBefore) {															
+											if(passives.passives.length > 0)
+												this.passive(passives, event)
+										}
+										target.takeDamage(damage)
+										let logger = database.getLogger()
+										let attackLog = origin.name + language.combat.attacks[0] + target.name + language.combat.attacks[1] + damage + language.combat.attacks[2]
+										logger.addLog(attackLog)		
+										healthLog = target.name + language.status.health[0] + target.health + language.status.health[1]
+										logger.addLog(healthLog)
+
+										event.updateEvent({
+											eventType: skillCondition.damageTaken
+										})
+										let passivesAfter = database.getPassivesByEvent(event)
+										for(let passives of passivesAfter) {															
+											if(passives.passives.length > 0)
+												this.passive(passives, event)
+										}									
+										if(!target.isAlive()) {
+											this.units = this.units.filter((a) => {
+												return a != target.id
+											})
+										}	
+									}
+							}
+
 						}
 					}
 				}
-				
 			}
 		}
 	}	

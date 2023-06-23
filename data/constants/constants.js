@@ -23,7 +23,11 @@ var skillVar = {
     logLug: 'LogLug',
     challengeTheStrong: 'ChallengeTheStrong',
     cullVermin: 'CullVermin',
-    damRepairs: 'DamRepairs'
+    damRepairs: 'DamRepairs',
+    logSnap: 'LogSnap',
+    inflictDamage: 'InflictDamage',
+    updateLog: 'UpdateLog',
+    giveHeal: 'GiveHeal',
 }
 
 var targetingVar = {
@@ -39,7 +43,9 @@ var skillType = {
 var skillEffectType = {
     damage: 'damage',
     heal: 'heal',
-    modify: 'modify',    
+    modify: 'modify',
+    summon: 'summon',
+    base: 'base'    
 }
 
 var skillCondition = {

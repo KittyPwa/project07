@@ -1,3 +1,4 @@
+
 class CombatScreen extends Phaser.Scene {
 
     constructor ()
@@ -268,14 +269,13 @@ class CombatScreen extends Phaser.Scene {
 		let uB = getUnitBaseFromUnitName(unit.unitName)
 		let units = []		
 		if(uB != null) {
-			
 			let levelUps = uB.levelUp[unit.level]
 			if(levelUps) {
 				for(let levelUp of levelUps) {
 					let newUnit = new Unit()
 					let newUnitBase = getUnitBaseFromUnitName(levelUp.unitName)
 					newUnit.updateUnit(newUnitBase)
-					if (unit.unitName == levelUp.unitName) {				
+					if (unit.unitName == levelUp.unitName) {
 						newUnit.updateUnit(levelUp)
 						newUnit.updateUnit({
 							level: unit.level,
