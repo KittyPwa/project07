@@ -30,7 +30,11 @@ class CombatScreen extends Phaser.Scene {
     	this.keyT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.T);
     	this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
 
-    	this.combatManager = new CombatManager()    
+    	this.combatManager = new CombatManager()   
+        this.animationManager = new AnimationManager() 
+        this.animationManager.updateAnimationManager({
+        	combatScreen: this,
+        })
     	this.gameState = database.getGameState()
     	this.combatManager.updateCombatManager({
     		turn: 1
@@ -309,7 +313,6 @@ class CombatScreen extends Phaser.Scene {
 		this.selectNewCharacter()
 	}
 
-
 	updateCharacters(newPosition = undefined) {
 	    let terrains = Object.values(database.getTerrains())	    
 
@@ -535,6 +538,7 @@ class CombatScreen extends Phaser.Scene {
 		that.selected = character.id;
 		sprite.tint = visualVars.unitSelectedColor
 		that.showSpotsAvailable(character, that)
+		that.animationManager.shakeSelectedSprite(character.id, sprite)
 	}
 
 	unselectCharacter(that, sprites) {
@@ -543,6 +547,7 @@ class CombatScreen extends Phaser.Scene {
 			sprite.clearTint()
 		}
 		that.hideIlluminatedSpots(that)
+		that.animationManager.stopShake('selectedSprite')
 	}
 
 	showSpotsAvailable(character, that) {		

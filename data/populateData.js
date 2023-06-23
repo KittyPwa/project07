@@ -356,8 +356,6 @@ function populateSkills() {
                 isActivated = false
             if(originUnit.allegiance != allegianceVars.foe)
                 isActivated = false
-            if(isActivated)
-                console.log(event)
             return isActivated
         },
         effects: [
