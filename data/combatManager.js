@@ -27,6 +27,7 @@ function CombatManager() {
 	}			
 
 	this.passive = function(skillObj, event) {
+		let animationManager = database.getAnimationManager()
 		let origin = database.getUnit(event.origin)
 		let originalTarget = database.getUnit(event.target)
 		for(let skillId of skillObj.passives) {
@@ -52,27 +53,52 @@ function CombatManager() {
 										let heal = skillUser.healDamage(skill)
 										if(heal != null) {								
 											target.takeHeal(heal)
-											let logger = database.getLogger()
-											let healLog = skillUser.name + language.combat.heals[0] + target.name + language.combat.heals[1] + heal + language.combat.heals[2]
-											logger.addLog(healLog)		
-											healthLog = target.name + language.status.health[0] + target.health + language.status.health[1]
-											logger.addLog(healthLog)
+											let log = database.getSkill(skill.id).getSkillEffectLog(effect.skillEffectType, damage, skillUser.id, target.id)
+											animationManager.addActionEvent({
+												origin: skillUser.id,
+												target: target.id,
+												skillEffectType: skillEffectType.heal,
+												amount: heal,
+												skill: skill,
+												targetHealth: target.health,
+												targetIsAlive: target.isAlive(),
+												log: log,
+											})
 										}
 									}
 									break;
 								case skillEffectType.summon: 
-									effect.effect({target:target, origin: origin})
+									let ret = effect.effect({target:target, origin: skillUser})
+									
+									if(ret.updated) {
+										target.updateStacks(ret['amount'])
+										let log = database.getSkill(skill.id).getSkillEffectLog(effect.skillEffectType, ret['amount'], skillUser.id, target.id)
+										animationManager.addActionEvent({
+												origin: skillUser.id,
+												target: target.id,
+												skillEffectType: skillEffectType.summon,
+												amount: ret['amount'],
+												skill: skill,
+												log: log,
+											})
+									}
 									break;
 								default: 
 									if(target.isAlive()) {
 										let damage = skillUser.inflictDamage(skill.id)
 										if(damage != null) {								
 											target.takeDamage(damage)
-											let logger = database.getLogger()
-											let attackLog = skillUser.name + ', passive : ' + language.combat.attacks[0] + target.name + language.combat.attacks[1] + damage + language.combat.attacks[2]
-											logger.addLog(attackLog)		
-											healthLog = target.name + language.status.health[0] + target.health + language.status.health[1]
-											logger.addLog(healthLog)
+											let log = database.getSkill(skill.id).getSkillEffectLog(effect.skillEffectType, damage, skillUser.id, target.id)
+											animationManager.addActionEvent({
+												origin: skillUser.id,
+												target: target.id,
+												skillEffectType: skillEffectType.damage,
+												amount: damage,
+												skill: skill,
+												targetHealth: target.health,
+												targetIsAlive: target.isAlive(),
+												log: log,
+											})
 											if(!target.isAlive()) {
 												event.updateEvent({
 													eventType: skillCondition.unitDeath
@@ -97,6 +123,7 @@ function CombatManager() {
 	}
 
 	this.active = function(originId) {
+		let animationManager = database.getAnimationManager()
 		let origin = database.getUnit(originId)
 		let activeSkills = origin.getActiveSkills()		
 		let originPassiveSkills = origin.getPassiveSkills()
@@ -131,14 +158,18 @@ function CombatManager() {
 											if(passives.passives.length > 0)
 												this.passive(passives, event)
 										}
-										
 										target.takeHeal(heal)
-										let logger = database.getLogger()
-										let healLog = origin.name + language.combat.heals[0] + target.name + language.combat.heals[1] + heal + language.combat.heals[2]
-										logger.addLog(healLog)		
-										healthLog = target.name + language.status.health[0] + target.health + language.status.health[1]
-										logger.addLog(healthLog)
-
+										let log = database.getSkill(skill).getSkillEffectLog(effect.skillEffectType, heal, originId, target.id)
+										animationManager.addActionEvent({
+											origin: originId,
+											target: target.id,
+											skillEffectType: skillEffectType.heal,
+											amount: heal,
+											skill: skill,
+											targetHealth: target.health,
+											targetIsAlive: target.isAlive(),
+											log: log,
+										})
 										event.updateEvent({
 											eventType: skillCondition.healTaken
 										})
@@ -150,7 +181,20 @@ function CombatManager() {
 									}
 									break;
 								case skillEffectType.summon: 
-									effect.effect({target:target, origin: origin})
+									let ret = effect.effect({target:target, origin: origin})
+									
+									if(ret.updated) {
+										target.updateStacks(ret['amount'])
+										let log = database.getSkill(skill).getSkillEffectLog(effect.skillEffectType, ret['amount'], originId, target.id)
+										animationManager.addActionEvent({
+												origin: originId,
+												target: target.id,
+												skillEffectType: skillEffectType.summon,
+												amount: ret['amount'],
+												skill: skill,
+												log: log,
+											})
+									}
 									break;
 								default: 
 									let damage = origin.inflictDamage(skill)
@@ -163,33 +207,42 @@ function CombatManager() {
 											if(passives.passives.length > 0)
 												this.passive(passives, event)
 										}
-										target.takeDamage(damage)
-										let logger = database.getLogger()
-										let attackLog = origin.name + language.combat.attacks[0] + target.name + language.combat.attacks[1] + damage + language.combat.attacks[2]
-										logger.addLog(attackLog)		
-										healthLog = target.name + language.status.health[0] + target.health + language.status.health[1]
-										logger.addLog(healthLog)
-
-										event.updateEvent({
-											eventType: skillCondition.damageTaken
-										})
-										let passivesAfter = database.getPassivesByEvent(event)
-										for(let passives of passivesAfter) {															
-											if(passives.passives.length > 0)
-												this.passive(passives, event)
-										}									
-										if(!target.isAlive()) {
-											event.updateEvent({
-												eventType: skillCondition.unitDeath
+										if(target.isAlive()) {
+											target.takeDamage(damage)
+											let log = database.getSkill(skill).getSkillEffectLog(effect.skillEffectType, damage, originId, target.id)
+											animationManager.addActionEvent({
+												origin: originId,
+												target: target.id,
+												skillEffectType: skillEffectType.damage,
+												amount: damage,
+												skill: skill,
+												targetHealth: target.health,
+												targetIsAlive: target.isAlive(),
+												log: log,
 											})
-											let passivesAfterDeath = database.getPassivesByEvent(event)
-											for(let passives of passivesAfterDeath) {															
+											event.updateEvent({
+												eventType: skillCondition.damageTaken
+											})
+											let passivesAfter = database.getPassivesByEvent(event)
+											for(let passives of passivesAfter) {															
 												if(passives.passives.length > 0)
 													this.passive(passives, event)
+											}									
+											if(!target.isAlive()) {
+												event.updateEvent({
+													eventType: skillCondition.unitDeath
+												})
+												let passivesAfterDeath = database.getPassivesByEvent(event)
+												for(let passives of passivesAfterDeath) {															
+													if(passives.passives.length > 0)
+														this.passive(passives, event)
+												}
+												this.units = this.units.filter((a) => {
+													return a != target.id
+												})
 											}
-											this.units = this.units.filter((a) => {
-												return a != target.id
-											})
+										} else {
+											this.active(originId)
 										}
 
 									}
@@ -203,7 +256,7 @@ function CombatManager() {
 	}	
 
 	this.executeTurn = function() {		
-		let newUnits = database.getNewTypedUnits([unitTypeVars.summon, unitTypeVars.support])
+		let newUnits = database.getNewUnits()
 		for(let newUnit of newUnits) {
 			newUnit.newUnit = false;
 		}
@@ -230,6 +283,7 @@ function CombatManager() {
 				break;
 			}		
 		}		
+		
 
 		this.turn++
 	}

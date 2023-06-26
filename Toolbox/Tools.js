@@ -181,6 +181,18 @@ function lowerFirstLetter(string) {
     return string.charAt(0).toLowerCase() + string.slice(1);
 }
 
+function camelCase(string) {
+    string = lowerFirstLetter(string)
+    stringArray = string.split(' ')
+    let first = stringArray[0]
+    stringArray.shift()
+    for(let i = 0; i < stringArray.length; i++) {
+        stringArray[i] = capitalizeFirstLetter(stringArray[i])
+    }
+    return first + stringArray.join('')
+
+}
+
 var direction = {
     left: {
         id: 0,

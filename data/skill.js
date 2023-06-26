@@ -41,6 +41,34 @@ function Skill() {
 		this.passiveIsActivated = data.passiveIsActivated !== undefined ? data.passiveIsActivated : this.passiveIsActivated
 	}
 
+	this.getSkillEffectLog = function(effectType, amount, originId, targetId) {
+		let descriptionArray = this.effects[effectType].effectDescription(amount)
+		let origin = database.getUnit(originId)
+		let target = database.getUnit(targetId)
+		let object = {
+			'amount': amount,
+			'origin': origin.name,
+			'target': target.name,
+		}
+		let i = 0
+		
+		
+		
+		
+		let name = camelCase(this.name)
+		
+		
+		for(let desc of language.skill[name][effectType].description) {
+			object[i] = desc
+			i++
+		}
+		let log = ''
+		for(let descriptionElement of Object.values(descriptionArray)) {
+			log += object[descriptionElement]
+		}
+		return log
+	}
+
 	this.getSkillByName = function(skillId) {
 		for(let skill of Object.values(this.data.skills)) {
 			if(skill.skillId == skillId) {

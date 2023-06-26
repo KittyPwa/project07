@@ -476,6 +476,7 @@ class CombatScreen extends Phaser.Scene {
 				    			}
 				    		} else {
 				    			if(!that.selected) {
+				    				//that.temp(character, sprite, that)
 					    			that.selectCharacter(character, sprite, that)
 					    		} else {
 					    			if(that.selected != character.id) {
@@ -538,7 +539,8 @@ class CombatScreen extends Phaser.Scene {
 		that.selected = character.id;
 		sprite.tint = visualVars.unitSelectedColor
 		that.showSpotsAvailable(character, that)
-		that.animationManager.shakeSelectedSprite(character.id, sprite)
+		let tween = that.animationManager.shakeSelectedSprite(character.id, [sprite])
+		tween.play()
 	}
 
 	unselectCharacter(that, sprites) {
@@ -607,7 +609,6 @@ class CombatScreen extends Phaser.Scene {
 			})
 			if(generals.length == 2){
 				this.combatManager.executeTurn()
-				this.textObject.setText(database.getLogger().getLogs())
 			} else {
 				let toKill = database.getUnitsByAllegiance(oppositeAllegianceVars[generals[0].allegiance])
 				for(let unit of toKill) {
@@ -619,8 +620,14 @@ class CombatScreen extends Phaser.Scene {
 					this.canLaunchTurn = false;
 				}
 			}
-		this.updateVisuals()
+		this.updateVisualAnimations()
 		}
+	}
+
+	updateVisualAnimations() {
+		let animationManager = database.getAnimationManager()
+		let events = animationManager.getActionEvents()
+		this.goThroughActionEvents(events)
 	}
 
 	updateVisuals() {
@@ -646,6 +653,62 @@ class CombatScreen extends Phaser.Scene {
 			let characterContainer = this.intializeCharacters(newUnits, this)
 			this.terrainScreen = this.add.container(terrainVars.widthOffset,terrainVars.heightOffset, [...characterContainer]);
 		}
+	}
+
+	goThroughActionEvents(events) {
+		let animationManager = database.getAnimationManager()
+			let that = this
+		if(events.length > 0) {
+			let event = events[0]
+			let logger = database.getLogger()
+			logger.addLog(event.log)
+			let act = animationManager.act(event.origin, this.characterObj[event.origin].obj)
+			act.on('complete', function() {
+				let target = database.getUnit(event.target)
+				
+				
+				if(target.newUnit == true) {
+					let characterContainer = that.intializeCharacters([target], that)
+					that.terrainScreen = that.add.container(terrainVars.widthOffset,terrainVars.heightOffset, [...characterContainer]);
+					target.updateUnit({newUnit: false})
+				}
+				let unit = that.characterObj[event.target]
+				unit.character = target
+				let recieve = animationManager.recieve(event.target, that.characterObj[event.target].obj)
+				recieve.on('complete', function() {
+					that.textObject.setText(logger.getLogs())
+					if(unit.healthBar)
+						unit.healthBar.setHealth(event.targetHealth)
+					if(event.targetIsAlive === false) {
+						for(let sprite of unit.obj){
+							that.destroySprite(sprite)
+						}
+						if(unit.healthBar)
+							that.destroySprite(unit.healthBar)
+						delete that.characterObj[unit.character.id]
+						unit.character.purge()
+					}
+					events.shift()
+					that.goThroughActionEvents(events)
+				});
+				recieve.play()
+			})
+			act.play()
+			
+			
+
+			//recieve.setCallback("onComplete", () => 
+		}	
+	}
+
+	temp(unit, sprite) {
+		
+		
+		let animationManager = database.getAnimationManager()
+		let act = animationManager.act(unit.id, [sprite])
+		let recieve = animationManager.recieve(unit.id, [sprite], 500)
+		act.play()
+		recieve.play()
 	}
 
 	refresh() {
