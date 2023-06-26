@@ -44,16 +44,22 @@ function populateSkills() {
                         effectMultiplier = data.origin.effectMultiplier.effectMultiplier
                     }
                 }
-                let ret = true
+                let ret = {
+                    updated: true,
+                    amount: data.logAmount * effectMultiplier
+                }
+
                 if(data.logAmount  < 0) {
-                    if(data.target.stackSize + data.logAmount >= 0) {
-                        data.target.removeStackSize(data.logAmount * effectMultiplier)
-                    } else {
-                        ret = false
+                    if(data.target.stackSize + data.logAmount < 0) {
+                        ret = {
+                            updated: false,
+                            amount: null
+                        }
                     }
-                } else {
-                    data.target.takeStackSize(data.logAmount * effectMultiplier)
-                }        
+                }       
+                
+                
+                
                 return ret
             }, 
         }]
@@ -73,13 +79,21 @@ function populateSkills() {
             effect: function(data) {
                 return database.getSkillByName(skillVar.inflictDamage).effects[skillEffectType.damage].effect(this.data)
             },
+            effectDescription: function(damage) {
+                return {
+                    1: 'origin',
+                    2: 0,
+                    3: 'target',
+                    4: 1,
+                    5: 'amount',
+                    6: 2,
+                }
+            },
             data: {
                 damage: 1
             }
         }],        
-        effectDescription: function() {
-            return language.skill.strike.description[0] + this.data.damage + language.skill.strike.description[1]  
-        },
+        
     })
 
 
@@ -94,9 +108,19 @@ function populateSkills() {
                 targeting: function(data) {
                     return database.getTargeting().classicTargeting(data.unit)
                 },
-                order:2,
+                order:1,
                 effect: function(data) {
                     return database.getSkillByName(skillVar.inflictDamage).effects[skillEffectType.damage].effect(this.data)
+                },
+                effectDescription: function(damage) {
+                    return {
+                        1: 'origin',
+                        2: 0,
+                        3: 'target',
+                        4: 1,
+                        5: 'amount',
+                        6: 2,
+                    }
                 },
                 data: {
                     damage: 1
@@ -107,9 +131,19 @@ function populateSkills() {
                 targeting: function(data) {
                     return database.getTargeting().logTargeting(this.data)
                 },
-                order: 1,
+                order: 2,
                 effect: function(data) {
-                    database.getSkillByName(skillVar.updateLog).effects[skillEffectType.summon].effect(Object.assign({},this.data,data))
+                    database.getSkillByName(skillVar.chop).updateSkill({data:{amount:null}})
+                    let ret = database.getSkillByName(skillVar.updateLog).effects[skillEffectType.summon].effect(Object.assign({},this.data,data))
+                    return ret
+                },
+                effectDescription: function(stackSize) {
+                    return {
+                        1: 'origin',
+                        2: 0,
+                        3: 'amount',
+                        4: 1
+                    }
                 },
                 data: {
                     logAmount: 2,
@@ -118,9 +152,10 @@ function populateSkills() {
             }
 
         ],
-        effectDescription: function() {
-            return language.skill.chop.description[0] + this.data.damage + language.skill.chop.description[1] + this.data.stackSize + language.skill.chop.description[2]  
-        },
+        
+        data: {
+            amount: null
+        }
     })
 
     let logLug = new Skill()
@@ -139,10 +174,26 @@ function populateSkills() {
                 },
                 order: 2,
                 effect: function(data) {
-                    return database.getSkillByName(skillVar.inflictDamage).effects[skillEffectType.damage].effect(this.data)
+                    let dmg = null
+                    if(this.data.authorized) {
+                        dmg = database.getSkillByName(skillVar.inflictDamage).effects[skillEffectType.damage].effect(this.data)
+                    }
+                    return dmg
                 },
+                effectDescription: function() {
+                    return {
+                        1: 'origin',
+                        2: 0,
+                        3: 'target',
+                        4: 1,
+                        5: 'amount',
+                        6: 2,
+                    }
+                },
+
                 data: {
-                    damage: 3
+                    damage: 3,
+                    authorized: false,
                 }
             },
             {
@@ -152,7 +203,21 @@ function populateSkills() {
                 },
                 order: 1,
                 effect: function(data) {
-                    database.getSkillByName(skillVar.updateLog).effects[skillEffectType.summon].effect(Object.assign({},this.data,data))
+                    let logLug = database.getSkillByName(skillVar.logLug)
+                    logLug.effects[skillEffectType.damage].data.authorized = false
+                    let ret = database.getSkillByName(skillVar.updateLog).effects[skillEffectType.summon].effect(Object.assign({},this.data,data))
+                    if(ret['updated']) {
+                        logLug.effects[skillEffectType.damage].data.authorized = true
+                    }
+                    return ret
+                },
+                effectDescription: function() {
+                    return {
+                        1: 'origin',
+                        2: 0,
+                        3: 'amount',
+                        4: 1
+                    }
                 },
                 data: {
                     logAmount: -2,
@@ -160,9 +225,6 @@ function populateSkills() {
                 }
             }
         ],      
-        effectDescription: function() {
-            return language.skill.logLug.description[0] + this.data.damage + language.skill.logLug.description[1] + this.data.stackSize + language.skill.logLug.description[2]  
-        },
         data: {
             damage: 3
         }
@@ -187,14 +249,21 @@ function populateSkills() {
                 effect: function(data) {
                     return database.getSkillByName(skillVar.inflictDamage).effects[skillEffectType.damage].effect(this.data)
                 },
+                effectDescription: function() {
+                    return {
+                        1: 'origin',
+                        2: 0,
+                        3: 'target',
+                        4: 1,
+                        5: 'amount',
+                        6: 2,
+                    }
+                },
                 data: {
                     damage: 1
                 }
             },
         ],        
-        effectDescription: function() {
-            return language.skill.pierce.description[0] + this.data.damage + language.skill.pierce.description[1]  
-        },
     })
 
     let cullVermin = new Skill()
@@ -211,6 +280,16 @@ function populateSkills() {
                 order: 1,
                 effect: function(data) {
                     return database.getSkillByName(skillVar.inflictDamage).effects[skillEffectType.damage].effect(this.data)
+                },
+                effectDescription: function() {
+                    return {
+                        1: 'origin',
+                        2: 0,
+                        3: 'target',
+                        4: 1,
+                        5: 'amount',
+                        6: 2,
+                    }
                 },
                 data: {
                     damage: 1
@@ -237,14 +316,21 @@ function populateSkills() {
                 effect: function(data) {
                     return database.getSkillByName(skillVar.inflictDamage).effects[skillEffectType.damage].effect(this.data)
                 },
+                effectDescription: function() {
+                    return {
+                        1: 'origin',
+                        2: 0,
+                        3: 'target',
+                        4: 1,
+                        5: 'amount',
+                        6: 2,
+                    }
+                },
                 data: {
                     damage: 2
                 }
             },
         ],       
-        effectDescription: function() {
-            return language.skill.challengeTheStrong.description[0] + this.data.damage + language.skill.challengeTheStrong.description[1]  
-        },
     })
 
     let damRepairs = new Skill()
@@ -261,10 +347,25 @@ function populateSkills() {
                 },
                 order: 2,
                 effect: function(data) {
-                    return database.getSkillByName(skillVar.giveHeal).effects[skillEffectType.heal].effect(this.data)
+                    let heal = null
+                    if(this.data.authorized){
+                        heal = database.getSkillByName(skillVar.giveHeal).effects[skillEffectType.heal].effect(this.data)
+                    }
+                    return heal
+                },
+                effectDescription: function() {
+                    return {
+                        1: 'origin',
+                        2: 0,
+                        3: 'target',
+                        4: 1,
+                        5: 'amount',
+                        6: 2,
+                    }
                 },
                 data: {
-                    heal: 1
+                    heal: 1,
+                    authorized: false,
                 }
             },
             {
@@ -274,7 +375,21 @@ function populateSkills() {
                 },
                 order: 1,
                 effect: function(data) {
-                    database.getSkillByName(skillVar.updateLog).effects[skillEffectType.summon].effect(Object.assign({},this.data,data))
+                    let damRepairs = database.getSkillByName(skillVar.damRepairs)
+                    damRepairs.effects[skillEffectType.heal].data.authorized = false
+                    let ret = database.getSkillByName(skillVar.updateLog).effects[skillEffectType.summon].effect(Object.assign({},this.data,data))
+                    if(ret['updated']) {
+                        damRepairs.effects[skillEffectType.damage].data.authorized = true
+                    }
+                    return ret
+                },
+                effectDescription: function() {
+                    return {
+                        1: 'origin',
+                        2: 0,
+                        3: 'amount',
+                        4: 1,
+                    }
                 },
                 data: {
                     logAmount: -2,
@@ -282,9 +397,6 @@ function populateSkills() {
                 }
             }
         ],      
-        effectDescription: function() {
-            return language.skill.damRepairs.description[0] + this.data.heal + language.skill.damRepairs.description[1]  
-        },
     })
 
     let logSnap = new Skill()
@@ -316,6 +428,16 @@ function populateSkills() {
                         dmg = database.getSkillByName(skillVar.inflictDamage).effects[skillEffectType.damage].effect(this.data)
                     return dmg
                 },
+                effectDescription: function() {
+                    return {
+                        1: 'origin',
+                        2: 0,
+                        3: 'target',
+                        4: 1,
+                        5: 'amount',
+                        6: 2,
+                    }
+                },
                 data: {
                     damage: 1
                 }
@@ -327,8 +449,21 @@ function populateSkills() {
                 },
                 order: 1,
                 effect: function(data) {
-                    let success = database.getSkillByName(skillVar.updateLog).effects[skillEffectType.summon].effect(Object.assign({},this.data,data))
-                    database.getSkillByName(skillVar.logSnap).effects[skillEffectType.damage].data.authorized = success
+                    let logSnap = database.getSkillByName(skillVar.logSnap)
+                    logSnap.effects[skillEffectType.damage].data.authorized = false
+                    let ret = database.getSkillByName(skillVar.updateLog).effects[skillEffectType.summon].effect(Object.assign({},this.data,data))
+                    if(ret['updated']) {
+                        logSnap.effects[skillEffectType.damage].data.authorized = true
+                    }
+                    return ret
+                },
+                effectDescription: function() {
+                    return {
+                        1: 'origin',
+                        2: 0,
+                        3: 'amount',
+                        4: 1,
+                    }
                 },
                 data: {
                     logAmount: -1,
@@ -336,9 +471,6 @@ function populateSkills() {
                 }
             }
         ],        
-        effectDescription: function() {
-            return language.skill.logSnap.description[0] + this.data.damage + language.skill.logSnap.description[1]  
-        },
     })
 
     let logCollect = new Skill()
@@ -356,8 +488,6 @@ function populateSkills() {
                 isActivated = false
             if(originUnit.allegiance != allegianceVars.foe)
                 isActivated = false
-            if(isActivated)
-                console.log(event)
             return isActivated
         },
         effects: [
@@ -368,7 +498,18 @@ function populateSkills() {
                 },
                 order: 1,
                 effect: function(data) {
-                    database.getSkillByName(skillVar.updateLog).effects[skillEffectType.summon].effect(Object.assign({},this.data,data))
+                    let ret = database.getSkillByName(skillVar.updateLog).effects[skillEffectType.summon].effect(Object.assign({},this.data,data))
+                    return ret
+                },
+                effectDescription: function() {
+                    return {
+                        1: 'origin',
+                        2: 0,
+                        3: 'target',
+                        4: 1,
+                        5: 'amount',
+                        6: 2,
+                    }
                 },
                 data: {
                     logAmount: 1,
@@ -376,9 +517,6 @@ function populateSkills() {
                 }
             }
         ],     
-        effectDescription: function() {
-            return language.skill.logSnap.description[0] + this.data.damage + language.skill.logSnap.description[1]  
-        },
         data: {
             damage: 1
         }

@@ -162,6 +162,14 @@ function Unit() {
 		}
 	}
 
+	this.updateStacks = function(amount) {
+		if(amount > 0) {
+			this.takeStackSize(amount)
+		} else {
+			this.removeStackSize(amount)
+		}
+	}
+
 	this.takeStackSize = function(stackSize) {
 		this.stackSize = this.stackSize !== undefined ? this.stackSize + stackSize : stackSize
 	}
@@ -324,6 +332,12 @@ function Unit() {
 		return retUnits
 	}
 
+	this.getNewUnits = function() {
+		let units = Object.values(database.getUnits())
+		let unitArray = units.filter((a) => a.newUnit == true)
+		return unitArray
+	}
+
 	this.getUnitsByAllegiance = function(allegiance) {
 		let units = Object.values(database.getUnits())
 		
@@ -345,6 +359,7 @@ function Unit() {
 		'getGenerals' : this.getGenerals,
 		'getUnitByName': this.getUnitByName,
 		'getNewTypedUnits': this.getNewTypedUnits,
+		'getNewUnits' : this.getNewUnits,
 		'getUnitsByAllegiance': this.getUnitsByAllegiance,
 		'getUnitsByAllegianceAndTypes': this.getUnitsByAllegianceAndTypes,
 	}

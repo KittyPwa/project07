@@ -53,38 +53,69 @@ var messageEn = {
 	skill: {
 		strike: {
 			name: ['Strike'],
-			description: ['Strike foe for ', ' damage']
+			damage: {
+				description: [' strikes ', ' for ', ' damage']
+			}
 		},
 		pierce: {
 			name: ['Pierce'],
-			description: ['Pierce foe for', 'damage']
+			damage: {
+				description: [' pierces ',' for', 'damage']
+			}
 		},
 		chop: {
 			name: ['Chop'],
-			description: ['Chop foe for', 'damage, producing ', ' Log']
+			damage: {
+				description: [' chops ',' for ', ' damage']
+			},
+			summon: {
+				description: [' produces ', ' Log']
+			}
 		},
 		logLug: {
 			name: ['Log Lug'],
-			description: ['Log lugs at foe for', 'damage, consuming ', ' Log']
+			damage: {
+				description: [' lugs logs at ',' for ', ' damage']
+			},
+			summon: {
+				description: [' consumes ', ' Log']
+			}
 		},
 		challengeTheStrong: {
 			name: ['Challenge the strong'],
-			description: ['Strikes the foe with the most HP for ', ' damage']
+			damage: {
+				description: [' challanges the foe with the most HP, ', ' for ', ' damage']
+			}
 		},
 		cullVermin: {
 			name: ['Cull vermin'],
-			description: ['Strikes the foe with the least HP for', ' damage']
+			damage: {
+				description: [' culls the foe with the least HP, ',' for ', ' damage']
+			}
 		},
 		damRepairs: {
 			name: ['Dam repairs'],
-			description: ['Repairs the dam for ', ' health, consuming ', ' Log']
+			heal: {
+				description: [' repairs the dam ',' for ', ' health']
+			},
+			summon: {
+				description: [' consumes ', ' Log']
+			}
 		},
 		logSnap: {
 			name: ['Log snap'],
-			description: ['Snap shoots a log for ', ' health every time a beaver strikes, consuming ', ' Log']
+			damage: {
+				description: [' snap shoots a log at ',' for ', ' damage']
+			},
+			summon: {
+				description: [' consumes ', ' Log']
+			}
 		},
 		logCollect: {
 			name: ['Log collect'],
+			summon: {
+				description: [' collects logs from ', ' produces ' , ' Log']
+			}
 		}
 	}
 }
