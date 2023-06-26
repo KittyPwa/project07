@@ -184,9 +184,9 @@ function populateSkills() {
                     return {
                         1: 'origin',
                         2: 0,
-                        3: 'amount',
+                        3: 'target',
                         4: 1,
-                        5: 'target',
+                        5: 'amount',
                         6: 2,
                     }
                 },
@@ -253,9 +253,9 @@ function populateSkills() {
                     return {
                         1: 'origin',
                         2: 0,
-                        3: 'amount',
+                        3: 'target',
                         4: 1,
-                        5: 'target',
+                        5: 'amount',
                         6: 2,
                     }
                 },
@@ -285,9 +285,9 @@ function populateSkills() {
                     return {
                         1: 'origin',
                         2: 0,
-                        3: 'amount',
+                        3: 'target',
                         4: 1,
-                        5: 'target',
+                        5: 'amount',
                         6: 2,
                     }
                 },
@@ -320,9 +320,9 @@ function populateSkills() {
                     return {
                         1: 'origin',
                         2: 0,
-                        3: 'amount',
+                        3: 'target',
                         4: 1,
-                        5: 'target',
+                        5: 'amount',
                         6: 2,
                     }
                 },
@@ -357,9 +357,9 @@ function populateSkills() {
                     return {
                         1: 'origin',
                         2: 0,
-                        3: 'amount',
+                        3: 'target',
                         4: 1,
-                        5: 'target',
+                        5: 'amount',
                         6: 2,
                     }
                 },
@@ -505,9 +505,9 @@ function populateSkills() {
                     return {
                         1: 'origin',
                         2: 0,
-                        3: 'amount',
+                        3: 'target',
                         4: 1,
-                        5: 'target',
+                        5: 'amount',
                         6: 2,
                     }
                 },
