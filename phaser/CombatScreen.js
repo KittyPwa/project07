@@ -235,6 +235,7 @@ class CombatScreen extends Phaser.Scene {
 
 	  	this.scene.get('unitSelectionScreen').events.once('shutdown', () => {
 			this.updateCharacters();
+
 			if(i < total) {
 				i++
 				this.selectNewCharacters(i, total)
@@ -415,6 +416,10 @@ class CombatScreen extends Phaser.Scene {
 			    	let widthPlacement =  terrainVars.tileSize * (spot.i + tileOffset.tileWidthOffset + 1/2)
 					let heightPlacement =  terrainVars.tileSize * (spot.j + tileOffset.tileHeightOffset + 1/2)
 			    	let sprite = that.add.sprite(widthPlacement, heightPlacement, character.spriteInfos.spriteSheet, character.spriteInfos.spriteNumber);
+			    	
+			    	
+			    	
+			    	
 			    	sprite['isDestroyable'] = true
 			    	let healthBar = null
 			    	if(!spot.isAdditionSpot() && spot.spotType != terrainVars.support) {
@@ -701,9 +706,7 @@ class CombatScreen extends Phaser.Scene {
 		}	
 	}
 
-	temp(unit, sprite) {
-		
-		
+	temp(unit, sprite) {		
 		let animationManager = database.getAnimationManager()
 		let act = animationManager.act(unit.id, [sprite])
 		let recieve = animationManager.recieve(unit.id, [sprite], 500)

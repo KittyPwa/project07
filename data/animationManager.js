@@ -10,7 +10,7 @@ function AnimationManager() {
 
 	this.actionEvents = []
 
-	this.animationSpeedUp = 1000
+	this.animationSpeedUp = animationSpeedUp
 
 	this.addActionEvent = function(event) {
 		let actionEvents = this.actionEvents

@@ -134,6 +134,7 @@ function CombatManager() {
 				for(let effect of effects) {
 					let allies = database.getUnitsByAllegiance(allegianceVars.ally)
 					let foes = database.getUnitsByAllegiance(allegianceVars.foe)
+					
 					let targets = effect.targeting({
 						allies: allies,
 						foes: foes,

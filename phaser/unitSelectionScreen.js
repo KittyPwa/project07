@@ -34,7 +34,8 @@ class UnitSelectionScreen extends Phaser.Scene {
   createNewUnit(unitBase) {
     delete unitBase.id
     let unit = new Unit()      
-    unit.updateUnit(unitBase)    
+    unit.updateUnit(unitBase)   
+    
     this.scene.stop('unitSelectionScreen')
   }
 

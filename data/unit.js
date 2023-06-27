@@ -57,6 +57,60 @@ function Unit() {
 		}
 	}
 
+	this.updateWithClonedSkill = function() {
+		let newSkills = []
+		let multipliers = {
+			skills: [],
+			damageMultiplier: [],
+			healMultiplier: [],
+			effectMultiplier: [],
+		}
+		let skillToClone = {}
+		for(let skillId of this.skills) {
+			let skill = database.getSkill(skillId)
+			if(skill.version == 'original') {
+				let clone = database.cloneSkill(skill.skillId).id
+				skillToClone[skill.skillId] = clone
+				newSkills.push(clone)
+			}
+		}
+		if(this.healMultiplier != null) {
+			for(let healMultiplier of this.healMultiplier) {
+				let skill = database.getSkill(healMultiplier.skillId)
+				if(skill.version == 'original') {
+					multipliers.healMultiplier = skillToClone[skill.skillId]
+				}
+			}
+		} else {
+			delete multipliers.healMultiplier
+		}
+		if(this.effectMultiplier != null) {
+			for(let effectMultiplier of this.effectMultiplier) {
+				let skill = database.getSkill(effectMultiplier.skillId)
+				if(skill.version == 'original') {
+					multipliers.effectMultiplier = skillToClone[skill.skillId]
+				}
+			}
+		} else {
+			delete multipliers.effectMultiplier
+		}
+		if(this.damageMultiplier != null) {
+			for(let dmgMultiplier of this.damageMultiplier) {
+				let skill = database.getSkill(dmgMultiplier.skillId)
+				if(skill.version == 'original') {
+					multipliers.damageMultiplier = skillToClone[skill.skillId]
+				}
+			}
+		} else {
+			delete multipliers.damageMultiplier
+		}
+
+		if(multipliers.skills.length > 0) {
+			this.updateUnit(multipliers)
+		}
+	    database.cleanUpDanglingSkills()
+	}
+
 	this.getDistinctions = function() {
 		return this.distinctions
 	}
@@ -107,8 +161,10 @@ function Unit() {
 			let dmgSkill = database.getSkill(dmgSkillIds[0])
 			let multiplier = 1
 			if(this.damageMultiplier) {
-				if(this.damageMultiplier.skillId == dmgSkillIds[0])
-					multiplier = this.damageMultiplier.damageMultiplier
+				for(let dmgMultiplier of this.damageMultiplier) {
+					if(dmgMultiplier.skillId == dmgSkillIds[0])
+						multiplier = dmgMultiplier.damageMultiplier
+				}
 			}
 			this.attack = dmgSkill.effects[skillEffectType.damage].data.damage * (multiplier)
 		}
@@ -130,18 +186,24 @@ function Unit() {
 
 	this.healDamage = function(supportSkillId) {
 		let multiplier = 1
-		if(this.healMultiplier) {
-			if(this.healMultiplier.skillId == supportSkillId)
-				multiplier = this.healMultiplier.healMultiplier
+		if(this.healMultiplier !== null) {
+			for(let hMulitiplier of this.healMultiplier) {
+				if(hMulitiplier.skillId == supportSkillId)
+					multiplier = hMulitiplier.healMultiplier	
+			}
+			
 		}
 		return this.activateSkillEffect(supportSkillId, skillEffectType.heal, multiplier)
 	}
 
 	this.inflictDamage = function(dmgSkillId) {
 		let multiplier = 1
-		if(this.damageMultiplier) {
-			if(this.damageMultiplier.skillId == dmgSkillId)
-				multiplier = this.damageMultiplier.damageMultiplier
+		if(this.damageMultiplier !== null) {
+			for(let dmgMultiplier of this.damageMultiplier) {
+				if(dmgMultiplier.skillId == dmgSkillId)
+					multiplier = dmgMultiplier.damageMultiplier			
+			}
+			
 		}
 
 		return this.activateSkillEffect(dmgSkillId, skillEffectType.damage, multiplier)
@@ -292,6 +354,7 @@ function Unit() {
 		this.id = data.id !== undefined ? data.id : this.id;
 		this.stackSize = data.stackSize !== undefined ? data.stackSize : this.stackSize;
 		this.newUnit = data.newUnit !== undefined ? data.newUnit : this.newUnit
+		this.updateWithClonedSkill()
 		database.setUnitToDatabase(this)
 	}
 

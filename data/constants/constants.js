@@ -16,6 +16,18 @@ var visualVars= {
 
 }
 
+var skillVersionVar = {
+    original: 'original',
+    clone: 'clone',
+}
+
+var animationSpeedUpVar = {
+    spedUp: 1000,
+    normal: 1
+}
+
+var animationSpeedUp = animationSpeedUpVar.spedUp
+
 var skillVar = {
     strike: 'Strike',
     pierce: 'Pierce',

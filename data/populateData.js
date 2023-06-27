@@ -4,6 +4,7 @@ function populateDatabase() {
     populateSkills()
 	populateLogger()
     populateGameState()
+
 }
 
 function populateSkills() {
@@ -39,9 +40,11 @@ function populateSkills() {
             order: 1,
             effect: function(data) {
                 let effectMultiplier = 1
-                if(data.origin.effectMultiplier) {
-                    if(data.origin.effectMultiplier.skillId == data.skillId && data.origin.effectMultiplier.skillEffectType == skillEffectType.summon) {
-                        effectMultiplier = data.origin.effectMultiplier.effectMultiplier
+                if(data.origin.effectMultiplier !== null) {
+                    for(let multiplier of data.origin.effectMultiplier) {
+                        if(multiplier.skillId == data.skillId && multiplier.skillEffectType == skillEffectType.summon) {
+                            effectMultiplier = multiplier.effectMultiplier
+                        }
                     }
                 }
                 let ret = {

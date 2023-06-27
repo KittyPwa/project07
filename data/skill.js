@@ -6,6 +6,8 @@ function Skill() {
 
 	this.skillId = null
 
+	this.version = skillVersionVar.original
+
 	this.skillType = null
 
 	this.skillEffectType = null
@@ -39,6 +41,7 @@ function Skill() {
 		this.orderingType = data.orderingType !== undefined ? data.orderingType : this.orderingType
 		this.skillCondition = data.skillCondition !== undefined ? data.skillCondition : this.skillCondition
 		this.passiveIsActivated = data.passiveIsActivated !== undefined ? data.passiveIsActivated : this.passiveIsActivated
+		this.version = data.version !== undefined ? data.version : this.version
 	}
 
 	this.getSkillEffectLog = function(effectType, amount, originId, targetId) {
@@ -51,9 +54,6 @@ function Skill() {
 			'target': target.name,
 		}
 		let i = 0
-		
-		
-		
 		
 		let name = camelCase(this.name)
 		
@@ -71,10 +71,23 @@ function Skill() {
 
 	this.getSkillByName = function(skillId) {
 		for(let skill of Object.values(this.data.skills)) {
-			if(skill.skillId == skillId) {
+			if(skill.skillId == skillId && skill.version == skillVersionVar.original) {
 				return skill
 			}
 		}
+	}
+
+	this.cloneSkill = function(name) {
+		let clone = new Skill()
+		let original = database.getSkillByName(name)
+		let skillBase = JSON.parse(JSON.stringify(original))
+		delete skillBase['id']
+		skillBase['version'] = skillVersionVar.clone
+		clone.updateSkill(skillBase)
+		clone.updateSkill({
+			effects : original.effects
+		})
+		return clone
 	}
 
 	this.getPassivesByEvent = function(event) {
@@ -95,9 +108,25 @@ function Skill() {
 		return skills
 	}
 
+	this.cleanUpDanglingSkills = function() {
+		let skills = Object.values(database.getSkills())
+		skills = skills.filter((a) => a.version == skillVersionVar.clone)
+		let units = Object.values(database.getUnits())
+		for(let unit of units) {
+			for(let unitSkill of unit.skills) {
+				skills = skills.filter((a) => a.skillId != unitSkill.skillId)
+			}
+		}
+		for(let skill of skills) {
+			delete database.data.skills[skills.id]
+		}
+	}
+
 	this.databaseFunctions = {
+		'cloneSkill'  : this.cloneSkill,
 		'getSkillByName' : this.getSkillByName,
 		'getPassivesByEvent': this.getPassivesByEvent,
+		'cleanUpDanglingSkills': this.cleanUpDanglingSkills,
 	}
 
 	database.setSkillToDatabase(this)	
