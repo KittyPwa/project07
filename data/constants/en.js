@@ -22,7 +22,8 @@ var messageEn = {
 			unitType: ['Type : '],
 			skill : ['Skills: '],
 			stackSize: ['Stack: '],
-			bitter: ['Bitter']
+			bitter: ['Bitter'],
+			exhausted: ['Exhausted'],
 		},
 		support: {
 			stackable: {

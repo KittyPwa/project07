@@ -26,7 +26,7 @@ var animationSpeedUpVar = {
     normal: 1
 }
 
-var animationSpeedUp = animationSpeedUpVar.spedUp
+var animationSpeedUp = animationSpeedUpVar.normal
 
 var skillVar = {
     strike: 'Strike',

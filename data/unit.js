@@ -43,6 +43,8 @@ function Unit() {
 
 	this.bitter = null
 
+	this.exhausted = false
+
 	this.distinguishUnit = function() {
 		if(this.bitter == null || !this.bitter) {
 			this.distinctions = this.distinctions !== null ? this.distinctions + 1 : 1;
@@ -55,6 +57,22 @@ function Unit() {
 		} else {
 			return false;
 		}
+	}
+
+	this.isExhausted = function() {
+		return this.exhausted
+	}
+
+	this.unExhaust = function() {
+		this.updateUnit({
+			exhausted: false
+		})
+	}
+
+	this.exhaust = function() {
+		this.updateUnit({
+			exhausted: true
+		})
 	}
 
 	this.updateWithClonedSkill = function() {
@@ -267,7 +285,9 @@ function Unit() {
 			description += language.unit.description.distinctions[0] + this.distinctions +'\n'
 		}
 		if(this.bitter !== null)
-			description += language.unit.description.bitter[0] + '\n'		
+			description += language.unit.description.bitter[0] + '\n'	
+		if(this.isExhausted())
+			description += language.unit.description.exhausted[0] + '\n'	
 		if(this.skills.length > 0)
 			description += language.unit.description.skill[0]
 		for(let skillId of this.skills) {
@@ -322,6 +342,7 @@ function Unit() {
 		this.healMultiplier = data.healMultiplier !== undefined ? data.healMultiplier : this.healMultiplier;
 		this.effectMultiplier = data.effectMultiplier !== undefined ? data.effectMultiplier : this.effectMultiplier;
 		this.skills = data.skills !== undefined ? data.skills : this.skills;
+		this.exhausted = data.exhausted !== undefined ? data.exhausted : this.exhausted
 		this.updateFromSkill()
 
 		this.additionalPositions = data.additionalPositions !== undefined ? data.additionalPositions : this.additionalPositions
@@ -418,6 +439,12 @@ function Unit() {
 		return retUnits
 	}	
 
+	this.unExhaustFaction = function(allegiance) {
+		for(let unit of database.getUnitsByAllegiance(allegiance)) {
+			unit.unExhaust()
+		}
+	}
+
 	this.databaseFunctions = {
 		'getGenerals' : this.getGenerals,
 		'getUnitByName': this.getUnitByName,
@@ -425,6 +452,7 @@ function Unit() {
 		'getNewUnits' : this.getNewUnits,
 		'getUnitsByAllegiance': this.getUnitsByAllegiance,
 		'getUnitsByAllegianceAndTypes': this.getUnitsByAllegianceAndTypes,
+		'unExhaustFaction' : this.unExhaustFaction,
 	}
 
 	database.setUnitToDatabase(this)

@@ -24,6 +24,7 @@ class CombatScreen extends Phaser.Scene {
         this.gameState
         this.distinguishUnit = false
         this.canLaunchTurn = false
+        this.turnIsLaunched = false
     }
     
     create() {
@@ -416,10 +417,6 @@ class CombatScreen extends Phaser.Scene {
 			    	let widthPlacement =  terrainVars.tileSize * (spot.i + tileOffset.tileWidthOffset + 1/2)
 					let heightPlacement =  terrainVars.tileSize * (spot.j + tileOffset.tileHeightOffset + 1/2)
 			    	let sprite = that.add.sprite(widthPlacement, heightPlacement, character.spriteInfos.spriteSheet, character.spriteInfos.spriteNumber);
-			    	
-			    	
-			    	
-			    	
 			    	sprite['isDestroyable'] = true
 			    	let healthBar = null
 			    	if(!spot.isAdditionSpot() && spot.spotType != terrainVars.support) {
@@ -481,7 +478,6 @@ class CombatScreen extends Phaser.Scene {
 				    			}
 				    		} else {
 				    			if(!that.selected) {
-				    				//that.temp(character, sprite, that)
 					    			that.selectCharacter(character, sprite, that)
 					    		} else {
 					    			if(that.selected != character.id) {
@@ -525,11 +521,15 @@ class CombatScreen extends Phaser.Scene {
 
 	moveSelectedToSpot(spot, tileOffset, that) {
 		let character = database.getUnit(that.selected)
-		character.updateUnit({position: spot.id})		
-		let sprite = that.characterObj[character.id].obj[0];
-		let healthBar = that.characterObj[character.id]['healthBar']
-		that.updateSpritePosition(sprite, healthBar, spot, tileOffset, that);
-		that.showSpotsAvailable(character, that)
+		if(!character.isExhausted()) {
+			character.updateUnit({position: spot.id})		
+			if(this.turnIsLaunched)
+				character.exhaust()
+			let sprite = that.characterObj[character.id].obj[0];
+			let healthBar = that.characterObj[character.id]['healthBar']
+			that.updateSpritePosition(sprite, healthBar, spot, tileOffset, that);
+			that.showSpotsAvailable(character, that)
+		}
 	}
 
 	hideIlluminatedSpots(that) {
@@ -541,11 +541,13 @@ class CombatScreen extends Phaser.Scene {
 	} 
 
 	selectCharacter(character, sprite, that) {
-		that.selected = character.id;
-		sprite.tint = visualVars.unitSelectedColor
-		that.showSpotsAvailable(character, that)
-		let tween = that.animationManager.shakeSelectedSprite(character.id, [sprite])
-		tween.play()
+		if(!character.isExhausted()) {
+			that.selected = character.id;
+			sprite.tint = visualVars.unitSelectedColor
+			that.showSpotsAvailable(character, that)
+			let tween = that.animationManager.shakeSelectedSprite(character.id, [sprite])
+			tween.play()
+		}
 	}
 
 	unselectCharacter(that, sprites) {
@@ -605,6 +607,7 @@ class CombatScreen extends Phaser.Scene {
 	    }
 	    this.combatManager.updateCombatManager(combatManagerData)
 		if (Phaser.Input.Keyboard.JustDown(this.keyT) && this.canLaunchTurn) {
+			this.turnIsLaunched = true
 			if(this.selected) {
 				this.unselectCharacter(this, this.characterObj[this.selected].obj)
 			}	
@@ -613,8 +616,10 @@ class CombatScreen extends Phaser.Scene {
 				return a.isAlive()
 			})
 			if(generals.length == 2){
+				this.canLaunchTurn = false
 				this.combatManager.executeTurn()
 			} else {
+				this.turnIsLaunched = false
 				let toKill = database.getUnitsByAllegiance(oppositeAllegianceVars[generals[0].allegiance])
 				for(let unit of toKill) {
 					unit.die()
@@ -624,7 +629,9 @@ class CombatScreen extends Phaser.Scene {
 					this.reinitializeGame()
 					this.canLaunchTurn = false;
 				}
+				this.updateVisuals()
 			}
+		database.unExhaustFaction(allegianceVars.ally)
 		this.updateVisualAnimations()
 		}
 	}
@@ -670,8 +677,6 @@ class CombatScreen extends Phaser.Scene {
 			let act = animationManager.act(event.origin, this.characterObj[event.origin].obj)
 			act.on('complete', function() {
 				let target = database.getUnit(event.target)
-				
-				
 				if(target.newUnit == true) {
 					let characterContainer = that.intializeCharacters([target], that)
 					that.terrainScreen = that.add.container(terrainVars.widthOffset,terrainVars.heightOffset, [...characterContainer]);
@@ -699,10 +704,8 @@ class CombatScreen extends Phaser.Scene {
 				recieve.play()
 			})
 			act.play()
-			
-			
-
-			//recieve.setCallback("onComplete", () => 
+		} else {
+			this.canLaunchTurn = true
 		}	
 	}
 
