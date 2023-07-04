@@ -44,21 +44,25 @@ function Skill() {
 		this.version = data.version !== undefined ? data.version : this.version
 	}
 
-	this.getSkillEffectLog = function(effectType, amount, originId, targetId) {
-		let descriptionArray = this.effects[effectType].effectDescription(amount)
-		let origin = database.getUnit(originId)
-		let target = database.getUnit(targetId)
+	this.getSkillEffectLog = function(data) {
+		let descriptionArray = this.effects[data.effectType].effectDescription(data.amount)
+		let origin = database.getUnit(data.originId)
+		let target = database.getUnit(data.targetId)
 		let object = {
-			'amount': amount,
+			'amount': data.amount,
 			'origin': origin.name,
-			'target': target.name,
+			'target': target.name, 
+		}
+		if(data.originalTargetId !== undefined) {
+			let originalTarget = database.getUnit(data.originalTargetId)
+			object['originalTarget'] = originalTarget.name
 		}
 		let i = 0
 		
 		let name = camelCase(this.name)
 		
 		
-		for(let desc of language.skill[name][effectType].description) {
+		for(let desc of language.skill[name][data.effectType].description) {
 			object[i] = desc
 			i++
 		}
@@ -66,6 +70,9 @@ function Skill() {
 		for(let descriptionElement of Object.values(descriptionArray)) {
 			log += object[descriptionElement]
 		}
+		console.log()
+		console.log(descriptionArray)
+		console.log(log)
 		return log
 	}
 

@@ -165,7 +165,7 @@ class CombatScreen extends Phaser.Scene {
 	}
 
 	selectFirstFoes(amount) {
-		this.selectFoes(amount, 1)
+		this.selectFoes(amount, 0)
 		this.updateCharacters();		
 	}
 
@@ -174,7 +174,7 @@ class CombatScreen extends Phaser.Scene {
 		foes = foes.filter((a) => a.unitType != unitTypeVars.general)
 		if(foes.length < amount) {
 			do {
-				this.selectFoes(amount, 1)
+				this.selectFoes(amount, 0)
 				foes = database.getUnitsByAllegiance(allegianceVars.foe)
 				foes = foes.filter((a) => a.unitType != unitTypeVars.general)
 			} while(foes.length < amount)		
@@ -206,10 +206,10 @@ class CombatScreen extends Phaser.Scene {
 		}
 	}
 
-	selectFoes(amount, level) {
+	selectFoes(amount, threatLevel) {
 		let units = []
 		for(let i = 0; i < amount; i++) {
-    		let randomUnitBases = getNUnitBases(1, allegianceVars.foe, level);
+    		let randomUnitBases = getNUnitBases(1, allegianceVars.foe, threatLevel);
     		let unit = new Unit()
 			unit.updateUnit(randomUnitBases[0]);
       		units.push(unit);

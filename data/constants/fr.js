@@ -22,7 +22,8 @@ var messageFr = {
 			unitType: ['Type : '],
 			skill : ['Compétences: '],
 			stackSize: ['Stock: '],
-			bitter: ['Frustré']
+			bitter: ['Frustré'],
+			exhausted: ['Epuisé'],
 		},
 		support: {
 			stackable: {
@@ -54,38 +55,69 @@ var messageFr = {
 	skill: {
 		strike: {
 			name: ['Frappe'],
-			description: ['Frappe adversaire pour ', ' dégâts']
+			damage: {
+				description: [' frappe ', ' pour ', ' dégâts']
+			}
 		},
 		pierce: {
-			name: ['Transperce'],
-			description: ['Transperce adversaire pour', 'dégâts']
+			name: ['Perce'],
+			damage: {
+				description: [' perce ',' pour', 'dégâts']
+			}
 		},
 		chop: {
-			name: ['Hacher'],
-			description: ['Hache adversaire pour', ' dégâts, produisant ', ' Bûche']
+			name: ['Hache'],
+			damage: {
+				description: [' hache ',' pour ', ' dégâts']
+			},
+			summon: {
+				description: [' produit ', ' Bûche']
+			}
 		},
 		logLug: {
-			name: ['Lancé de bûche'],
-			description: ['Lance des bûches aux adversaires pour ', ' dégâts, consommant ', ' Bûche']
+			name: ['Lancée de bûche'],
+			damage: {
+				description: [' lance une bûche à ',' pour ', ' dégâts']
+			},
+			summon: {
+				description: [' conomme ', ' Bûche']
+			}
 		},
 		challengeTheStrong: {
-			name: ['Ego des puissants'],
-			description: ['Frappe adversaire avec le plus de HP pour', ' dégâts']
+			name: ['Orgueil du puissant'],
+			damage: {
+				description: [' lance un duel à l\'adversaire avec le plus de points de vie, ', ' pour ', ' dégâts']
+			}
 		},
 		cullVermin: {
-			name: ['Eradiquer la vermine'],
-			description: ['Frappe adversaire avec le moins de HP pour', ' dégâts']
+			name: ['Détruire vermine'],
+			damage: {
+				description: [' attaque l\'adversaire avec le moins de points de vie, ',' pour ', ' dégâts']
+			}
 		},
 		damRepairs: {
-			name: ['Réparations de barrage'],
-			description: ['Répare le barrage pour ', ' HP, consommant ', ' Bûche']
+			name: ['Réparation de barrage'],
+			heal: {
+				description: [' Soigne ',' pour ', ' points de vie']
+			},
+			summon: {
+				description: [' consomme ', ' Bûche']
+			}
 		},
 		logSnap: {
 			name: ['Claquement de bûche'],
-			description: ['Fouette avec une bûche pour ', ' HP à chaque fois qu\'un castor attaque, consommant ', ' Bûche']
+			damage: {
+				description: [' envoie un bûchette à ',' pour ', ' dégâts']
+			},
+			summon: {
+				description: [' consomme ', ' Bûche']
+			}
 		},
 		logCollect: {
 			name: ['Collecte de bûche'],
+			summon: {
+				description: [' collecte des bûches du mort ', ' produit ' , ' Bûche']
+			}
 		}
 	}
 

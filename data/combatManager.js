@@ -30,6 +30,7 @@ function CombatManager() {
 		let animationManager = database.getAnimationManager()
 		let origin = database.getUnit(event.origin)
 		let originalTarget = database.getUnit(event.target)
+		console.log(originalTarget)
 		for(let skillId of skillObj.passives) {
 			let skill = database.getSkill(skillId)
 			let effects = Object.values(skill.effects).sort((a,b) => a.order - b.order)
@@ -53,7 +54,13 @@ function CombatManager() {
 										let heal = skillUser.healDamage(skill)
 										if(heal != null) {								
 											target.takeHeal(heal)
-											let log = database.getSkill(skill.id).getSkillEffectLog(effect.skillEffectType, damage, skillUser.id, target.id)
+											let log = database.getSkill(skill.id).getSkillEffectLog({
+												effectType: effect.skillEffectType, 
+												amount: heal, 
+												originId: skillUser.id,
+												targetId: target.id,
+												originalTargetId: originalTarget.id
+											})
 											animationManager.addActionEvent({
 												origin: skillUser.id,
 												target: target.id,
@@ -72,7 +79,13 @@ function CombatManager() {
 									
 									if(ret.updated) {
 										target.updateStacks(ret['amount'])
-										let log = database.getSkill(skill.id).getSkillEffectLog(effect.skillEffectType, ret['amount'], skillUser.id, target.id)
+										let log = database.getSkill(skill.id).getSkillEffectLog({
+											effectType: effect.skillEffectType, 
+											amount: ret['amount'], 
+											originId: skillUser.id,
+											targetId: target.id,
+											originalTargetId: originalTarget.id
+										})
 										animationManager.addActionEvent({
 												origin: skillUser.id,
 												target: target.id,
@@ -80,6 +93,7 @@ function CombatManager() {
 												amount: ret['amount'],
 												skill: skill,
 												log: log,
+												originalTarget: originalTarget.id
 											})
 									}
 									break;
@@ -87,8 +101,14 @@ function CombatManager() {
 									if(target.isAlive()) {
 										let damage = skillUser.inflictDamage(skill.id)
 										if(damage != null) {								
-											target.takeDamage(damage)
-											let log = database.getSkill(skill.id).getSkillEffectLog(effect.skillEffectType, damage, skillUser.id, target.id)
+											target.takeDamage(damage)											
+											let log = database.getSkill(skill.id).getSkillEffectLog({
+												effectType: effect.skillEffectType, 
+												amount: damage, 
+												originId: skillUser.id,
+												targetId: target.id,
+												originalTargetId: originalTarget.id
+											})
 											animationManager.addActionEvent({
 												origin: skillUser.id,
 												target: target.id,
@@ -160,7 +180,12 @@ function CombatManager() {
 												this.passive(passives, event)
 										}
 										target.takeHeal(heal)
-										let log = database.getSkill(skill).getSkillEffectLog(effect.skillEffectType, heal, originId, target.id)
+										let log = originSkill.getSkillEffectLog({
+											effectType: effect.skillEffectType, 
+											amount: heal, 
+											originId: originId,
+											targetId: target.id,
+										})
 										animationManager.addActionEvent({
 											origin: originId,
 											target: target.id,
@@ -186,7 +211,12 @@ function CombatManager() {
 									
 									if(ret.updated) {
 										target.updateStacks(ret['amount'])
-										let log = database.getSkill(skill).getSkillEffectLog(effect.skillEffectType, ret['amount'], originId, target.id)
+										let log = originSkill.getSkillEffectLog({
+											effectType: effect.skillEffectType, 
+											amount: ret['amount'], 
+											originId: originId,
+											targetId: target.id,
+										})
 										animationManager.addActionEvent({
 												origin: originId,
 												target: target.id,
@@ -209,8 +239,16 @@ function CombatManager() {
 												this.passive(passives, event)
 										}
 										if(target.isAlive()) {
-											target.takeDamage(damage)
-											let log = database.getSkill(skill).getSkillEffectLog(effect.skillEffectType, damage, originId, target.id)
+											target.takeDamage(damage)				
+											console.log(originSkill)
+											console.log(skill)			
+											console.log(database.getSkill(skill))			
+											let log = originSkill.getSkillEffectLog({
+												effectType: effect.skillEffectType, 
+												amount: damage, 
+												originId: originId,
+												targetId: target.id,
+											})
 											animationManager.addActionEvent({
 												origin: originId,
 												target: target.id,
@@ -233,6 +271,8 @@ function CombatManager() {
 												event.updateEvent({
 													eventType: skillCondition.unitDeath
 												})
+												console.log(target)
+												console.log(event)
 												let passivesAfterDeath = database.getPassivesByEvent(event)
 												for(let passives of passivesAfterDeath) {															
 													if(passives.passives.length > 0)

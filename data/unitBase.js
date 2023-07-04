@@ -5,6 +5,7 @@ let unitBase = {
 			militia: {
 		    	name: language.unit.mamal.beaver.militia[0],
 		    	level : 1,
+		    	threatLevel: 1,
 		    	distinctions: 0,
 		    	unitName: unitNameVars.mamal.beaver.militia,
 		    	allegiance: allegianceVars.ally,
@@ -62,6 +63,7 @@ let unitBase = {
 		    warrior: {
 		    	name: language.unit.mamal.beaver.warrior[0],
 		    	level : 1,
+		    	threatLevel: 0,
 		    	distinctions: 0,
 		    	unitName: unitNameVars.mamal.beaver.warrior,
 		        allegiance: allegianceVars.ally,
@@ -141,6 +143,7 @@ let unitBase = {
 		    trailBlazer: {
 		    	name: language.unit.mamal.beaver.trailBlazer[0],
 		    	level : 1,
+		    	threatLevel: 0,
 		    	distinctions: 0,
 		    	unitName: unitNameVars.mamal.beaver.trailBlazer,
 		        allegiance: allegianceVars.ally,
@@ -214,7 +217,8 @@ let unitBase = {
 		    },
 		    builder: {
 		    	name: language.unit.mamal.beaver.builder[0],
-		    	level : 2,
+		    	level : 1,
+		    	threatLevel: 2,
 		    	distinctions: 0,
 		    	unitName: unitNameVars.mamal.beaver.builder,
 		    	allegiance: allegianceVars.ally,
@@ -289,7 +293,8 @@ let unitBase = {
 		    },
 		    alpha: {
 		    	name: language.unit.mamal.beaver.alpha[0],
-		    	level: 2,
+		    	level: 1,
+		    	threatLevel: 2,
 		    	distinctions: 0,
 		    	unitName: unitNameVars.mamal.beaver.alpha,
 		    	allegiance: allegianceVars.ally,
@@ -413,6 +418,7 @@ let unitBase = {
 			grunt: {
 		    	name: language.unit.treant.greenForest.grunt[0],
 		    	level: 1,
+		    	threatLevel: 0,
 		    	unitName: unitNameVars.treant.greenForest.grunt,
 		    	allegiance: allegianceVars.foe,
 		    	health: 4,
@@ -457,7 +463,8 @@ let unitBase = {
 		    },
 			barkBiter: {
 				name: language.unit.treant.greenForest.barkBiter[0],
-				level: 2,
+				level: 1,
+				threatLevel: 1,
 		    	unitName: unitNameVars.treant.greenForest.barkBiter,
 		    	allegiance: allegianceVars.foe,
 		    	health: 2,
@@ -474,7 +481,8 @@ let unitBase = {
 			},
 			ogre: {
 				name: language.unit.treant.greenForest.ogre[0],
-				level: 2,
+				level: 1,
+				threatLevel: 2,
 		    	unitName: unitNameVars.treant.greenForest.ogre,
 		    	allegiance: allegianceVars.foe,
 		    	health: 6,
@@ -511,7 +519,7 @@ let unitBase = {
 	}
 }
 
-function getNUnitBases(n, allegiance, level) {
+function getNUnitBases(n, allegiance, threatLevel) {
 	let alleged = []
 	let races = unitAllegianceVars[allegiance]
 	for(let race of races) {		
@@ -521,8 +529,8 @@ function getNUnitBases(n, allegiance, level) {
 			}
 		}
 	}
-	if(level) {
-		alleged = alleged.filter((a) => a.level <= level)
+	if(threatLevel !== undefined) {
+		alleged = alleged.filter((a) => a.threatLevel <= threatLevel)
 	}
 	shuffleArray(alleged)
 	return alleged.slice(0,n)

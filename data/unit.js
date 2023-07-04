@@ -39,6 +39,8 @@ function Unit() {
 
 	this.level = null
 
+	this.threatLevel = null
+
 	this.distinctions = null
 
 	this.bitter = null
@@ -367,6 +369,7 @@ function Unit() {
 
 		this.bitter = data.bitter !== undefined ? data.bitter : this.bitter;
 		this.level = data.level !== undefined ? data.level : this.level;
+		this.threatLevel = data.threatLevel !== undefined ? data.threatLevel : this.threatLevel;
 		this.distinctions = data.distinctions !== undefined ? data.distinctions : this.distinctions;
 		this.unitType = data.unitType !== undefined ? data.unitType : this.unitType;
 		this.health = data.health !== undefined ? data.health : this.health;

@@ -59,10 +59,8 @@ function populateSkills() {
                             amount: null
                         }
                     }
-                }       
-                
-                
-                
+                }     
+                console.log(ret)  
                 return ret
             }, 
         }]
@@ -382,7 +380,7 @@ function populateSkills() {
                     damRepairs.effects[skillEffectType.heal].data.authorized = false
                     let ret = database.getSkillByName(skillVar.updateLog).effects[skillEffectType.summon].effect(Object.assign({},this.data,data))
                     if(ret['updated']) {
-                        damRepairs.effects[skillEffectType.damage].data.authorized = true
+                        damRepairs.effects[skillEffectType.heal].data.authorized = true
                     }
                     return ret
                 },
@@ -484,12 +482,12 @@ function populateSkills() {
         skillEffectType: skillEffectType.summon,
         passiveIsActivated: function(event) { 
             let isActivated = true            
-            let originUnit = database.getUnit(event.origin) 
-            if(originUnit.getRace() != raceNameVars.treant)
+            let targetUnit = database.getUnit(event.target) 
+            if(targetUnit.getRace() != raceNameVars.treant)
                 isActivated = false     
             if(event.eventType != skillCondition.unitDeath) 
                 isActivated = false
-            if(originUnit.allegiance != allegianceVars.foe)
+            if(targetUnit.allegiance != allegianceVars.foe)
                 isActivated = false
             return isActivated
         },
@@ -508,7 +506,7 @@ function populateSkills() {
                     return {
                         1: 'origin',
                         2: 0,
-                        3: 'target',
+                        3: 'originalTarget',
                         4: 1,
                         5: 'amount',
                         6: 2,

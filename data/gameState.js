@@ -2,12 +2,12 @@ function GameState() {
 
 	this.id = uuidv4()
 
-	this.globalLevel = 1
+	this.globalLevel = 0
 
 	this.distinctionsAmountForNextLevel = 1
 
 	//this.battleAmountForNextLevel = getRandomInt(3,7)
-	this.battleAmountForNextLevel = 1
+	this.battleAmountForNextThreatLevel = 1
 
 	this.battleAmountForNextEnemy = 3
 
@@ -50,7 +50,7 @@ function GameState() {
 		let globalLevel = this.globalLevel
 		let enemyCount = this.enemyCount
 		let update = false
-		if (this.battleAmount % this.battleAmountForNextLevel == 0) {
+		if (this.battleAmount % this.battleAmountForNextThreatLevel == 0) {
 			globalLevel = this.globalLevel + 1
 			update = true
 		}
